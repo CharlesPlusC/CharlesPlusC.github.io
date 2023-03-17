@@ -2,7 +2,7 @@
 layout: single
 title: "Aerodynamic Drag Modelling for LEO Mega-Constellations"
 header:
-  teaser: /images/HCL_drag_diff.png
+  teaser: HCL_drag_diff.png
 collection: project
 author_profile: true
 share: true
@@ -20,9 +20,7 @@ The study also highlights the relative simplicity of including higher-fidelity a
 
 The study also emphasizes the complexity of modelling the atmospheric density in the orbit propagation process. The size of uncertainties in the atmospheric density modelling problem overshadow many other aspects of the orbit propagation process. Any work seeking to explore the problem of aerodynamic drag modelling would be wise to use one of the most commonly implemented atmospheric density models for comparability across the literature (NRLMSISE-00 or JB08).
 
-The study has some limitations, including the fact that only monopole gravity and J2 have been included alongside aerodynamic drag. These are the three strongest forces at LEO. Another limitation is that the following study only studied a "live" subset of the OneWeb constellation(around 40% of the total constellation), within a 15 km altitude range. The full extent of the effects of the $\beta$' angle and displacement has not been explored. However, despite these limitations, the research presented in this study is highly relevant to space traffic management.
-
-The study indicates that current accepted drag modelling methods are likely too coarse and a potential culprit behind the high false-positive rate of conjunction warnings. For mega-constellation operators, this research indicates that using higher-fidelity drag models will predict the geometry of the spacecraft network more accurately. This will impact upon optimal scheduling of maneuvers and station-keeping.
+The study indicates that current drag modelling methods underlying operational systems are likely too coarse and a potential culprit behind the high false-positive rate of conjunction warnings. For mega-constellation operators, this research indicates that using higher-fidelity drag models will predict the geometry of the spacecraft network more accurately. This will impact upon optimal scheduling of maneuvers and station-keeping.
 
 Suggested future work includes validating the proposed model against "real-world" data to quantify the impact relative to a ground truth. Reducing the computational cost of the propagation process and further understanding the effects of drag on orbital geometry would also be valuable. Including the proposed method (or some variant of it) into a more well-known orbit propagator (i.e., SGP4) would make it available to spacecraft operators "off the shelf."
 
