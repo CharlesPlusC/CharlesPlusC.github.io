@@ -3,14 +3,16 @@ layout: archive
 title: "Publications"
 permalink: /publications/
 author_profile: true
+header:
+  overlay_image: NASAreentry.png
+  overlay_filter: 0.3
 ---
 
-{% if author.googlescholar %}
-  You can also find my articles on <u><a href="{{author.googlescholar}}">my Google Scholar profile</a>.</u>
-{% endif %}
+Refereed Journal Articles
+------
 
-{% include base_path %}
+* <b>Constant, C.</b>, Bhattarai, S., Ziebart, M.  [On the Limits of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series] <i>Preprint submitted </i>, 2023.
 
-{% for post in site.publications reversed %}
-  {% include archive-single.html %}
-{% endfor %}
+Conference Talks/Poster
+------
+* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M [Astrodynamics and Space Geodesy for Space Domain Awareness and Sustainability] <i>Global Network On Sustainability in Space</i>, 2022.
