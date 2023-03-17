@@ -12,7 +12,7 @@ redirect_from:
 ---
 
 Welcome, fellow seekers of the infinite expanse! 
-I am a PhD candidate in Spaceflight Dynamics and Geodesy, studying at UCL's Space Geodesy and Navigation laboratory under the watchful gaze of Professor Marek Ziebart and Dr. Santosh Bhattarai.
+I am a PhD candidate in Spaceflight Dynamics and Geodesy, studying at UCL's Space Geodesy and Navigation Laboratory (SGNL) under the watchful gaze of Professor Marek Ziebart and Dr. Santosh Bhattarai.
 
 In a previous life, I roamed the winding roads of the world as a professional cyclist, but my true calling was written among the stars. Now, I spend my days delving into the mysteries of spaceflight, seeking to unlock the secrets of spacecraft motion. 
 
