@@ -19,4 +19,4 @@ In a previous life, I roamed the winding roads of the world as a professional cy
 
 With a background in engineering, physical geography, and data science, I bring a unique perspective to my research on the dynamics and coordination of satellites amidst the rise of mega-constellations. Currently, I am dedicated to leveraging state-of-the-art non-conservative force modeling to optimize mega constellation management. 
 
-If you share my passion for exploring the vastness of the cosmos, or just want to chat about the latest space news, please don't hesitate to get in touch. The universe awaits us!
+If you share my passion for studying the mysteries of spaceflight and unlocking the secrets of spacecraft motion, or just want to chat about the latest space news, please don't hesitate to get in touch. The universe awaits us!
