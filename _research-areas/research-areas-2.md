@@ -1,6 +1,6 @@
 ---
 title: "Data Visualization of Satellite Constellations"
-excerpt: "Data visualization .<br/><img src='/images/ow_constellation_animation_oneweb.gif' width='650'>"
+excerpt: "Data visualization of resident space objects across time-scales is one of the specialities of the group. <br/><img src='/images/ow_constellation_animation_oneweb.gif' width='650'>"
 collection: research-areas
 ---
 
@@ -10,3 +10,4 @@ Within the research group, part of our work is focused on communicating the chal
 
 ![Starlink](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/sl_constellation_animation_starlink.gif?raw=true)
 
+I also actively partake in the development of the UCL Future Space Populations visulaization tool (spearheaded by Indigo Brownhall). This tool is a web-based visualization tool that allows users to explore the past, present and future space populations. The tool is currently in development and will be released in the near future. 
