@@ -1,10 +1,13 @@
 ---
+layout: single
 title: "Data Visualization of Satellite Constellations"
 excerpt: "Data visualization of resident space objects across time-scales is one of the specialities of the group. <br/><img src='/images/ow_constellation_animation_oneweb.gif' width='650'>"
-collection: research-areas
----
+collection: project
+author_profile: true
+share: true
+--- 
 
-Within the research group, part of our work is focused on communicating the challenges associated with mega-constellations. Usually words and numbers are not enough to convey the scale of the problem. I have a developped a set of visualizations to aid me in easily conveying different information about mega-constellations. The visualizations are based on the NORAD TLE data and are updated semi-regularly. Here are some examples:
+Within the research group, part of our work is focused on communicating the challenges associated with mega-constellations. Usually words and numbers are not enough to convey the scale of the problem. I have a developped a set of visualizations to aid me in easily conveying different information about mega-constellations. The visualizations are based on the NORAD TLE data and are updated semi-regularly. Find some examples below.
 
 ![OneWeb](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/ow_constellation_animation_oneweb.gif?raw=true)
 
