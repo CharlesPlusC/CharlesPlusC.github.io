@@ -3,14 +3,12 @@ permalink: /
 title: "Spaceflight Dynamics and Geodesy Research Student"
 excerpt: "About me"
 author_profile: true
+header:
+  image: /assets/images/NASAreentry.png
 redirect_from: 
   - /about/
   - /about.html
 ---
-
-<p align="center">
-  <img src="/images/NASAreentry.png" alt="Reentry" width="800"/>
-</p>
 
 Welcome, fellow seekers of the infinite expanse! 
 I am a PhD candidate in Spaceflight Dynamics and Geodesy, studying at UCL's Space Geodesy and Navigation laboratory under the watchful gaze of Professor Marek Ziebart and Dr. Santosh Bhattarai.
