@@ -1,11 +1,9 @@
 ---
-title: 'The Rise and Reign of Two-Line Elements: A Brief Guide'
-date: 2023-03-17
-permalink: /TLE_blog
-tags:
-  - space situational awareness
-  - two-line elements
-  - satellite tracking
+layout: single
+title: "Blog Post 1"
+collection: project 
+author_profile: true
+share: true
 ---
 
 
