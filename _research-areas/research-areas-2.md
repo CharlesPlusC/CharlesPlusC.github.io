@@ -1,5 +1,5 @@
 ---
 title: "Data Visualization of Satellite Constellations"
-excerpt: "Argument of Latitude at which TLEs are produced for each constellation based on TLE source.<br/><img src='/images/constellation_animation_oneweb.gif' width='500'><br/><img src='/images/sl_constellation_animation_starlink.gif' width='500'>"
+excerpt: "Snapshot of the two largest constellations based on NORAD TLE data.<br/><img src='/images/sl_constellation_animation_starlink.gif' width='650'><br/><img src='/images/sl_constellation_animation_starlink.gif' width='650'>"
 collection: research-areas
 ---
