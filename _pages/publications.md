@@ -15,4 +15,4 @@ Refereed Journal Articles
 
 Conference Talks/Poster
 ------
-* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M [Astrodynamics and Space Geodesy for Space Domain Awareness and Sustainability](assets/GNOSIS_Poster_28_11_22.pdf) <i>Global Network On Sustainability in Space</i>, 2022.
+* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M [Astrodynamics and Space Geodesy for Space Domain Awareness and Sustainability](https://github.com/CharlesPlusC/CharlesPlusC.github.io/raw/master/assets/GNOSIS_Poster_28_11_22.pdf) <i>Global Network On Sustainability in Space</i>, 2022.
