@@ -11,8 +11,8 @@ header:
 Refereed Journal Articles
 ------
 
-* <b>Constant, C.</b>, Bhattarai, S., Ziebart, M.  [On the Limits of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series] <i>Preprint submitted </i>, 2023.
+* <b>Constant, C.</b>, Bhattarai, S., Ziebart, M.  _On the Limits of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series_  <i>Preprint submitted </i>, 2023.
 
 Conference Talks/Poster
 ------
-* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M [Astrodynamics and Space Geodesy for Space Domain Awareness and Sustainability] <i>Global Network On Sustainability in Space</i>, 2022.
+* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M [Astrodynamics and Space Geodesy for Space Domain Awareness and Sustainability](assets/GNOSIS_Poster_28_11_22.pdf) <i>Global Network On Sustainability in Space</i>, 2022.

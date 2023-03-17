@@ -14,7 +14,7 @@ description              : &description "PhD Space Flight Dynamics and Geodesy"
 url                      : https://CharlesPlusC.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
 repository               : "CharlesPlusC/CharlesPlusC.github.io"
-teaser                   :  "images/NASAreentry.png"
+teaser                   : "images/NASAreentry.png"
 breadcrumbs              : false # true, false (default)
 words_per_minute         : 160
 future                   : true
