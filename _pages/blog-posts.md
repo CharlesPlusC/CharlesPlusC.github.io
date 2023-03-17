@@ -3,6 +3,9 @@ layout: archive
 permalink: /blog-posts/
 title: "Blog posts"
 author_profile: true
+header:
+  overlay_image: NASAreentry.png
+  overlay_filter: 0.3
 ---
 
 {% include base_path %}
