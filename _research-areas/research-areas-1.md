@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Aerodynamic Drag Modelling for LEO Mega-Constellations"
-collection: project
+collection: blog-posts
 author_profile: true
 share: true
 ---
