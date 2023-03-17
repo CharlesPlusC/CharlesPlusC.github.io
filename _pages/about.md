@@ -4,7 +4,8 @@ title: "Spaceflight Dynamics and Geodesy Research Student"
 excerpt: "About me"
 author_profile: true
 header:
-  image: 500x300.png
+  image: NASAreentry.png
+  height: 400px
 redirect_from: 
   - /about/
   - /about.html
