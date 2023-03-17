@@ -14,7 +14,7 @@ description              : &description "PhD Space Flight Dynamics and Geodesy"
 url                      : https://CharlesPlusC.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
 repository               : "CharlesPlusC/CharlesPlusC.github.io"
-teaser                   :  # filename of teaser fallback teaser image placed in /images/, .e.g. "500x300.png"
+teaser                   :  "images/NASAreentry.png"
 breadcrumbs              : false # true, false (default)
 words_per_minute         : 160
 future                   : true
@@ -82,12 +82,12 @@ analytics:
 author:
   name             : "Charles Constant"
   avatar           : "profile.png"
-  bio              : "PhD Space Flight Dynamics and Geodesy at University College London"
-  location         : "Space Geodesy and Navigation Laboratory, UCL, London, UK"
+  bio              : "PhD Space Flight Dynamics and Geodesy \n at University College London"
+  location         : "UCL, London, UK"
   employer         :
   pubmed           : 
   googlescholar    : 
-  email            : "zcesccc@ucl.ac.uk:"
+  email            : "zcesccc@ucl.ac.uk"
   researchgate     : 
   uri              :
   bitbucket        :
