@@ -9,7 +9,7 @@ redirect_from:
 ---
 
 <p align="center">
-  <img src="/images/NASAreentry.png" alt="Reentry" width="600"/>
+  <img src="/images/NASAreentry.png" alt="Reentry" width="800"/>
 </p>
 
 Welcome, fellow seekers of the infinite expanse! 
