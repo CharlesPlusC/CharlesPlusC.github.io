@@ -6,7 +6,7 @@ excerpt: 'This paper analyzes different sources of uncooperative space surveilla
 date: 2023-01-01
 # venue: 'Journal 1'
 paperurl: 'http://academicpages.github.io/files/paper1.pdf'
-citation: 'Constant, Bhattarai and Ziebart. (2023). &quot;On the Limits of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series.&quot; <i>Submitted for Review </i>. 1(1).'
+citation: 'Constant, Bhattarai and Ziebart. (2023). &quot;On the Limits of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series.&quot; <i>Submitted for Review </i>.'
 ---
 <!-- 
 [Download paper here](http://academicpages.github.io/files/paper1.pdf) -->
