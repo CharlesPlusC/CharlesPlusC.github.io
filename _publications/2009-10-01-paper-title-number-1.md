@@ -3,9 +3,8 @@ title: "On the Limits of Current Practices in Uncooperative Space Surveillance: 
 collection: publications
 permalink: /publication/2023-01-01-paper-title-number-1
 excerpt: 'This paper analyzes different sources of uncooperative space surveillance data and their impact on the accuracy of spacecraft position.'
-date: TBC 
-# venue: 'Journal 1'
-paperurl: 'http://academicpages.github.io/files/paper1.pdf'
+date: 2023-01-01
+paperurl: 'tbc.pdf'
 citation: 'Constant, Bhattarai and Ziebart. (2023). &quot;On the Limits of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series.&quot; <i>Submitted for Review </i>.'
 ---
 <!-- 
