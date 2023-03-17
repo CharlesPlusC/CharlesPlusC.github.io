@@ -1,7 +1,7 @@
 ---
 title: 'The Rise and Reign of Two-Line Elements: A Brief Guide'
 date: 2023-03-17
-permalink: /blog-posts/TLE_blog
+permalink: /TLE_blog
 tags:
   - space situational awareness
   - two-line elements
