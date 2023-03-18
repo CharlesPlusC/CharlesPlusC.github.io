@@ -10,7 +10,7 @@ permalink: /posts/2023-03-18-astrointro
 # Astrodynamics: A Beginner's Guide to the Celestial Dance
 
 ## Introduction
-Astrodynamics, is a mesmerizing discipline that combines celestial mechanics, physics, and mathematics to study the motion of objects in space. Whether it's spacecraft navigating through the cosmos or satellites orbiting Earth, astrodynamics is integral to understanding and predicting their behavior. In this article, we will give an overview of astrodynamics aimed at those who are not familiar with the topic. We briefly discuss its importance in space missions and satellite operations, and highlight its role in solving real-world space problems such as space debris and orbital transfers.
+Astrodynamics combines celestial mechanics, physics, and mathematics to study the motion of objects in space. Whether it's spacecraft navigating through the cosmos or satellites orbiting Earth, astrodynamics is integral to understanding and predicting their behavior. In this article, we will give an overview of astrodynamics aimed at those who are not familiar with the topic. We briefly discuss its importance in space missions and satellite operations, and highlight its role in solving real-world space problems such as space debris and orbital transfers.
 
 ## I. Fundamentals of Astrodynamics
 
