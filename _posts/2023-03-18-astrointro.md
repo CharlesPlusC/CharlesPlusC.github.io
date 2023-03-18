@@ -20,7 +20,7 @@ Astrodynamics encompasses celestial mechanics and spacecraft motion, focusing on
 
 Celestial mechanics is a branch of astronomy that deals with the motion of celestial bodies in space. It examines how objects such as planets, moons, asteroids, and comets move under the influence of gravitational forces. The foundation of celestial mechanics lies in Isaac Newton's laws of motion and law of universal gravitation, which describe the force and motion of objects in space.
 
-![NASA Copernicus Trajectory Design](/images/copernicus-image-Nasa.png)
+![NASA Copernicus Trajectory Design](/images/copernicus-image-Nasa.png "NASA Copernicus Trajectory Design")
 
 ### B. Spacecraft Motion
 
@@ -34,7 +34,7 @@ Astrodynamics plays a crucial role in various aspects of space missions and sate
 
 Astrodynamics is vital in designing spacecraft trajectories, which are the paths that spacecraft take to travel from one point in space to another. By understanding the forces at play and the motion of celestial bodies, astrodynamicists can optimize spacecraft trajectories to minimize fuel consumption and ensure mission success. This is particularly important for interplanetary missions, where precise trajectory design is required to reach distant destinations like Mars or Jupiter.
 
-![NASA Voyager1 nad 2 Trajectories](/images/04-voyager-1and2-nasa.jpeg)
+![NASA Voyager1 and 2 Trajectories](/images/04-voyager-1and2-nasa.jpeg "NASA Voyager1 and 2 Trajectories")
 
 ### B. Satellite Operations
 
@@ -51,7 +51,7 @@ Space debris, also known as space junk, consists of defunct satellites, spent ro
 ### B. Orbital Transfers
 Orbital transfers are maneuvers that change a spacecraft's orbit, enabling it to reach new destinations or alter its position relative to other objects in space. Astrodynamics is essential in designing efficient and accurate orbital transfer maneuvers. One common technique used in orbital transfers is the Hohmann transfer, which minimizes fuel consumption by taking advantage of the gravitational forces between celestial bodies. Other advanced techniques, such as low-thrust transfers and gravity-assist maneuvers, also rely heavily on astrodynamics for their planning and execution.
 
-![NASA Skylab](/images/skylab_nasa.jpeg)
+![NASA Skylab](/images/skylab_nasa.jpeg "NASA Skylab in orbit")
 
 ## Conclusion:
 Astrodynamics, is a fascinating field that lies at the heart of our understanding of celestial mechanics and spacecraft motion. Its importance in space missions and satellite operations cannot be overstated, as it provides the foundation for spacecraft trajectory design and helps ensure the safe and efficient operation of satellites. Moreover, astrodynamics plays a critical role in addressing real-world space challenges, such as space debris and orbital transfers.
