@@ -21,7 +21,7 @@ Astrodynamics encompasses celestial mechanics and spacecraft motion, focusing on
 Celestial mechanics is a branch of astronomy that deals with the motion of celestial bodies in space. It examines how objects such as planets, moons, asteroids, and comets move under the influence of gravitational forces. The foundation of celestial mechanics lies in Isaac Newton's laws of motion and law of universal gravitation, which describe the force and motion of objects in space.
 
 <p align="center">
-  <img width="350" height="400" src="https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/copernicus-image-Nasa.png" alt="Copernicus Trajectory Design (NASA)">
+  <img width="550" height="600" src="https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/copernicus-image-Nasa.png" alt="Copernicus Trajectory Design (NASA)">
 </p>
 
 ### B. Spacecraft Motion
@@ -37,7 +37,7 @@ Astrodynamics plays a crucial role in various aspects of space missions and sate
 Astrodynamics is vital in designing spacecraft trajectories, which are the paths that spacecraft take to travel from one point in space to another. By understanding the forces at play and the motion of celestial bodies, astrodynamicists can optimize spacecraft trajectories to minimize fuel consumption and ensure mission success. This is particularly important for interplanetary missions, where precise trajectory design is required to reach distant destinations like Mars or Jupiter.
 
 <p align="center">
-  <img width="350" height="400" src="https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/04-voyager-1and2-nasa.png" alt="Voyager1 and 2 Planned Trajectories (NASA)">
+  <img width="500" height="500" src="https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/04-voyager-1and2-nasa.png" alt="Voyager1 and 2 Planned Trajectories (NASA)">
 </p>
 
 
@@ -57,7 +57,7 @@ Space debris, also known as space junk, consists of defunct satellites, spent ro
 Orbital transfers are maneuvers that change a spacecraft's orbit, enabling it to reach new destinations or alter its position relative to other objects in space. Astrodynamics is essential in designing efficient and accurate orbital transfer maneuvers. One common technique used in orbital transfers is the Hohmann transfer, which minimizes fuel consumption by taking advantage of the gravitational forces between celestial bodies. Other advanced techniques, such as low-thrust transfers and gravity-assist maneuvers, also rely heavily on astrodynamics for their planning and execution.
 
 <p align="center">
-  <img width="350" height="400" src="https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/skylab_nasa.png" alt="Skylab in Orbit (NASA)">
+  <img src="https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/skylab_nasa.png" alt="Skylab in Orbit (NASA)">
 </p>
 
 ## Conclusion:
