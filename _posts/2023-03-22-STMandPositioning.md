@@ -19,6 +19,10 @@ Some SSA systems claim to produce ephemerides with covariances of a few hundred 
 
 It's important to note that mismodeling spacecraft geometry and attitude are some of the largest sources of error in computing non-conservative forces (Vallado, 2014). As a result, the accuracy and precision achieved using geodetic spheres as calibration tools should be considered a lower-bound or best-case scenario in orbit validation. Spacecraft with different geometries, attitudes, and orbital geometries will likely perform worse. Nevertheless, geodetic spheres offer valuable insight into the potential for uncooperative tracking.
 
+<p align="center">
+  <img width="550" height="600" src="https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/Starlette-sphere.png" alt="A Starlette Geodetic Sphere (Image Credit:CNES)">
+</p>
+
 ## Understanding the Impact of Positional Error
 Defining "good" accuracy depends on the requirements we set for ourselves. To better grasp the consequences of positional error, consider this example:
 
@@ -47,8 +51,6 @@ $\frac{1}{2}at^2 = \frac{1}{2}\times 1.8\times10^{-6}\times86400^2 = 6718.464m$
 This difference greatly exceeds the 100-200 meter positional error threshold we are shooting for in LEO.
 This example demonstrates how small errors in initial conditions can lead to disproportionate errors in position over time. Furthermore, this effect is accentuated in LEO due to the increasingly strong impact of monopole gravity wtih decreasing altitude. Gravity is roughly 1000 times greater than any other acceleration in LEO (Montenbruck, 2000), making not only the calculation of gravitational force of paramount importance, but also highlighting the importance that the inputs to the equations of motion be precise and accurate.
 
-Word count: 400
-
 ## Tackling Positional Degradation in Space Situational Awareness Data
 The decline of positional accuracy of orbits over time poses a significant challenge for SSA systems. In this section, we discuss three primary solutions for mitigating positional degradation in SSA data:
 
@@ -59,6 +61,10 @@ The decline of positional accuracy of orbits over time poses a significant chall
 - _Improving Orbit_ Propagation: Even with perfect initial conditions and frequent measurements, a propagated orbit will still degrade due to force model and numerical integrator errors. Utilizing a higher-fidelity orbit propagator, which models the spacecraft's interaction with the physical environment more accurately, will result in fewer errors.
 
 Real-time positioning in Low Earth Orbits (LEO) has reached centimeter-level accuracy (Li, 2019). However this level of accuracy necessitates a "cooperative" approach to space traffic management, where two-way communication occurs between the ground station and the satellite in question.
+
+<p align="center">
+  <img width="550" height="600" src="https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/radar-leolabs.png" alt="LEOLabs' Australian Radars for Uncooperative Space Surveillance">
+</p>
 
 In contrast, the United States Space Surveillance Network (USSSN) aims to disseminate information about a wide range of Resident Space Objects (RSOs) to various operators (Wilson, 2019). Most RSOs, however, either lack Global Navigation Satellite Systems (GNSS) receivers or are unable or unwilling to share information with the USSSN. This "uncooperative" approach presents significant challenges, as there is no telemetry to aid the tracking process for most RSOs. Consequently, the USSSN must make cost-benefit trade-offs concerning measurement frequency, initial conditions accuracy, and force model complexity. For instance, high-fidelity atmospheric density models like the TIE-GCM (Qian, 2013) are readily available but are not widely used in orbit propagators due to their high computational cost (Licata, 2021).
 
