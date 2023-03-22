@@ -4,7 +4,7 @@ title: "Positioning for Space Traffic Management: an Overview of Challenges and 
 collection: posts 
 author_profile: true
 share: true
-permalink: /posts/2023-03-22-STMandPositioning.md
+permalink: /posts/2023-03-22-STMandPositioning
 ---
 
 # Positioning for Space Traffic Management: an Overview of Challenges and Solutions
