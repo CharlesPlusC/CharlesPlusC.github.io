@@ -8,9 +8,10 @@ permalink: /posts/2023-03-18-astrointro
 ---
 
 # Astrodynamics: A Beginner's Guide to the Celestial Dance
+What is astrodynamics? How does it relate to space missions and satellite operations? This is a whistle stop tour of the field of astrodynamics, aimed at those who are not familiar with the topic.
 
 ## Introduction
-Astrodynamics combines celestial mechanics, physics, and mathematics to study the motion of objects in space. Whether it's spacecraft navigating through the cosmos or satellites orbiting Earth, astrodynamics is integral to understanding and predicting their behavior. In this article, we will give an overview of astrodynamics aimed at those who are not familiar with the topic. We briefly discuss its importance in space missions and satellite operations, and highlight its role in solving real-world space problems such as space debris and orbital transfers.
+Astrodynamics combines celestial mechanics, physics, and mathematics to study the motion of objects in space. Whether it's spacecraft navigating through the deep space or satellites orbiting Earth, astrodynamics is integral to understanding and predicting their behavior. In this article, we will give an overview of astrodynamics aimed at those who are not familiar with the topic. We briefly discuss its importance in space missions and satellite operations, and highlight its role in solving real-world space problems such as space debris and orbital transfers.
 
 ## I. Fundamentals of Astrodynamics
 
@@ -64,6 +65,7 @@ Orbital transfers are maneuvers that change a spacecraft's orbit, enabling it to
 Astrodynamics, is a fascinating field that lies at the heart of our understanding of celestial mechanics and spacecraft motion. Its importance in space missions and satellite operations cannot be overstated, as it provides the foundation for spacecraft trajectory design and helps ensure the safe and efficient operation of satellites. Moreover, astrodynamics plays a critical role in addressing real-world space challenges, such as space debris and orbital transfers.
 
 By appreciating the principles and applications of astrodynamics, we gain a deeper understanding of the complexities and wonders of the cosmos. As our ambitions in space exploration continue to grow, so too will our reliance on astrodynamics to guide us through the vast, interconnected dance of celestial bodies.
+
 <!-- Add a reference section (small heading)
 ===
 References:
