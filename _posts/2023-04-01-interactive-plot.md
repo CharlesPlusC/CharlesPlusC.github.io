@@ -8,7 +8,7 @@ permalink: /posts/2023-04-01-interactive-plot/
 ---
 
 <div id="interactive-plot"></div>
-
+{% raw %}
 <script>
   // Define the plot data
   var trace1 = {
@@ -34,6 +34,8 @@ permalink: /posts/2023-04-01-interactive-plot/
   // Create the plot
   Plotly.newPlot('interactive-plot', data, layout);
 </script>
+{% endraw %}
+
 
 
 <!-- Welcome to the captivating world of precision solar radiation pressure (SRP) force modeling for spacecraft! As a recent member of the SGNL Group, I'm excited to dive deeper into our innovative work using advanced ray-tracing techniques and the impact it has on spacecraft like Galileo.
