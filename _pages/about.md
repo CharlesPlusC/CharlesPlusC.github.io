@@ -11,12 +11,12 @@ redirect_from:
   - /about.html
 ---
 
-Welcome, fellow seekers of the infinite expanse! 
-I am a PhD candidate in Spaceflight Dynamics and Geodesy, studying at UCL's Space Geodesy and Navigation Laboratory (SGNL) under the watchful gaze of Professor Marek Ziebart and Dr. Santosh Bhattarai.
+### Astrodynamics and Geodesy Research Student
 
-In a previous life, I roamed the winding roads of the world as a professional cyclist, but my true calling was written among the stars. Now, I spend my days delving into the mysteries of spaceflight, seeking to unlock the secrets of spacecraft motion. 
+Greetings, fellow space explorers! I'm currently navigating the academic cosmos as a PhD candidate at UCL's Space Geodesy and Navigation Laboratory (SGNL), mentored by Professor Marek Ziebart and Dr. Santosh Bhattarai. My research orbits around Spaceflight Dynamics and Geodesy.
 
-With degrees in engineering, physical geography, and data science, I bring a unique perspective to my research on the dynamics and coordination of satellites amidst the rise of mega-constellations. Currently, I am dedicated to leveraging state-of-the-art non-conservative force modeling to optimize mega constellation management. 
+Before academia, I pedaled through life as a professional cyclist, journeying across our planet's diverse terrains. Yet, the allure of the stars was irresistible. Now, I channel my energy into deciphering the enigmas of spaceflight and the dance of spacecraft motion.
 
-If you're also on a quest to unlocking the secrets of spacecraft motion, or just want to chat about the latest space news, please don't hesitate to get in touch. 
-The universe awaits us!
+My toolkit? A fusion of engineering, physical geography, and data science degrees. This unique blend fuels my research on the choreography of satellites, especially amidst the burgeoning era of mega-constellations. I'm currently harnessing cutting-edge non-conservative force modeling to improve orbit solutions. This has implications for collision avoidance, space debris mitigation, and satellite navigation.
+
+If you're intrigued by the ballet of spacecraft motion, or simply wish to exchange thoughts on the latest space headlines, I'd love to hear from you. Let's traverse the cosmic frontier together!
