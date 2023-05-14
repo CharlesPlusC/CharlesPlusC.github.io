@@ -7,7 +7,6 @@ share: true
 permalink: /posts/2023-03-22-STMandPositioning
 ---
 
-# Positioning for Space Traffic Management: an Overview of Challenges and Solutions
 
 ## Navigating the Challenges of Space Traffic Management
 

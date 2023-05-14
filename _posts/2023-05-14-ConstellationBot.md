@@ -19,13 +19,15 @@ Now that I have a working "version 1.0" of this Twitter bot, I'd like to share a
 
 ### About the Bot
 
-The bot provides daily updates on the state of the largest satellite mega-constellations (currently tracking the top 7). Written in Python, it uses the Tweepy library to interact with the Twitter API. The bot operates automatically via GitHub Actions and runs on a cron job that executes the Python script once a day. I plan to enhance its capabilities with additional features and visualizations in the future.
+The bot serves as a reliable resource, delivering daily status updates on the largest satellite mega-constellations - at present, it's tracking the top 7. It's designed in Python, utilizing the Tweepy library for interacting with the Twitter API. The bot functions autonomously through GitHub Actions and is activated by a `cron` job that triggers the Python script once daily. Future plans encompass augmenting its competencies with added features and visualizations.
 
-I believe this bot offers a quick snapshot of the current state of key players in the field, making it easier to keep up with the latest developments. Besides, the visual representation of constellation geometry provides valuable insights into constellation operations such as orbit raising, deorbiting, anomalies, and changes in geographical coverage. I'm currently working on imrpoving a statistics module to provide some salient stats alongside each visualization.
+This bot's mission is to furnish a concise overview of the current state of major players in the arena, simplifying the process of staying abreast with the newest advancements. Moreover, it visually illustrates constellation geometry, contributing critical insights into constellation operations such as orbit raising, deorbiting, anomalies, and shifts in geographical coverage. I'm in the process of enhancing a statistics module to accompany each visualization with relevant stats.
+
+The code I share in this post serves only to shed light on the logic that fuels these scripts- I will be sharing the entire code repository in an upcoming post. I hope this will inspire you to dive deeper, innovate, and perhaps create your own unique applications.
 
 ### Method Overview
 
-I will outline a broad overview and some key functions that used below. I will not go into too much detail about the code itself, as I will provide a link to the Github repo in the next post:
+I will outline a broad overview and share some key functions that I used below.
 
 1. __Selection of Constellations:__ I chose to track the seven largest operational constellations: Iridium, Starlink, OneWeb, Planet, Spire, and Swarm.
 
@@ -239,5 +241,8 @@ jobs:
           SLTRACK_PWD: ${{ secrets.SLTRACK_PWD }}
           SLTRACK_USR: ${{ secrets.SLTRACK_USR }} 
 ```
+
+In the next couple of posts, I will delve deeper into the intricacies of the code, providing access to a shared repository enabling anyone to execute this code within their own environment. More detailed insights into the specific visualizations will also be part of this exploration.
+Subsequently, I'll interpret the information conveyed by these plots, focusing on their implications for understanding constellations. I aim to guide you on how to critically appraise the information within visualizations for a more comprehensive understanding of the emerging phenomenon of satellite mega-constellations.
 
 As ever if you have any questions or comments please feel free to message me. I hope you enjoyed this post and I hope you enjoy the bot!
