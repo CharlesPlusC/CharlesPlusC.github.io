@@ -7,6 +7,7 @@ share: true
 permalink: /posts/2023-03-22-STMandPositioning
 ---
 
+Now for a bit of a technical one... This posts assumes you have some knowledge of TLEs and orbital mechanics. But even if you don't I think there will be something of interest here for you anyway.
 
 ## Navigating the Challenges of Space Traffic Management
 
@@ -48,7 +49,7 @@ Calculating the overall distance between both states over a 24-hour period (8640
 $\frac{1}{2}at^2 = \frac{1}{2}\times 1.8\times10^{-6}\times86400^2 = 6718.464m$
 
 This difference greatly exceeds the 100-200 meter positional error threshold we are shooting for in LEO.
-This example demonstrates how small errors in initial conditions can lead to disproportionate errors in position over time. Furthermore, this effect is accentuated in LEO due to the increasingly strong impact of monopole gravity wtih decreasing altitude. Gravity is roughly 1000 times greater than any other acceleration in LEO (Montenbruck, 2000), making not only the calculation of gravitational force of paramount importance, but also highlighting the importance that the inputs to the equations of motion be precise and accurate.
+This example demonstrates how small errors in initial conditions can lead to disproportionate errors in position over time. Furthermore, this effect is accentuated in LEO due to the increasingly strong impact of monopole gravity with decreasing altitude. Gravity is roughly 1000 times greater than any other acceleration in LEO (Montenbruck, 2000), making not only the calculation of gravitational force of paramount importance, but also highlighting the importance that the inputs to the equations of motion be precise and accurate.
 
 ## Tackling Positional Degradation in Space Situational Awareness Data
 The decline of positional accuracy of orbits over time poses a significant challenge for SSA systems. In this section, we discuss three primary solutions for mitigating positional degradation in SSA data:
@@ -75,8 +76,22 @@ Moving forward, it is essential to invest in research and development that seeks
 
 In conclusion, the future of space traffic management hinges on our ability to enhance the accuracy and reliability of positional information for satellites and other space objects. By tackling the challenges associated with uncooperative tracking and positional degradation, we can help ensure the long-term sustainability of the space environment and enable safe and efficient space operations for all stakeholders involved.
 
+## References
 
+- Oltrogge, D. et al. (2018). "The “we” approach to space traffic management." *15th International Conference on Space Operations*.
 
+- Alfano et al. (2021). "SSA positional and dimensional accuracy requirements for Space Traffic Coordination and Management." *2021 Advanced Maui Optical Space Surveillance Technologies Conference*.
 
+- Nicolls, M. (2017). "Conjunction Assessment for Commercial Satellite Constellations Using Commercial Radar Data Sources." *2017 Advanced Maui Optical Space Surveillance Technologies Conference*.
 
+- Vallado, D. (2014). "A critical assessment of satellite drag and atmospheric density modeling." *Acta Astronautica*, 95, 141–165.
 
+- Montebruck, O. & Eberhard, G. (2000). "Satellite Orbits Models, Methods and Applications." *Springer-Verlag Berlin*.
+
+- Li et al. (2019). "LEO enhanced Global Navigation Satellite System (LeGNSS) for real-time precise positioning services." *Advances in Space Research*, 63(1), 73-93.
+
+- Qian, L. (2013). "The NCAR TIE-GCM: A community model of the coupled thermosphere/ionosphere system." *Geophysical Monograph Series*, 201, 73-83.
+
+- Wilson, T. (2019). "18th Space Control Squadron - Small Satellite Support Presentation." *Sept.2019*.
+
+- Licata, M. (2021). "Impact of Space Weather Driver Forecast Uncertainty on Drag and Orbit Prediction." *Advances in the Astronautical Sciences*, 175, 1941-1959.
