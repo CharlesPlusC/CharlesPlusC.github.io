@@ -81,12 +81,12 @@ constellation_cat_names = {"starlink": "STARLINK", "oneweb": "ONEWEB", "planet":
         return ephemeris
     ``` 
 
-4. __Plotting Positions:__ You will need to store the (/time series of) positions for each satellite after each TLE is propagated. Then you can use this data to plot the satellite positions in 3D. I use `matplotlib` to plot the satellite positions in 3D and I use the cartopy module for the map under the ground tracks. If you want to plot the ground tracks, you will have to convert the Earth Centred Inertial Coordinates into Earth Centred Earth Fixed Coordinates. Then you will have to convert these to latitude and longitude. The `astropy.coordinates` provides methods to do both of these accurately and painlessly.
+4. __Plotting Positions:__ You will need to store the (/time series of) positions for each satellite after each TLE is propagated. Then you can use this data to plot the satellite positions in 3D. I use `matplotlib` to plot the satellite positions in 3D and I use the `cartopy` module for the map under the ground tracks. If you want to plot the ground tracks, you will have to convert the Earth Centred Inertial(ECI) coordinates into Earth Centred Earth Fixed (ECEF)coordinates. Then you will have to convert these to latitude and longitude to project them onto a map of the Earth. The `astropy.coordinates` provides methods to do both of these conversions accurately and painlessly.
     1. __ECI to ECEF:__ Use the `CartesianRepresentation()` class and make sure you convert from _GCRS_ to _ITRS_.
     2. __ECEF to Lat/Long:__ Use the `Transformer()` class to convert from _EPSG:4978_ to _EPSG:4326_.
 
      
-5. __Animating Plots:__ To animate these plots I rotate the plots by 5 degrees about the z-axis and then save each frame as a png. I then use the `PIL` module to convert the pngs into a gif. For the large constellations these becomes pretty computationally intensive so I have included some use of the `multiprocessing` module to speed things up. This parallelizes the plotting of each frame- however for Starlink this still takes around 30 minutes (and fails in Github Actions)... 
+5. __Animating Plots:__ To animate these plots I rotate the plots by 5 degrees about the z-axis and then save each new plot as a numbered frame (.png format ). I then use the `PIL` module to convert the pngs into a gif. For the large constellations this becomes pretty computationally intensive so I have included some use of the `multiprocessing` module to speed things up. This parallelizes the plotting of each frame- however for Starlink this still takes around 30 minutes (and fails in Github Actions)... 
 
     ```python
     import logging
@@ -109,7 +109,7 @@ constellation_cat_names = {"starlink": "STARLINK", "oneweb": "ONEWEB", "planet":
         """
         const_ephemerides, constellation_img_paths = process_geom_data(const)
 
-        max_workers = 4
+        max_workers = 4 # Max number of processes that can run in GitHub Actions is 5. 
 
         gif_folder = os.path.join('images/constellation_anim/gifs/', const)
         images_folder = os.path.join('images/constellation_anim/current_geometry/', const)
@@ -137,11 +137,11 @@ constellation_cat_names = {"starlink": "STARLINK", "oneweb": "ONEWEB", "planet":
                 logging.error(f"Permission denied to delete file {img}.")
     ```
 
-6. __Computing Statistics:__ At this stage I also compute statistics for the constellation. For the time being this is somewhat rudimentary but it works: I have created a JSON file that contains the number of satellites in each constellation, the number of satellites in each altitude band (from 0-2000 in 100km bands), and the number of satellites in each inclination band (from 0-180 in 10 degree bands), and a timestamp to go with this data. 
+6. __Computing Statistics:__ At this stage, I also compute statistics for the constellation. For the time being this is somewhat rudimentary but it works as follows: I have created a JSON file that contains the number of satellites in each constellation, the number of satellites in each altitude band (from 0-2000 in 100km bands), and the number of satellites in each inclination band (from 0-180 in 10 degree bands), and a timestamp to go with this data. Every time I pull data pertaining to a constellation this JSON file gets populated.
 
-7. __Selecting Statistics:__ Then I use the `json` module to compare the last two entries for a given constellation. I calculate the differences between all the bands and select the largest difference. I then manually generate a tweet that says something like "Starlink has added 10 satellites in the 1000-1100km altitude band since yesterday".
+7. __Selecting Statistics:__ Then I use the `json` module to read the last two entries for a given constellation. I calculate the differences between all the bands and select the largest difference. I then manually generate a tweet that says something like "Starlink has added 10 satellites in the 1000-1100km altitude band since yesterday".
 
-8. __Generating Tweet Text:__ I pass the statistics along with the name of the constellation to the `openai` module's `Completion` class to generate the text. If there is no change in the statistics then I have a different prompt to generate a generic tweet about this constellation.
+8. __Generating Tweet Text:__ I pass the statistics and the string with the largest difference along with the name of the constellation to the `openai` module's `Completion` class to generate the text. If there is no change in the statistics then I have a different prompt to generate a generic tweet about this constellation.
 
     ```python
     import logging
@@ -178,7 +178,7 @@ constellation_cat_names = {"starlink": "STARLINK", "oneweb": "ONEWEB", "planet":
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
-        )
+        ) # the parameters here took some trial and error
 
         tweet_text = response.choices[0].text.strip()
         tweet_text = "Constellation-bot: " + tweet_text
@@ -192,7 +192,7 @@ constellation_cat_names = {"starlink": "STARLINK", "oneweb": "ONEWEB", "planet":
         return tweet_text
     ```
 
-9. __Posting Tweets:__ Finally, I use the `tweepy` module to post the text and the tweet. You will have to set up a Twitter developer account to generate the necessary API keys and tokens to post the tweets. In order to run this script automatically and not have my tokens exposed on Github I have also set up a Github Secret to store these keys and tokens in my repo environment variables. `tweepy` does not yet have a build in method to post GIFs so I had to repurpose the code used for posting PNG images. I will make this class available in my repo in the near future.
+9. __Posting Tweets:__ Finally, I use the `tweepy` module to post the text and the tweet. You will have to set up a Twitter developer account to generate the necessary API keys and tokens to post the tweets. In order to run this script automatically and not have my tokens exposed on Github I have also set up a Github Secret to store these keys and tokens in my repository environment variables. `tweepy` does not yet have a build in method to post GIFs so I had to repurpose the code used for posting PNG images. I will make this class available in my repo in the near future.
 
 10. __Automating the process :__ Finally I set up a Github Actions workflow `cron` job to run the script once a day with a different constellation and visualization type. If the script fails/succeeds I get a notification through the Github app on my phone.
 
@@ -239,3 +239,5 @@ jobs:
           SLTRACK_PWD: ${{ secrets.SLTRACK_PWD }}
           SLTRACK_USR: ${{ secrets.SLTRACK_USR }} 
 ```
+
+As ever if you have any questions or comments please feel free to message me. I hope you enjoyed this post and I hope you enjoy the bot!
