@@ -35,51 +35,51 @@ constellation_cat_names = {"starlink": "STARLINK", "oneweb": "ONEWEB", "planet":
 ```
 3. __Propagating TLEs:__ Use the Python package `sgp4` to propagate the TLEs if required. Two of my visualizations (the constellation geometry and ground tracks), require the state to be propagated forward. I do this for one orbital revolution (or 2pi radians of argument of latitude). The SGP4 propagator will return Earth-Centred Inertial Coordinates in the TEME (True Equator, Mean Equinox) reference frame. 
 
-```python
-import logging
-from typing import List, Union
-from sgp4.api import Satrec
+    ```python
+    import logging
+    from typing import List, Union
+    from sgp4.api import Satrec
 
-def sgp4_prop_TLE(TLE: str, jd_start: float, jd_end: float, dt: float) -> List[List[Union[float, tuple]]]:
-    """
-    Given a TLE, a start time, end time, and time step, propagate the TLE and return the time-series of Cartesian coordinates, 
-    and accompanying time-stamps (Modified Julian Day). This is a wrapper for the SGP4 routine in the sgp4.api package (Brandon Rhodes).
+    def sgp4_prop_TLE(TLE: str, jd_start: float, jd_end: float, dt: float) -> List[List[Union[float, tuple]]]:
+        """
+        Given a TLE, a start time, end time, and time step, propagate the TLE and return the time-series of Cartesian coordinates, 
+        and accompanying time-stamps (Modified Julian Day). This is a wrapper for the SGP4 routine in the sgp4.api package (Brandon Rhodes).
 
-    Args:
-        TLE (str): TLE to be propagated.
-        jd_start (float): Start time of propagation in Julian Date format.
-        jd_end (float): End time of propagation in Julian Date format.
-        dt (float): Time step of propagation in seconds.
+        Args:
+            TLE (str): TLE to be propagated.
+            jd_start (float): Start time of propagation in Julian Date format.
+            jd_end (float): End time of propagation in Julian Date format.
+            dt (float): Time step of propagation in seconds.
 
-    Returns:
-        list: A list of lists containing the time-series of Cartesian coordinates, and accompanying time-stamps (MJD).
-    
-    Raises:
-        ValueError: If jd_start is greater than jd_end.
-    """
-    if jd_start > jd_end:
-        raise ValueError('jd_start must be less than jd_end')
+        Returns:
+            list: A list of lists containing the time-series of Cartesian coordinates, and accompanying time-stamps (MJD).
+        
+        Raises:
+            ValueError: If jd_start is greater than jd_end.
+        """
+        if jd_start > jd_end:
+            raise ValueError('jd_start must be less than jd_end')
 
-    ephemeris = []
-    dt_jd = dt/86400
-    split_tle = TLE.split('\n')
-    s = split_tle[0]
-    r = split_tle[1]
-    fr = 0.0
-    satellite = Satrec.twoline2rv(s, r)
+        ephemeris = []
+        dt_jd = dt/86400
+        split_tle = TLE.split('\n')
+        s = split_tle[0]
+        r = split_tle[1]
+        fr = 0.0
+        satellite = Satrec.twoline2rv(s, r)
 
-    time = jd_start
-    while time < jd_end:
-        error, position, velocity = satellite.sgp4(time, fr)
-        if error != 0:
-            logging.error('Satellite position could not be computed for the given date')
-            break
-        else:
-            ephemeris.append([time,position, velocity])
-        time += dt_jd
+        time = jd_start
+        while time < jd_end:
+            error, position, velocity = satellite.sgp4(time, fr)
+            if error != 0:
+                logging.error('Satellite position could not be computed for the given date')
+                break
+            else:
+                ephemeris.append([time,position, velocity])
+            time += dt_jd
 
-    return ephemeris
-``` 
+        return ephemeris
+    ``` 
 
 4. __Plotting Positions:__ You will need to store the (/time series of) positions for each satellite after each TLE is propagated. Then you can use this data to plot the satellite positions in 3D. I use `matplotlib` to plot the satellite positions in 3D and I use the cartopy module for the map under the ground tracks. If you want to plot the ground tracks, you will have to convert the Earth Centred Inertial Coordinates into Earth Centred Earth Fixed Coordinates. Then you will have to convert these to latitude and longitude. The `astropy.coordinates` provides methods to do both of these accurately and painlessly.
     1. __ECI to ECEF:__ Use the `CartesianRepresentation()` class and make sure you convert from _GCRS_ to _ITRS_.
@@ -88,54 +88,54 @@ def sgp4_prop_TLE(TLE: str, jd_start: float, jd_end: float, dt: float) -> List[L
      
 5. __Animating Plots:__ To animate these plots I rotate the plots by 5 degrees about the z-axis and then save each frame as a png. I then use the `PIL` module to convert the pngs into a gif. For the large constellations these becomes pretty computationally intensive so I have included some use of the `multiprocessing` module to speed things up. This parallelizes the plotting of each frame- however for Starlink this still takes around 30 minutes (and fails in Github Actions)... 
 
-```python
-import logging
-import multiprocessing as mp
-import os
-from PIL import Image
-import time
-from typing import Any
+    ```python
+    import logging
+    import multiprocessing as mp
+    import os
+    from PIL import Image
+    import time
+    from typing import Any
 
-def generate_geom_gif(const: str) -> None:
-    """
-    Generate a gif of the geometry of a constellation.
+    def generate_geom_gif(const: str) -> None:
+        """
+        Generate a gif of the geometry of a constellation.
 
-    Args:
-        const (str): The name of the constellation.
+        Args:
+            const (str): The name of the constellation.
 
-    Raises:
-        FileNotFoundError: If an image file does not exist.
-        PermissionError: If the program does not have permission to delete an image file.
-    """
-    const_ephemerides, constellation_img_paths = process_geom_data(const)
+        Raises:
+            FileNotFoundError: If an image file does not exist.
+            PermissionError: If the program does not have permission to delete an image file.
+        """
+        const_ephemerides, constellation_img_paths = process_geom_data(const)
 
-    max_workers = 4
+        max_workers = 4
 
-    gif_folder = os.path.join('images/constellation_anim/gifs/', const)
-    images_folder = os.path.join('images/constellation_anim/current_geometry/', const)
-    os.makedirs(gif_folder, exist_ok=True)
+        gif_folder = os.path.join('images/constellation_anim/gifs/', const)
+        images_folder = os.path.join('images/constellation_anim/current_geometry/', const)
+        os.makedirs(gif_folder, exist_ok=True)
 
-    with mp.Pool(processes=max_workers) as pool:
-        pool.map(create_frame, [(az, const, const_ephemerides, constellation_img_paths) for az in range(0, 365, 5)])
+        with mp.Pool(processes=max_workers) as pool:
+            pool.map(create_frame, [(az, const, const_ephemerides, constellation_img_paths) for az in range(0, 365, 5)])
 
-    logging.info(f"Combining frames into gif for {const}...")
+        logging.info(f"Combining frames into gif for {const}...")
 
-    images = sorted([img for img in os.listdir(images_folder) if img.endswith(".png")], key=lambda x: int(x.split('_')[-1].split('.')[0]))
-    with Image.open(os.path.join(images_folder, images[0])) as first_image:
-        image_list = [Image.open(os.path.join(images_folder, img)) for img in images[1:]]
-        first_image.save(os.path.join(gif_folder, f'geom_{const}_{time.strftime("%y_%m_%d")}.gif'), save_all=True, append_images=image_list, duration=110, loop=0)
+        images = sorted([img for img in os.listdir(images_folder) if img.endswith(".png")], key=lambda x: int(x.split('_')[-1].split('.')[0]))
+        with Image.open(os.path.join(images_folder, images[0])) as first_image:
+            image_list = [Image.open(os.path.join(images_folder, img)) for img in images[1:]]
+            first_image.save(os.path.join(gif_folder, f'geom_{const}_{time.strftime("%y_%m_%d")}.gif'), save_all=True, append_images=image_list, duration=110, loop=0)
 
-    logging.info(f"Finished creating .gif file for {const}")
+        logging.info(f"Finished creating .gif file for {const}")
 
-    logging.info(f"Deleting frames for {const}...")
-    for img in images:
-        try:
-            os.remove(os.path.join(images_folder, img))
-        except FileNotFoundError:
-            logging.error(f"File {img} not found.")
-        except PermissionError:
-            logging.error(f"Permission denied to delete file {img}.")
-```
+        logging.info(f"Deleting frames for {const}...")
+        for img in images:
+            try:
+                os.remove(os.path.join(images_folder, img))
+            except FileNotFoundError:
+                logging.error(f"File {img} not found.")
+            except PermissionError:
+                logging.error(f"Permission denied to delete file {img}.")
+    ```
 
 6. __Computing Statistics:__ At this stage I also compute statistics for the constellation. For the time being this is somewhat rudimentary but it works: I have created a JSON file that contains the number of satellites in each constellation, the number of satellites in each altitude band (from 0-2000 in 100km bands), and the number of satellites in each inclination band (from 0-180 in 10 degree bands), and a timestamp to go with this data. 
 
@@ -143,54 +143,54 @@ def generate_geom_gif(const: str) -> None:
 
 8. __Generating Tweet Text:__ I pass the statistics along with the name of the constellation to the `openai` module's `Completion` class to generate the text. If there is no change in the statistics then I have a different prompt to generate a generic tweet about this constellation.
 
-```python
-import logging
-import openai
-from typing import List, str
+    ```python
+    import logging
+    import openai
+    from typing import List, str
 
-def generate_tweet(constellation_name: str, viz_type: str, openai_api_key: str) -> str:
-    """
-    Generates a tweet for the given constellation using OpenAI's GPT-3 API.
+    def generate_tweet(constellation_name: str, viz_type: str, openai_api_key: str) -> str:
+        """
+        Generates a tweet for the given constellation using OpenAI's GPT-3 API.
 
-    Args:
-        constellation_name (str): The name of the constellation.
-        viz_type (str): The type of visualization.
-        openai_api_key (str): The API key for OpenAI.
+        Args:
+            constellation_name (str): The name of the constellation.
+            viz_type (str): The type of visualization.
+            openai_api_key (str): The API key for OpenAI.
 
-    Returns:
-        str: The generated tweet.
+        Returns:
+            str: The generated tweet.
 
-    Raises:
-        ValueError: If viz_type is not valid.
-    """
-    possible_viz_types = ["latest_state", "current_geometry", "ground_tracks"]
-    if viz_type not in possible_viz_types:
-        raise ValueError(f"Invalid viz_type {viz_type}. Must be one of {possible_viz_types}")
-    
-    prompt = create_gpt3_prompt(constellation_name, viz_type)
+        Raises:
+            ValueError: If viz_type is not valid.
+        """
+        possible_viz_types = ["latest_state", "current_geometry", "ground_tracks"]
+        if viz_type not in possible_viz_types:
+            raise ValueError(f"Invalid viz_type {viz_type}. Must be one of {possible_viz_types}")
+        
+        prompt = create_gpt3_prompt(constellation_name, viz_type)
 
-    openai.api_key = openai_api_key
-    response = openai.Completion.create(
-      engine="text-davinci-002",
-      prompt=prompt,
-      temperature=0.72,
-      max_tokens=200,
-      top_p=1,
-      frequency_penalty=0,
-      presence_penalty=0
-    )
+        openai.api_key = openai_api_key
+        response = openai.Completion.create(
+        engine="text-davinci-002",
+        prompt=prompt,
+        temperature=0.72,
+        max_tokens=200,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+        )
 
-    tweet_text = response.choices[0].text.strip()
-    tweet_text = "Constellation-bot: " + tweet_text
-    logging.info(f"gpt tweet: {tweet_text}")
+        tweet_text = response.choices[0].text.strip()
+        tweet_text = "Constellation-bot: " + tweet_text
+        logging.info(f"gpt tweet: {tweet_text}")
 
-    # If the generated tweet is too short or contains invalid characters, generate a default tweet
-    if len(tweet_text) < 10 or not tweet_text.isascii():
-        tweet_text = f"Check out the latest state of the {constellation_name} constellation! #spacex #megaconstellations #satellites"
-    if len(tweet_text) > 280:
-        tweet_text = f"Check out the latest state of the {constellation_name} constellation! #spacex #megaconstellations #satellites"
-    return tweet_text
-```
+        # If the generated tweet is too short or contains invalid characters, generate a default tweet
+        if len(tweet_text) < 10 or not tweet_text.isascii():
+            tweet_text = f"Check out the latest state of the {constellation_name} constellation! #spacex #megaconstellations #satellites"
+        if len(tweet_text) > 280:
+            tweet_text = f"Check out the latest state of the {constellation_name} constellation! #spacex #megaconstellations #satellites"
+        return tweet_text
+    ```
 
 9. __Posting Tweets:__ Finally, I use the `tweepy` module to post the text and the tweet. You will have to set up a Twitter developer account to generate the necessary API keys and tokens to post the tweets. In order to run this script automatically and not have my tokens exposed on Github I have also set up a Github Secret to store these keys and tokens in my repo environment variables. `tweepy` does not yet have a build in method to post GIFs so I had to repurpose the code used for posting PNG images. I will make this class available in my repo in the near future.
 
