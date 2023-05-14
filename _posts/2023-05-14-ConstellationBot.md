@@ -7,27 +7,33 @@ share: true
 permalink: /posts/2023-05-14-ConstellationBot
 ---
 
-## Intro
+## Introduction
 
-Inspired by the work of Jonathan McDowell [Jonathan's Space Report](www.planet4589.org)and T.S. Kelso [CelesTrak](https://celestrak.org/), who tirelessly provide heaps of satellite data to the world, I decided to create a little project of my own. Over the easter holidays I set out to create a Twitter bot that would post daily updates on the current state of satellite mega-constellations. While my Twitter bot may not be on the same level as what Kelso and McDowell are doing, it's my humble attempt to contribute to the field and make satellite data more engaging for a wider audience.
+Inspired by the pioneering work of Jonathan McDowell's [Jonathan's Space Report](www.planet4589.org) and T.S. Kelso's [CelesTrak](https://celestrak.org/), I embarked on a journey to create a unique project of my own. Over the Easter holidays, I developed a Twitter bot that provides daily updates on the current state of satellite mega-constellations. While my bot may not match the scale of Kelso and McDowell's contributions, it's my modest attempt to make satellite data more accessible and engaging for a broader audience.
 
-As I now have a working version "1.0" of this Twitter bot I thought I would share the rough outline of how I did it for anyone that might be interested in replicating it or even contributing to the code I have. 
+Now that I have a working "version 1.0" of this Twitter bot, I'd like to share an overview of its creation process. Whether you're interested in replicating it, contributing to the code, or simply curious about its inner workings, I hope you find this post informative. If you are curious to see it in action you can check out the Twitter bot here: [ConstellationBot](https://twitter.com/CharlesPlusC)
 
-The bot posts daily tweet-updates on the current state of the largest satellite mega-constellations (I have selected the 7 largest for now). The bot is written in Python and uses the Tweepy library to interact with the Twitter API. The bot is run through automatically Github Actions and runs on a cron job that executes the Python script once a day. The bot is currently in version 1.0 and I plan to add more features and visualizations in the future.
+<p align="center">
+  <img width="550" height="600" src='/images/animated_polar_histogram.gif'  alt="Example Constellation Plot">
+</p>
 
-I thought this rapid overview of the current state of the most important players in the field would be useful for keeping up with the latest developments. Personally, I find it very handy, so I thought I'd share it with the world. Plus, visualizing constellation geometry is informative in this format. It conveys valuable information about constellation operations such as orbit raising, deorbiting, anomalies, and changes in geographical coverage. Recently, I have been working on integrating a statistics module, that will also provide some fresh statistics alongside each visualization.
+### About the Bot
+
+The bot provides daily updates on the state of the largest satellite mega-constellations (currently tracking the top 7). Written in Python, it uses the Tweepy library to interact with the Twitter API. The bot operates automatically via GitHub Actions and runs on a cron job that executes the Python script once a day. I plan to enhance its capabilities with additional features and visualizations in the future.
+
+I believe this bot offers a quick snapshot of the current state of key players in the field, making it easier to keep up with the latest developments. Besides, the visual representation of constellation geometry provides valuable insights into constellation operations such as orbit raising, deorbiting, anomalies, and changes in geographical coverage. I'm currently working on imrpoving a statistics module to provide some salient stats alongside each visualization.
 
 ### Method Overview
 
 I will outline a broad overview and some key functions that used below. I will not go into too much detail about the code itself, as I will provide a link to the Github repo in the next post:
 
-1. Select a list of constellations to track. In my case these are: Irirdium, Starlink, OneWeb, Planet, Spire, and Swarm. These were the largest 7 operational constellations at the time of writing.
+1. __Selection of Constellations:__ I chose to track the seven largest operational constellations: Iridium, Starlink, OneWeb, Planet, Spire, and Swarm.
 
-2. Fetch the latest TLEs from Space-Track.org. I use the Python package `spacetrack` to do this. You will have to make a Space-Track account to use the API to fetch the latest TLEs for the selected constellations. Then you will manually have to do some digging around to find the constellation IDs for each constellation. For the ones I selected this ended up being:
+2. __Fetching Latest TLEs:__ Fetch the latest TLEs from Space-Track.org. I use the Python package `spacetrack` to do this. You will have to make a Space-Track account to use the API to fetch the latest TLEs for the selected constellations. Then you will manually have to do some digging around to find the constellation IDs for each constellation. For the ones I selected this ended up being:
 ```python
 constellation_cat_names = {"starlink": "STARLINK", "oneweb": "ONEWEB", "planet": "FLOCK", "swarm": "SpaceBEE", "spire": "LEMUR", "iridium": "IRIDIUM"} 
 ```
-3. Use the Python package `sgp4` to propagate the TLEs if required. Two of my visualizations (the constellation geometry and ground tracks), require the state to be propagated forward. I do this for one orbital revolution (or 2pi radians of argument of latitude). The SGP4 propagator will return Earth-Centred Inertial Coordinates in the TEME (True Equator, Mean Equinox) reference frame. 
+3. __Propagating TLEs:__ Use the Python package `sgp4` to propagate the TLEs if required. Two of my visualizations (the constellation geometry and ground tracks), require the state to be propagated forward. I do this for one orbital revolution (or 2pi radians of argument of latitude). The SGP4 propagator will return Earth-Centred Inertial Coordinates in the TEME (True Equator, Mean Equinox) reference frame. 
 
 ```python
 import logging
@@ -75,9 +81,12 @@ def sgp4_prop_TLE(TLE: str, jd_start: float, jd_end: float, dt: float) -> List[L
     return ephemeris
 ``` 
 
-4. You will need to store the (/time series of) positions for each satellite after each TLE is propagated. Then you can use this data to plot the satellite positions in 3D. I use `matplotlib` to plot the satellite positions in 3D and I use the cartopy module for the map under the ground tracks.
+4. __Plotting Positions:__ You will need to store the (/time series of) positions for each satellite after each TLE is propagated. Then you can use this data to plot the satellite positions in 3D. I use `matplotlib` to plot the satellite positions in 3D and I use the cartopy module for the map under the ground tracks. If you want to plot the ground tracks, you will have to convert the Earth Centred Inertial Coordinates into Earth Centred Earth Fixed Coordinates. Then you will have to convert these to latitude and longitude. The `astropy.coordinates` provides methods to do both of these accurately and painlessly.
+    1. __ECI to ECEF:__ Use the `CartesianRepresentation()` class and make sure you convert from _GCRS_ to _ITRS_.
+    2. __ECEF to Lat/Long:__ Use the `Transformer()` class to convert from _EPSG:4978_ to _EPSG:4326_.
 
-5. To animate these plots I rotate the plots by 5 degrees about the z-axis and then save each frame as a png. I then use the `PIL` module to convert the pngs into a gif. For the large constellations these becomes pretty computationally intensive so I have included some use of the `multiprocessing` module to speed things up. This parallelizes the plotting of each frame- however for Starlink this still takes around 30 minutes... 
+     
+5. __Animating Plots:__ To animate these plots I rotate the plots by 5 degrees about the z-axis and then save each frame as a png. I then use the `PIL` module to convert the pngs into a gif. For the large constellations these becomes pretty computationally intensive so I have included some use of the `multiprocessing` module to speed things up. This parallelizes the plotting of each frame- however for Starlink this still takes around 30 minutes (and fails in Github Actions)... 
 
 ```python
 import logging
@@ -128,11 +137,11 @@ def generate_geom_gif(const: str) -> None:
             logging.error(f"Permission denied to delete file {img}.")
 ```
 
-6. At this stage I also compute statistics for the constellation. For the time being this is somewhat rudimentary but it works: I have created a JSON file that contains the number of satellites in each constellation, the number of satellites in each altitude band (from 0-2000 in 100km bands), and the number of satellites in each inclination band (from 0-180 in 10 degree bands), and a timestamp to go with this data. 
+6. __Computing Statistics:__ At this stage I also compute statistics for the constellation. For the time being this is somewhat rudimentary but it works: I have created a JSON file that contains the number of satellites in each constellation, the number of satellites in each altitude band (from 0-2000 in 100km bands), and the number of satellites in each inclination band (from 0-180 in 10 degree bands), and a timestamp to go with this data. 
 
-7. Then I use the `json` module to compare the last two entries for a given constellation. I calculate the differences between all the bands and select the largest difference. I then manually generate a tweet that says something like "Starlink has added 10 satellites in the 1000-1100km altitude band since yesterday".
+7. __Selecting Statistics:__ Then I use the `json` module to compare the last two entries for a given constellation. I calculate the differences between all the bands and select the largest difference. I then manually generate a tweet that says something like "Starlink has added 10 satellites in the 1000-1100km altitude band since yesterday".
 
-8. I pass the statistics along with the name of the constellation to the `openai` module's `Completion` class to generate the text. If there is no change in the statistics then I have a different prompt to generate a generic tweet about this constellation.
+8. __Generating Tweet Text:__ I pass the statistics along with the name of the constellation to the `openai` module's `Completion` class to generate the text. If there is no change in the statistics then I have a different prompt to generate a generic tweet about this constellation.
 
 ```python
 import logging
@@ -183,11 +192,11 @@ def generate_tweet(constellation_name: str, viz_type: str, openai_api_key: str) 
     return tweet_text
 ```
 
-9. Finally, I use the `tweepy` module to post the text and the tweet. You will have to set up a Twitter developer account to generate the necessary API keys and tokens to post the tweets. In order to run this script automatically and not have my tokens exposed on Github I have also set up a Github Secret to store these keys and tokens in my repo environment variables. `tweepy` does not yet have a build in method to post GIFs so I had to repurpose the code used for posting PNG images. I will make this class available in my repo in the near future.
+9. __Posting Tweets:__ Finally, I use the `tweepy` module to post the text and the tweet. You will have to set up a Twitter developer account to generate the necessary API keys and tokens to post the tweets. In order to run this script automatically and not have my tokens exposed on Github I have also set up a Github Secret to store these keys and tokens in my repo environment variables. `tweepy` does not yet have a build in method to post GIFs so I had to repurpose the code used for posting PNG images. I will make this class available in my repo in the near future.
 
-10. Finally I set up a Github Actions workflow `cron` job to run the script once a day. I have a cron job that runs the script at 09:00 UTC every day. If the script fails/succeeds I get a notification through the Github app on my phone.
+10. __Automating the process :__ Finally I set up a Github Actions workflow `cron` job to run the script once a day with a different constellation and visualization type. If the script fails/succeeds I get a notification through the Github app on my phone.
 
-```
+```yaml
 name: Cron twice-daily tweet
 
 on:
@@ -230,5 +239,3 @@ jobs:
           SLTRACK_PWD: ${{ secrets.SLTRACK_PWD }}
           SLTRACK_USR: ${{ secrets.SLTRACK_USR }} 
 ```
-
-If you are curious to see it in action you can check out the Twitter bot here: [ConstellationBot](https://twitter.com/CharlesPlusC)
