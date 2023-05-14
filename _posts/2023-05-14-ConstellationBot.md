@@ -14,7 +14,7 @@ Inspired by the pioneering work of Jonathan McDowell's [Jonathan's Space Report]
 Now that I have a working "version 1.0" of this Twitter bot, I'd like to share an overview of its creation process. Whether you're interested in replicating it, contributing to the code, or simply curious about its inner workings, I hope you find this post informative. If you are curious to see it in action you can check out the Twitter bot here: [ConstellationBot](https://twitter.com/CharlesPlusC)
 
 <p align="center">
-  <img width="550" height="600" src='/images/animated_polar_histogram.gif'  alt="Example Constellation Plot">
+  <img width="550" height="600" src='/images/geom_planet_23_04_17.gif'  alt="Example Constellation Plot">
 </p>
 
 ### About the Bot
