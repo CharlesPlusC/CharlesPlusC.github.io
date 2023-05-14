@@ -19,7 +19,7 @@ Now that I have a working "version 1.0" of this Twitter bot, I'd like to share a
 
 ### About the Bot
 
-The bot serves as a reliable resource, delivering daily status updates on the largest satellite mega-constellations - at present, it's tracking the top 7. It's designed in Python, utilizing the Tweepy library for interacting with the Twitter API. The bot functions autonomously through GitHub Actions and is activated by a `cron` job that triggers the Python script once daily. Future plans encompass augmenting its competencies with added features and visualizations.
+The bot serves as a reliable resource, delivering daily status updates on the largest satellite mega-constellations - at present, it's tracking the top 7. It's designed in Python, utilizing the `Tweepy` library for interacting with the [Twitter API](https://developer.twitter.com/en/docs/twitter-api). The bot functions autonomously through GitHub Actions and is activated by a `cron` job that triggers the Python script once daily. Future plans encompass augmenting its competencies with added features and visualizations.
 
 This bot's mission is to furnish a concise overview of the current state of major players in the arena, simplifying the process of staying abreast with the newest advancements. Moreover, it visually illustrates constellation geometry, contributing critical insights into constellation operations such as orbit raising, deorbiting, anomalies, and shifts in geographical coverage. I'm in the process of enhancing a statistics module to accompany each visualization with relevant stats.
 
