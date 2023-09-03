@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Aerodynamic Drag Modelling for LEO Mega-Constellations"
+title: "MSc Project: Aerodynamic Drag Modelling for LEO Mega-Constellations"
 collection: posts
 author_profile: true
 share: true

@@ -1,6 +1,6 @@
 ---
-title: "Assessing current practices in uncooperative Space Situational Awareness"
-excerpt: "Argument of Latitude at which TLEs are produced for each constellation based on TLE source.<br/><img src='/images/animated_polar_histogram.gif' width='700'>"
+title: "Identifying the limitations of current orbital solutions in Space Situational Awareness"
+excerpt: "Argument of Latitude at which TLEs are produced for the two largest constellations based on TLE source.<br/><img src='/images/animated_polar_histogram.gif' width='700'>"
 collection: research-areas
 ---
 
