@@ -10,8 +10,7 @@ header:
 
 Journal Articles
 ------
-
-* <b>Constant, C.</b>, Bhattarai, S., Ziebart, M.  _Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series_,  <i>Preprint submitted </i>, 2023.
+* <b>Constant, C.</b>, Bhattarai, S., Ziebart, M.  _Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series_,  <i>link to publication coming soon </i>, 2023.
 
 Conference Talks/Posters
 ------

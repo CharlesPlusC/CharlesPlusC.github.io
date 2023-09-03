@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Future Space Populations Tool"
-excerpt: "Medium-term modelling of the space environment."
+excerpt: "Medium-term modelling of the space environment. <br/><img src='/images/object_distribution_fsp_2028.png' width='700'>"
 collection: project
 author_profile: true
 share: true
@@ -12,6 +12,7 @@ At UCL, our research also delves into medium-term modelling of space behavior (0
 Examples of their use has been to tackle questions such as: 
 - How would the space environment change if the E-Space constellation, with over 500,000 satellites, were to materialize? 
 - What is the best location for radar facilities to track the upcoming defense and communications LEO constellations?
+- How good have FCC filings been as a source of information for predicting future space populations?
 
 Enter the Future Space Populations (FSP) Tool - our solution in the making. This tool is crafted not just to answer such complex questions but also to present the insights visually and interactively.
 
