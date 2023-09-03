@@ -227,6 +227,15 @@ defaults:
       author_profile: true
       share: true
       comment: true
+  # _constellationbot
+  - scope:
+      path: ""
+      type: constellationbot
+    values:
+      layout: single
+      author_profile: true
+      share: true
+      comment: true
   # _talks
   - scope:
       path: ""
