@@ -8,4 +8,5 @@ header:
   overlay_filter: 0.3
 ---
 
-This page will periodically update with the latest visualizations from the Constellation Bot.
+This page will periodically update with the latest visualizations from the Constellation Bot from my repo [here](https://github.com/CharlesPlusC/ConstellationBot).
+
