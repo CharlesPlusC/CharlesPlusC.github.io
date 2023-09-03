@@ -7,6 +7,10 @@ share: true
 permalink: /posts/2023-05-14-ConstellationBot
 ---
 
+
+## NOTE: 
+This post was intended as the start of a series on how to make a Twitter constellation visualization bot. However, recent updates to the Twitter API have meant that the repetitive nature of the posts have blocked the bot so I will be stopping this effort. I tried to modify my code to work with the new API but it has proved too time-consuming. Instead, I will be posting these GIFs to my personal website on a dedicated page.
+
 ## Introduction
 
 Inspired by the pioneering work of Jonathan McDowell's [Jonathan's Space Report](www.planet4589.org) and T.S. Kelso's [CelesTrak](https://celestrak.org/), I embarked on a journey to create a unique project of my own. Over the Easter holidays, I developed a Twitter bot that provides daily updates on the current state of satellite mega-constellations. While my bot may not match the scale of Kelso and McDowell's contributions, it's my modest attempt to make satellite data more accessible and engaging for a broader audience.
@@ -241,8 +245,5 @@ jobs:
           SLTRACK_PWD: ${{ secrets.SLTRACK_PWD }}
           SLTRACK_USR: ${{ secrets.SLTRACK_USR }} 
 ```
-
-In the next couple of posts, I will delve deeper into the intricacies of the code, providing access to a shared repository enabling anyone to execute this code within their own environment. More detailed insights into the specific visualizations will also be part of this exploration.
-Subsequently, I'll interpret the information conveyed by these plots, focusing on their implications for understanding constellations. I aim to guide you on how to critically appraise the information within visualizations for a more comprehensive understanding of the emerging phenomenon of satellite mega-constellations.
 
 As ever if you have any questions or comments please feel free to message me. I hope you enjoyed this post and I hope you enjoy the bot!
