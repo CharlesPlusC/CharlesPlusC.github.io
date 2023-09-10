@@ -5,16 +5,18 @@ excerpt: "About me"
 author_profile: true
 header:
   image: NASAreentry.png
-  height: 400px
+  height: 200px
 redirect_from: 
   - /about/
   - /about.html
 ---
 
-Hello there! I'm on an exciting journey at UCL's Space Geodesy and Navigation Laboratory (SGNL), guided by the insightful Professor Marek Ziebart and Dr. Santosh Bhattarai. My research focuses on the applications of astrodynamics and space geodesy techniques to space domain awareness.
+Hello there! I'm Charles, currently navigating an exhilarating PhD journey at University College London's renowned Space Geodesy and Navigation Laboratory. This lab, over the past two decades, has pioneered significant advancements in orbit solutions, with notable contributions to the JASON-1 altimeter, GPS, and Galileo satellites. Inspired by this legacy, I strive to not only deepen my understanding but also to channel this knowledge into the burgeoning domain of space traffic management.
 
-Before diving into the world of academia, I explored our beautiful Earth as a professional cyclist, soaking in its varied landscapes. But the mesmerizing pull of the cosmos led me to a different path. Today, I spend most of my days nerding out about spaceflight. In particular, I make high-fidelity physics-driven simulations of spacecraft motion, aiming to refine orbit solutions, which could revolutionize collision prevention, space traffic management, and satellite navigation.
+Central to my research is the development and application of radiation pressure models for mega constellation satellites. My goal is twofold: refine aerodynamic drag estimates and elevate orbit accuracy and precision, addressing the operational needs of mega-constellation operators.
 
-This website is a collection of my research topics, projects, and thoughts.
+Blending data science, machine learning, engineering, and physical geography, my academic approach is both diverse and holistic.
 
-Whether you share a passion for spacecraft or are keen to discuss the latest in space news, I'd be thrilled to connect.
+Collaboration fuels my progress. I'm proud to be actively engaged with esteemed entities such as NASA's Jet Propulsion Laboratory, the European Space Agency, and a global frontrunner in mega-constellation operations.
+
+Dive in, explore my work, and should the idea of collaboration resonate, know that I'm just a message away.
