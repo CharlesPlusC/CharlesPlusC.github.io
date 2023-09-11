@@ -1,0 +1,31 @@
+name: Update Website with GIFs
+
+on:
+  repository_dispatch:
+    types: [update-gifs]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout website code
+      uses: actions/checkout@v2
+
+    - name: Remove old GIFs
+      run: |
+        # Assuming the GIFs are stored in a directory named 'gifs' in your Jekyll site.
+        rm -rf Figures/constellationbot_gifs
+
+    - name: Download new GIFs from artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: gifs
+        path: Figures/constellationbot_gifs
+
+    - name: Commit and push changes
+      run: |
+        git config user.name "GitHub Action Bot"
+        git config user.email "<your-email>@users.noreply.github.com"
+        git add -A
+        git commit -m "Update GIFs"
+        git push
