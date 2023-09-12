@@ -16,10 +16,11 @@ jobs:
         # Assuming the GIFs are stored in a directory named 'constellationbot_gifs' in your Jekyll site's 'Figures' directory.
         rm -rf Figures/constellationbot_gifs
 
-    - name: Download GIF artifact
-      run: |
-        curl -L -o artifact.zip "${{ github.event.client_payload.artifact_url }}"
-        unzip artifact.zip -d Figures/constellationbot_gifs
+    - name: Download new GIFs from artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: gifs
+        path: Figures/constellationbot_gifs
 
     - name: Commit and push changes
       run: |
