@@ -13,7 +13,6 @@ jobs:
 
     - name: Remove old GIFs
       run: |
-        # Assuming the GIFs are stored in a directory named 'constellationbot_gifs' in your Jekyll site's 'Figures' directory.
         rm -rf Figures/constellationbot_gifs
 
     - name: Download GIF artifact
@@ -26,7 +25,11 @@ jobs:
     - name: Commit and push changes
       run: |
         git config user.name "GitHub Action Bot"
-        git config user.email "<your-email>@users.noreply.github.com"
+        git config user.email "c.constant14@eabjm.org@users.noreply.github.com"
         git add -A
         git commit -m "Update GIFs"
+        git remote set-url origin https://$GH_PAT@github.com/CharlesPlusC/CharlesPlusC.github.io.git
         git push
+      env:
+        GH_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      
