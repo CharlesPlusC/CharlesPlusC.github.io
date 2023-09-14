@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "High Fidelity Radiation Pressure Models for Spacecraft. <br/><img src='/images/raddir_GRACE_neg_X.png' width='700'>"
+title: "High Fidelity Radiation Pressure Models for Spacecraft. <br/><img src='/images/raddir_GRACE_neg_X.png' width='450'>"
 collection: posts
 author_profile: true
 share: true

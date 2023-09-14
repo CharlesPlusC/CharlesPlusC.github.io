@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Data Visualization of Satellite Constellations"
-excerpt: "Data visualization of resident space objects across time-scales is one of the specialities of the group. <br/><img src='/images/ow_constellation_animation_oneweb.gif' width='650'>"
+excerpt: "Data visualization of resident space objects across time-scales is one of the specialities of the group. <br/><img src='/images/ow_constellation_animation_oneweb.gif' width='350'>"
 collection: project
 author_profile: true
 share: true
