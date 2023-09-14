@@ -21,7 +21,7 @@ This page will periodically update with the latest visualizations from the Const
   </tr>
   <tr>
     <td><img src="Figures/constellationbot_gifs/geom_swarm_23_09_10.gif" alt="GIF 5" width="100%"></td>
-    <!-- You can add a sixth GIF here by following the same format -->
+    <td><img src="Figures/constellationbot_gifs/geom_iridium_23_09_14.gif" alt="GIF 6" width="100%"></td>
     <td></td>
   </tr>
 </table>
