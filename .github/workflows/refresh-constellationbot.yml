@@ -11,9 +11,9 @@ jobs:
     - name: Checkout website code
       uses: actions/checkout@master
 
-    - name: Remove old GIFs
+    - name: Remove old GIF of the same Constellation
       run: |
-        rm -rf Figures/constellationbot_gifs
+        rm -f Figures/constellationbot_gifs/geom_${{ github.event.client_payload.constellation_name }}_*.gif
 
     - name: Download GIF artifact
       run: |
