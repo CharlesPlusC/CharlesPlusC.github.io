@@ -1,8 +1,11 @@
 ---
-title: "Identifying the limitations of current orbital solutions in Space Situational Awareness"
-excerpt: "Argument of Latitude at which TLEs are produced for the two largest constellations based on TLE source.<br/><img src='/images/animated_polar_histogram.gif' width='700'>"
-collection: research-areas
----
+layout: single
+title: "Data Visualization of Satellite Constellations"
+excerpt: "Data visualization of resident space objects across time-scales is one of the specialities of the group. <br/><img src='/images/ow_constellation_animation_oneweb.gif' width='650'>"
+collection: project
+author_profile: true
+share: true
+--- 
 
 As part of my PhD I am working on improving orbit solutions for space traffic management operations using a number of techniques. The first step in this process has been identifying the limitations of current orbital solutions in Space Situational Awareness. This has involved analyzing the accuracy of the current state-of-the-art in both uncooperative and cooperative SSA. The results of this analysis are presented in the paper "On the Limits of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series" which I will present at the 2023 AMOS conference.
 
