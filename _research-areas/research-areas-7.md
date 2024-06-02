@@ -1,10 +1,12 @@
 ---
 layout: single
-title: "Earth Radiation Pressure: CERES Flux Modeller <br/><img src='images/combined_flux_animation_nipy.gif' width='450'>"
-collection: posts
+title: "Earth Radiation Pressure in LEO"
+excerpt: CERES Flux Modeller.<br/><img src='images/combined_flux_animation_nipy.gif' width='350'>"
+collection: research-areas
 author_profile: true
 share: true
 ---
+
 
 Earth Radiation Pressure (ERP) is a significant non-conservative force acting on satellites in Low Earth Orbit (LEO). The force is caused by the reflection, absorption and emission of solar radiation by the Earth. Typically the magnitude of the force means that it tends to be outright ignored. Recent research of mine has been focused on assessing how valid this assumption is. In particular I have been looking at using high resoltuion Earth Radiation Budget Experiment (CERES) data to model the Earth's albedo and subsequently the Earth's radiation pressure on satellites, and comparing this to exisitng methods.
 
