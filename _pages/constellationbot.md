@@ -9,7 +9,7 @@ header:
 ---
 
 The aim of this page is to provide a quick overview of the current state of mega-constellations in LEO. These visualizations are based on the use of TLEs provided by [Space-Track](https://www.space-track.org/) .
-This page will periodically update with the latest visualizations from the Constellation Bot from my repo [here](https://github.com/CharlesPlusC/ConstellationBot).
+This page will periodically update with the latest visualizations from the Constellation Bot from my repo [here](https://github.com/CharlesPlusC/ConstellationBot). Update: Retired.
 
 <table>
   <tr>
