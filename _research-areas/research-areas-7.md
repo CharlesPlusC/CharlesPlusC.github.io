@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Earth Radiation Pressure in LEO"
-excerpt: CERES Flux Modeller.<br/><img src='images/combined_flux_animation_nipy.gif' width='350'>"
+excerpt: CERES Flux Modeller.<br/><img src='https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/combined_flux_animation_nipy.gif' width='350'>"
 collection: research-areas
 author_profile: true
 share: true
