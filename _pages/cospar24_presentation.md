@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "My Presentation"
+title: "Presentation"
 permalink: /presentation/
 ---
 
