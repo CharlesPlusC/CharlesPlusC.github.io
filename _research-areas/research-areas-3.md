@@ -16,7 +16,7 @@ Examples of their use has been to tackle questions such as:
 
 Enter the Future Space Populations (FSP) Tool - our solution in the making. This tool is crafted not just to answer such complex questions but also to present the insights visually and interactively.
 
-I am personally involved in writing the code behind the models but the UCL Future Space Populations tool also has a web-based [interface] (https://fsp-visualizer.netlify.app/). With it, you can journey through space populations of the past, revel in the present, and leap into various predicted futures.
+I am personally involved in writing the code behind the models but the UCL Future Space Populations tool also has a web-based [interface] (https://fsp-visualizer.netlify.app/).
 
 In our quest to promote space sustainability and make it interdisciplinary, we're excited to announce that the FSP tool is now open source. If the universe of space modelling intrigues you, hop on board and contribute. While it's still a nascent project, we're gearing up for an official launch soon.
 
