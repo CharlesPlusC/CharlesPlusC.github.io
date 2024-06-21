@@ -11,12 +11,8 @@ redirect_from:
   - /about.html
 ---
 
-Hello there! I'm Charles, currently navigating an exhilarating PhD journey at University College London's renowned Space Geodesy and Navigation Laboratory. This lab, over the past two decades, has pioneered significant advancements in orbit solutions, with notable contributions to the JASON-1 altimeter, GPS, and Galileo satellites. Inspired by this legacy, I strive to not only deepen my understanding but also to channel this knowledge into the burgeoning domain of space traffic management.
+Hi, I'm Charles. I’m a PhD student at UCL's Space Geodesy and Navigation Lab.
 
-Central to my research is the development and application of radiation pressure models for mega constellation satellites. My goal is twofold: refine aerodynamic drag estimates and elevate orbit accuracy and precision, addressing the operational needs of mega-constellation operators.
+My research is all about making space operations safer, from improving collision avoidance and radiation force modeling to using the increasing number of spacecraft in orbit to invert for the structure of the atmosphere. I'm eager to apply my work to real-world satellite operations.
 
-Blending data science, machine learning, engineering, and physical geography, my academic approach is both diverse and holistic.
-
-Collaboration fuels my progress. I'm proud to be actively engaged with esteemed entities such as NASA's Jet Propulsion Laboratory, the European Space Agency, and a global frontrunner in mega-constellation operations.
-
-Dive in, explore my work, and should the idea of collaboration resonate, know that I'm just a message away.
+On this website you will find a (largely incomplete and out of date) repository of my research and some blog posts that I post inconsistently. If you would like ask about collaborating or are simply curious to know more about the research on here, please feel free to reach out!
