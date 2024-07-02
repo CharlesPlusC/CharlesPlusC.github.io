@@ -45,6 +45,16 @@
         .link-section a:hover {
             text-decoration: underline;
         }
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            margin-top: 20px;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 
@@ -57,12 +67,13 @@
             <a href="timeseries_raw.html" target="_blank">Time Series of Propagation Error Grouped by Year, Error-type and Force Model</a>
         </div>
         <div class="link-section">
-            <h2>Orbit Determination/Propagation Stripplots</h2>
+            <h2>Orbit Determination/Propagation</h2>
             <a href="H_stripplot.html" target="_blank">Height Propagation RMSE Stripplot</a>
             <a href="L_stripplot.html" target="_blank">Along-track Propagation RMSE Stripplot</a>
             <a href="C_stripplot.html" target="_blank">Cross-track Propagation RMSE Stripplot</a>
             <a href="3D_stripplot.html" target="_blank">3D Propagation RMSE Stripplot</a>
             <a href="OD_Fit_stripplot.html" target="_blank">Orbit Determination 3D RMSE Stripplot</a>
+            <a href="mean_absolute_error_bars.html" target="_blank">Mean Absolute Propagation Error at the end of the 6 hour propgation period: Barplots</a>
         </div>
         <div class="link-section">
             <h2>Space Weather Indices</h2>
@@ -70,8 +81,95 @@
         </div>
         <div class="link-section">
             <h2>Collision Simulations</h2>
-            <a href="collision_simulations.html" target="_blank">Collision Simulations</a>
+            <div class="nested-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Satellite</th>
+                            <th colspan="2">Low Solar Activity (2019)</th>
+                            <th colspan="2">High Solar Activity (2023)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td>TCA vs DCA</td>
+                            <td>Cumulative Distribution DCA</td>
+                            <td>TCA vs DCA</td>
+                            <td>Cumulative Distribution DCA</td>
+                        </tr>
+                        <tr>
+                            <td>GRACE-FO-A</td>
+                            <td><a href="collision_figures/GRACE-FO-A_2019_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/GRACE-FO-A_2019_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                            <td><a href="collision_figures/GRACE-FO-A_2023_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/GRACE-FO-A_2023_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                        </tr>
+                        <tr>
+                            <td>GRACE-FO-B</td>
+                            <td><a href="collision_figures/GRACE-FO-B_2019_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/GRACE-FO-B_2019_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                            <td><a href="collision_figures/GRACE-FO-B_2023_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/GRACE-FO-B_2023_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                        </tr>
+                        <tr>
+                            <td>Sentinel-1A</td>
+                            <td><a href="#">TCA vs DCA</a></td>
+                            <td><a href="#">Cumulative Distribution</a></td>
+                            <td><a href="collision_figures/Sentinel-1A_2023_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/Sentinel-1A_2023_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                        </tr>
+                        <tr>
+                            <td>Sentinel-2A</td>
+                            <td><a href="collision_figures/Sentinel-2A_2019_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/Sentinel-2A_2019_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                            <td><a href="collision_figures/Sentinel-2A_2023_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/Sentinel-2A_2023_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                        </tr>
+                        <tr>
+                            <td>Sentinel-2B</td>
+                            <td><a href="collision_figures/Sentinel-2B_2019_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/Sentinel-2B_2019_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                            <td><a href="collision_figures/Sentinel-2B_2023_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/Sentinel-2B_2023_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                        </tr>
+                        <tr>
+                            <td>Sentinel-3A</td>
+                            <td><a href="collision_figures/Sentinel-3A_2019_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/Sentinel-3A_2019_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                            <td><a href="collision_figures/Sentinel-3A_2023_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/Sentinel-3A_2023_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                        </tr>
+                        <tr>
+                            <td>Sentinel-3B</td>
+                            <td><a href="collision_figures/Sentinel-3B_2019_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/Sentinel-3B_2019_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                            <td><a href="collision_figures/Sentinel-3B_2023_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/Sentinel-3B_2023_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                        </tr>
+                        <tr>
+                            <td>TanDEM-X</td>
+                            <td><a href="collision_figures/TanDEM-X_2019_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/TanDEM-X_2019_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                            <td><a href="#">TCA vs DCA</a></td>
+                            <td><a href="#">Cumulative Distribution</a></td>
+                        </tr>
+                        <tr>
+                            <td>TerraSAR-X</td>
+                            <td><a href="#">TCA vs DCA</a></td>
+                            <td><a href="#">Cumulative Distribution</a></td>
+                            <td><a href="collision_figures/TerraSAR-X_2023_TCA_DCA_Matrix.jpg">TCA vs DCA</a></td>
+                            <td><a href="collision_figures/TerraSAR-X_2023_Cumulative_Distribution_DCA.jpg">Cumulative Distribution</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+    </div>
+
+    <!-- Embed OneDrive PowerPoint presentation -->
+    <div class="iframe-container">
+        <iframe src="https://liveuclac-my.sharepoint.com/personal/zcesccc_ucl_ac_uk/_layouts/15/Doc.aspx?sourcedoc={40d846ae-dbbe-4f06-ba2d-c94daef8ff51}&amp;action=embedview&amp;wdAr=1.7777777777777777" frameborder="0">This is an embedded <a target="_blank" href="https://office.com">Microsoft Office</a> presentation, powered by <a target="_blank" href="https://office.com/webapps">Office</a>.</iframe>
     </div>
 </body>
 
