@@ -3,583 +3,76 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>COSPAR 2024 - LEO Force Model Benchmarking</title>
-    <link rel="stylesheet" href="dist/reset.css">
-    <link rel="stylesheet" href="dist/reveal.css">
-    <link rel="stylesheet" href="dist/theme/dracula.css">
-    <link rel="stylesheet" href="plugin/highlight/monokai.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>COSPAR 2024 - LEO Force Model Benchmarking Results</title>
     <style>
-        /* General Style */
-        html, body {
-            width: 100%;
-            height: 100%;
+        body {
+            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            overflow: hidden; /* Prevent unwanted scrolling */
-            font-family: Arial, sans-serif; /* Use a clean, readable font */
-        }
-
-        .reveal {
-            width: 100vw;
-            height: 100vh;
-            padding: 0;
-            margin: 0;
-        }
-
-        /* Slides Container */
-        .reveal .slides {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Individual Slides */
-        .reveal .slides section {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            padding: 0;
-            margin: 0;
-        }
-
-        /* Title Slide Styles */
-        .title-slide {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center; /* Center text horizontally */
-            background: linear-gradient(to bottom, #4b79a1, #283e51); /* Background gradient */
-            color: white; /* Text color */
-            height: 100vh; /* Ensure full viewport height */
-            padding: 2em; /* Add padding for better text spacing */
-            box-sizing: border-box;
-        }
-
-        .title-slide h1 {
-            font-size: 3em; /* Adjust title size */
-            margin: 0.5em 0; /* Space around title */
-            font-weight: 700; /* Bold title */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for better readability */
-        }
-
-        .title-slide p {
-            font-size: 1.5em; /* Adjust subtitle size */
-            margin: 0.5em 0; /* Space around subtitle */
-            font-weight: 300; /* Lighter subtitle */
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .title-slide h1 {
-                font-size: 2em; /* Smaller title on small screens */
-            }
-
-            .title-slide p {
-                font-size: 1.2em; /* Smaller subtitle on small screens */
-            }
-        }
-
-        /* Other styles (unchanged from your original CSS) */
-        .plot-container, .iframe-container {
-            width: 100%;
-            height: 80%;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 0;
-            margin: 0;
-            overflow: hidden;
+            justify-content: flex-start;
+            min-height: 100vh;
+            background-color: #f0f0f0;
         }
-
-        .plotly-graph {
-            width: 100%;
-            height: 100%;
-            border: none;
-            margin: 0;
-            padding: 0;
-            display: block;
-            box-sizing: border-box;
+        h1 {
+            margin-bottom: 20px;
         }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            margin: 0;
-            padding: 0;
-            display: block;
-            box-sizing: border-box;
-        }
-
-        .text-slide h2 {
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 1em;
-            font-size: 2em;
-        }
-
-        .plot-slide h2 {
-            font-size: 1.5em !important;
-            margin: 0.5em 0 !important;
-            text-align: left !important;
-            padding-left: 1em;
-            color: #555; /* Adjust the color as needed */
-        }
-
-        .key-takeaways {
-            font-size: 1em;
-            line-height: 1.4em;
-        }
-
-        .key-takeaways li {
-            margin-bottom: 0.5em;
-        }
-
-        .text-slide {
-            padding: 1em;
-            text-align: justify;
-            max-width: 60%;
-            margin: 0 auto;
-        }
-
-        .text-slide ul {
-            text-align: left;
-            padding-left: 3em;
-        }
-
-        .text-slide p {
-            margin-bottom: 1em;
-        }
-
-        .center-plot-slide {
+        .link-container {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .center-plot-slide .plot-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 60%;
-            height: 70%;
-            margin: 0 auto;
-        }
-
-        .center-plot-slide .plotly-graph {
-            width: 100%;
-            height: 100%;
-        }
-
-        .image-slide {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh; /* Ensure the section uses full viewport height */
-            padding: 4em;
-        }
-
-        .content-container {
-            display: flex;
-            justify-content: space-between;
             align-items: flex-start;
-            height: 80%; /* Adjust as necessary */
-            padding: 2em;
-            box-sizing: border-box;
+            width: 100%;
+            max-width: 800px;
         }
-
-        .image-container {
-            flex: 0 0 50%; /* Adjust percentage as needed */
-            max-width: 50%; /* Prevent image from exceeding its container */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+        .link-section {
+            margin-bottom: 40px;
         }
-
-        .image-container img {
-            max-width: 100%;
-            height: auto;
+        .link-section h2 {
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #333;
         }
-
-        .text-container {
-            flex: 0 0 45%; /* Adjust percentage as needed */
-            max-width: 45%;
-            font-size: 1em; /* Adjust size to fit well with your image */
-            line-height: 1.4em;
-            padding-left: 2em; /* Adds space between image and text */
-            box-sizing: border-box;
+        .link-section a {
+            display: block;
+            text-decoration: none;
+            color: #007bff;
+            margin: 10px 0;
+            font-size: 18px;
         }
-
-        .text-container ul {
-            margin: 0;
-            padding: 0;
-            list-style-type: none;
+        .link-section a:hover {
+            text-decoration: underline;
         }
     </style>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
 <body>
-    <div class="reveal">
-        <div class="slides">
-            <!-- Slide 1 -->
-            <section class="title-slide">
-                <h1>An Evaluation of Physics-Based Force Model Performance in LEO</h1>
-                <p>Implications for Next-Generation Space Traffic Management</p>
-            </section>
-            <!-- Slide 2 -->
-            <section class="text-slide">
-                <h2>Goal</h2>
-                <ul class="key-takeaways">
-                    <li class="fragment" data-fragment-index="1">Question: If I were an SSA/STM orbit provider, how would I approach the force modelling aspect of my orbit generation? What would my recipe be?</li>
-                    <li class="fragment" data-fragment-index="2">Method: Sensitivity analysis of force model fidelity to SSA Key Performance Indicators.</li>
-                    <!-- <li class="fragment" data-fragment-index="3">Contribute to bridging the SSA-Geodesy gap.</li> -->
-                </ul>
-            </section>
-            <!-- Slide 3 -->
-            <section class="text-slide">
-                <h2>Metrics</h2>
-                <ul class="key-takeaways">
-                    <li class="fragment">Orbit Determination RMS</li>
-                    <li class="fragment">Orbit Propagation RMS</li>
-                    <li class="fragment">Probability of Collision</li>
-                </ul>
-            </section>
-            <!-- Slide 4 -->
-            <section class="text-slide">
-                <h2> Parameter Space</h2>
-                <ul class="key-takeaways">
-                    <li class="fragment"> This is effectively a grid search over an infinite set of parameters for a highly dynamical problem...</li>
-                    <li class="fragment">...so we need to apply some constraints to make this tractable.</li>
-                </ul>
-            </section>
-            <!-- Slide 5 -->
-            <section class="text-slide">
-                <h2>Regions of Interest</h2>
-                <ul class="key-takeaways">
-                    <li class="fragment"><span style="font-weight: bold;">~450 km</span> high number of <span style="font-style: italic;">active</span></li>
-                    <li class="fragment"><span style="font-weight: bold;">~650-700 km</span> high number of <span style="font-style: italic;">inactive</span></li>
-                </ul>
-            </section>
-            <section>
-                <h2 id="plot-title-1">Selected Missions/Regions</h2>
-                <div class="plot-container">
-                    <iframe class="plotly-graph" src="hist_sat_alt.html" frameborder="0" scrolling="no" id="plot-iframe-1"></iframe>
-                </div>
-            </section>
-            <!-- Slide 6 -->
-            <section class="text-slide">
-                <h2>High Quality "Truth" Data</h2>
-                <ul class="key-takeaways">
-                    <li class="fragment">SP3-C Rapid Science Orbits from GFZ Potsdam</li>
-                    <li class="fragment">1-2cm residuals against SLR</li>
-                    <li class="fragment">This is many orders of magnitude better than the errors I am about to generate...</li>
-                </ul>
-            </section>
-            <!-- Slide 7 -->
-            <!-- Slide 8 -->
-            <section class="text-slide">
-                <h2>Time Periods</h2>
-                <ul class="key-takeaways">
-                    <li class="fragment">End of 2019: Low Solar Activity (G0)</li>
-                    <li class="fragment">Mid 2023: High Solar Activity (G4)</li>
-                </ul>
-            </section>
-            <!-- Slide 9 -->
-            <section class="center-plot-slide">
-                <h2 id="plot-title-2">Space Weather Conditions</h2>
-                <div class="plot-container">
-                    <iframe class="plotly-graph" src="sw_indicesplot2019-11-16_2023-05-07.html" frameborder="0" scrolling="yes" id="plot-iframe-2"></iframe>
-                </div>
-            </section>
-            <!-- Slide 10 -->
-            <section>
-                <h2>Force Modelling Strategies</h2>
-                <table style="width:60%; font-size: 0.6em; line-height: 1.2; border-collapse: collapse; border: 1px solid #ddd;">
-                    <thead>
-                        <tr style="background-color: #6272a4;">
-                            <th style="padding: 3px; text-align: left; border: 1px solid #ddd;">Strategy Number</th>
-                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="fragment">
-                            <td style="padding: 3px; border: 1px solid #ddd;">1</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">36x36 Gravity + 3BP</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="padding: 3px; border: 1px solid #ddd;">2</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">120x120 Gravity + 3BP</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="padding: 3px; border: 1px solid #ddd;">3</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">Strategy 2 + Solid and Ocean Tides</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="padding: 3px; border: 1px solid #ddd;">4</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">Strategy 3 + Relativistic Correction</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="padding: 3px; border: 1px solid #ddd;">5</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">Strategy 4 + ERP (Knocke)</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="padding: 3px; border: 1px solid #ddd;">6</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">Strategy 5 + SRP (Canonball)</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="padding: 3px; border: 1px solid #ddd;">7</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">Strategy 6 + Drag JB08 (Canonball)</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="padding: 3px; border: 1px solid #ddd;">8</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">Strategy 6 + Drag DTM 2000 (Canonball)</td>
-                        </tr>
-                        <tr class="fragment">
-                            <td style="padding: 3px; border: 1px solid #ddd;">9</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">Strategy 6 + Drag NRLMSISE-00 (Canonball)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-            <!-- Slide 11 -->
-            <section class="text-slide">
-                <h2>What about stochastic parameters?</h2>
-                <ul class="key-takeaways">
-                    <li class="fragment">No once-per-revs, no parameter estimation</li>
-                    <li class="fragment">Although widely used in practice, the aim was to understand the limitations of the physical models, not the empirical models.</li>
-                </ul>
-            </section>
-            <!-- Slide 12 -->
-            <section class="text-slide">
-                <h2>Simulation Process</h2>
-                <ul class="key-takeaways">
-                    <li class="fragment">Simulate 20 ground station passes</li>
-                    <li class="fragment">20-minute arcs (1 state vector/minute)</li>
-                    <!-- <li class="fragment">We are also careful not to use a fit span that is too long when the satellite is in a high-drag environment to ensure partial derivatives sensitivities do not exhibit highly non-linear properties</li> -->
-                    <li class="fragment">Batch Least Squares Orbit Determination with each force model</li>
-                    <li class="fragment">Orbit Propagation with each force model (6 hours)</li>
-                    <li class="fragment">~ 1450 OD/OP runs</li>
-                </ul>
-            </section>
-            <!-- Slide 13 -->
-            <!-- <section>
-                <h2>Satellite Ground Station Interaction</h2>
-                <div class="iframe-container">
-                    <iframe src="force_model_bench_animation.html" width="100%" height="90%" frameborder="0"></iframe>
-                </div>
-            </section> -->
-            <!-- Slide 14 -->
-            <section>
-                <h2 id="plot-title-2">Orbit Determination Residuals</h2>
-                <div class="plot-container">
-                    <iframe class="plotly-graph" src="OD_Fit_stripplot.html" frameborder="0" scrolling="no" id="plot-iframe-2"></iframe>
-                </div>
-            </section>
-            <section>
-                <h2 id="plot-title-2">Orbit Propagation Errors</h2>
-                <div class="plot-container">
-                    <iframe class="plotly-graph" src="mean_absolute_error_bars.html" frameborder="0" scrolling="yes" id="plot-iframe-2"></iframe>
-                </div>
-            </section>
-            <!-- Slide 15 -->
-            <section>
-                <h2 id="plot-title-3">Height Residuals</h2>
-                <div class="plot-container">
-                    <iframe class="plotly-graph" src="H_stripplot.html" frameborder="0" scrolling="no" id="plot-iframe-3"></iframe>
-                </div>
-            </section>
-            <!-- Slide 16 -->
-            <section>
-                <h2 id="plot-title-4">Cross-Track Residuals</h2>
-                <div class="plot-container">
-                    <iframe class="plotly-graph" src="C_stripplot.html" frameborder="0" scrolling="no" id="plot-iframe-4"></iframe>
-                </div>
-            </section>
-            <!-- Slide 17 -->
-            <section>
-                <h2 id="plot-title-5">Along-Track Residuals</h2>
-                <div class="plot-container">
-                    <iframe class="plotly-graph" src="L_stripplot.html" frameborder="0" scrolling="no" id="plot-iframe-5"></iframe>
-                </div>
-            </section>
-            <!-- Slide 18 -->
-            <section class="text-slide">
-                <h2>Obvious Takeaways</h2>
-                <ul class="key-takeaways">
-                    <li class="fragment">Epoch Space environment conditions should drive force model selection.</li>
-                    <ul>
-                        <li class="fragment">Lower altitudes and higher solar/geomagnetic activity degrade OD/OP significantly.</li>
-                        <li class="fragment">For high solar/geomagnetic activity, drag modelling is crucial but still involves significant variability.</li>
-                    </ul>
-                </ul>
-            </section>
-            <!-- Slide 19 -->
-            <section class="text-slide">
-                <h2>Not So Obvious Takeaways</h2>
-                <ul class="key-takeaways" style="font-size: 0.8em; line-height: 1.2;">
-                    <li class="fragment">Many OD/OP performance enhancements likely remain underexploited:
-                        <ul>
-                            <li class="fragment">Gravity field resolution enhances OD fit at least as much as drag models. Under all conditions.</li>
-                        </ul>
-                    </li>
-                    <li class="fragment">Solid and ocean tides provide the single best improvement in cross-track propagation RMS (orbital tubes).
-                    <li class="fragment">As we exit solar maximum, conservative and radiation forces will become an increasingly reliable way to improve orbit propagation.
-                        <ul>
-                            <li class="fragment">Drag models become increasingly useless and in some instances even detrimental (Sentinel-2/3), particularly at higher altitudes.</li>
-                        </ul>
-                    </li>
-                </ul>
-            </section>
-            <!-- Slide 20 -->
-            <section>
-                <h2>Operational Perspective</h2>
-                <ul class="key-takeaways" style="font-size: 0.8em; line-height: 1.2;">
-                    <li class="fragment">Why should I care? What are the practical/operational implications of this?
-                        <ul>
-                            <li class="fragment">Let's take a look at the impact on probability of collision...</li>
-                        </ul>
-                    </li>
-                </ul>
-            </section>
-            <!-- Slide 21 -->
-            <section>
-                <h2>Collision Simulation</h2>
-                <ul class="key-takeaways" style="font-size: 0.8em; line-height: 1.2;">
-                    <li class="fragment">Go to t+12hrs (in the SP3-C ephemeris) after the first state calculated in the OD run</li>
-                    <li class="fragment">Take the state, flip the velocity vector and generate keplerian orbit</li>
-                    <ul>
-                        <li class="fragment">Now I have a trajectory that I know collides with my truth trajectory at t+12hrs!</li>
-                    </ul>
-                    <li class="fragment">Go back to t0</li>
-                    <li class="fragment">Sample the covariance generated by each force modelling strategy 10,000 times</li>
-                    <li class="fragment">Propagate each state vector with its corresponding force model for 12.1 hours</li>
-                        <ul>
-                            <li class="fragment">Calculate the time and distance of closest approach for each trajectory relative to the truth trajectory</li>
-                            <li class="fragment">Note: Traveling at ~7.5km/s, a 1/1000th second error in TCA is equivalent to 7.5m. In many cases this is ~= the size of the spacecraft.</li>
-                        </ul>
-                    </li>
-                </ul>
-            </section>
-            <section class="Sentinel-2A: Low Solar Activity">
-                <h2>Sentinel-2A: Low Solar Activity</h2>
-                <div class="content-container">
-                    <div class="image-container">
-                        <img src="Sentinel-2A_TCA_vs_DCA_Matrix_2019.jpg" alt="Description of Image 1" class="image-item">
-                    </div>
-                    <div class="text-container">
-                        <ul class="key-takeaways">
-                            <li class="fragment">Solid and Ocean Tides provides the best improvement in DCA.</li>
-                            <ul>
-                                <li class="fragment">Suggests most of the error was in the cross-track.</li>
-                            </ul>
-                            <li class="fragment">Interesting to note some linearity disappears with addition of DTM</li>
-                            <ul>
-                                <li class="fragment">Consistent with propagation experiments where DTM performed best at high altitude.</li>
-                            </ul>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-            <section class="Sentinel-2A: High Solar Activity">
-                <h2>Sentinel-2A: High Solar Activity</h2>
-                <div class="content-container">
-                    <div class="image-container">
-                        <img src="Sentinel-2A_TCA_vs_DCA_Matrix_2023.jpg" alt="Description of Image 1" class="image-item">
-                    </div>
-                    <div class="text-container">
-                        <ul class="key-takeaways">
-                            <li class="fragment">DCA is ~2x that of low solar activity case. TCA is now unbiased.</li>
-                            <li class="fragment">Distribution less Gaussian</li>
-                            <li class="fragment">Addition of Drag model not greatly helpful</li>
-                            <ul>
-                                <li class="fragment">But computationally much more expensive...</li>
-                            </ul>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-            <section class="GRACE-FO-A: Low Solar Acitivity">
-                <h2>GRACE-FO-A: Low Solar Acitivity</h2>
-                <div class="content-container">
-                    <div class="image-container">
-                        <img src="GRACE-FO-A_TCA_vs_DCA_Matrix_19.jpg" alt="Description of Image 1" class="image-item">
-                    </div>
-                    <div class="text-container">
-                        <ul class="key-takeaways">
-                            <li class="fragment">Largely unbiased TCA. DCA is better than high altitude counterparts</li>
-                            <li class="fragment">Improved Gravity Field Greatly Improves DCA estimate</li>
-                            <ul>
-                                <li class="fragment">Hypothesis: the strength of gravity forcing at this altitude offsets the errors in drag</li>
-                            </ul>
-                            <li class="fragment">Dominance of drag increases uncertainty (wider spread and non-linear distribution)</li>
-                            <ul>
-                                <li class="fragment">All drag models perform adequately</li>
-                            </ul>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-            <section class="GRACE-FO-A: High Solar Acitivity">
-                <h2>GRACE-FO-A: High Solar Acitivity</h2>
-                <div class="content-container">
-                    <div class="image-container">
-                        <img src="GRACE-FO-A_TCA_vs_DCA_Matrix_23.jpg" alt="Description of Image 1" class="image-item">
-                    </div>
-                    <div class="text-container">
-                        <ul class="key-takeaways">
-                            <li class="fragment">DCA 2x as bad. TCA 10x as bad.</li>
-                            <li class="fragment">Much less normally distributed</li>
-                            <li class="fragment">Gravity field improvement virtually useless</li>
-                            <li class="fragment">Drag is most important factor at play.</li>
-                            <li class="fragment">Of the drag models JB08 outperforms other by ~2x in DCA and TCA, but has a wider spread</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-            <section>
-                <h2>Conclusions</h2>
-                <ul class="key-takeaways" style="font-size: 0.8em; line-height: 1.2;">
-                    <ul>                            
-                        <li class="fragment">The space environment changes distinctly with altitude and solar acitivity</li>
-                        <li class="fragment">The behaviour of certain KPIs will exhibit different behaviour under different circumstances </li>
-                        <ul>
-                            <li class="fragment">Likely that below a certain drag signal threshold, gravitational and radiative force modelling are underexploited in SSA/STM </li>
-                        </ul>
-                        <li class="fragment">Drag modelling is very important at present, and will almost always be below ~500km.</li>
-                        <li class="fragment">Entering the next solar minima (2030+), imrpovements in conservative and radiative forces are likely to become more significant.</li>
-                    </ul>
-                </ul>
-            </section>
+    <h1>COSPAR 2024 - LEO Force Model Benchmarking Results</h1>
+    <div class="link-container">
+        <div class="link-section">
+            <h2>Orbit Propagation Time Series</h2>
+            <a href="force_model_mean_grouped.html" target="_blank">Time Series of Propagation Error Grouped by Altitude Group, Year, Error-type and Force Model</a>
+            <a href="timeseries_raw.html" target="_blank">Time Series of Propagation Error Grouped by Year, Error-type and Force Model</a>
+        </div>
+        <div class="link-section">
+            <h2>Orbit Determination/Propagation Stripplots</h2>
+            <a href="H_stripplot.html" target="_blank">Height Propagation RMSE Stripplot</a>
+            <a href="L_stripplot.html" target="_blank">Along-track Propagation RMSE Stripplot</a>
+            <a href="C_stripplot.html" target="_blank">Cross-track Propagation RMSE Stripplot</a>
+            <a href="3D_stripplot.html" target="_blank">3D Propagation RMSE Stripplot</a>
+            <a href="OD_Fit_stripplot.html" target="_blank">Orbit Determination 3D RMSE Stripplot</a>
+        </div>
+        <div class="link-section">
+            <h2>Space Weather Indices</h2>
+            <a href="sw_indicesplot2019-11-16_2023-05-07.html" target="_blank">Space Weather Indices During Period Studied</a>
+        </div>
+        <div class="link-section">
+            <h2>Collision Simulations</h2>
+            <a href="collision_simulations.html" target="_blank">Collision Simulations</a>
         </div>
     </div>
-    <script src="dist/reveal.js"></script>
-    <script src="plugin/notes/notes.js"></script>
-    <script src="plugin/markdown/markdown.js"></script>
-    <script src="plugin/highlight/highlight.js"></script>
-    <script>
-        Reveal.initialize({
-            hash: true,
-            width: '100%',
-            height: '100%',
-            margin: 0,
-            minScale: 1,
-            maxScale: 1,
-            slideNumber: true,
-            fragments: true, // Ensure fragments are enabled
-            tansitionSpeed: 'fast',
-            plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
-        });
-    </script>
-    </script>
 </body>
+
 </html>

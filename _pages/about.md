@@ -5,7 +5,7 @@ excerpt: "About me"
 author_profile: true
 header:
   image: NASAreentry.png
-  height: 200px
+  height: 120px
 redirect_from: 
   - /about/
   - /about.html
