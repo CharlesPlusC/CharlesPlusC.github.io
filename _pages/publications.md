@@ -18,7 +18,7 @@ Conference Talks/Posters
 
 * Brownhall, I.,  Lifson, M., <b>Constant, C.</b>, Lavezzi, G., Harris, M F., Linares, M., Ziebart, M., Bhattarai, S. MOCAT-PYSSEM: An Open-Source Python Library and User Interface for Orbital Debris and Source Sink Environmental Modelling [link](10.13140/RG.2.2.12438.15688) <i>Commitee on Space Research</i>, 2024.
 
-* <b>Constant, C.</b>, Bhattarai, S., Ziebart, M [Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series](https://github.com/CharlesPlusC/CharlesPlusC.github.io/raw/master/Figures/AMOS-Poster.pdf) | [Watch the Video](https://github.com/CharlesPlusC/CharlesPlusC.github.io/raw/master/assets/AMOS_Presentation_3min.mp4) <i>AMOS</i>, 2023.
+* <b>Constant, C.</b>, Bhattarai, S., Ziebart, M [Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series](https://github.com/CharlesPlusC/CharlesPlusC.github.io/raw/master/Figures/AMOS-Poster.pdf) | [3-minute presentation](https://github.com/CharlesPlusC/CharlesPlusC.github.io/raw/master/assets/AMOS_Presentation_3min.mp4) <i>AMOS</i>, 2023.
 
 * <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M [Astrodynamics and Space Geodesy for Space Domain Awareness and Sustainability](https://github.com/CharlesPlusC/CharlesPlusC.github.io/raw/master/assets/GNOSIS_Poster_28_11_22.pdf) <i>Global Network On Sustainability in Space</i>, 2022.
 
