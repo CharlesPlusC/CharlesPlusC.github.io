@@ -11,7 +11,7 @@ redirect_from:
   - /about.html
 ---
 
-Hi, I'm Charles. I’m a PhD student at UCL's Space Geodesy and Navigation Lab.
+Hi, I'm Charles. I’m a PhD student in Space Flight Dynamics and Geodesy at University College London.
 
 My research is all about making space operations safer, from improving collision avoidance and radiation force modeling to using the increasing number of spacecraft in orbit to invert for the structure of the atmosphere. I'm eager to apply my work to real-world satellite operations.
 
