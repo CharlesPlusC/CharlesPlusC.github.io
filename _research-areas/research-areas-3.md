@@ -1,23 +1,25 @@
 ---
 layout: single
-title: "Future Space Populations Tool"
-excerpt: "Medium-term modelling of the space environment. <br/><img src='/images/object_distribution_fsp_2028.png' width='700'>"
-collection: project
+title: "High Fidelity Radiation Pressure Models for Spacecraft. <br/><img src='/images/raddir_GRACE_neg_X.png' width='450'>"
+collection: posts
 author_profile: true
 share: true
---- 
+---
 
-At UCL, our research also delves into medium-term modelling of space behavior (0-25 yrs). Central to our analysis is the use of "source-sink evolutionary models", which are pivotal for assessing potential scenarios, formulating policies, predicting trends, and understanding launch patterns.
 
-Examples of their use has been to tackle questions such as: 
-- How would the space environment change if the E-Space constellation, with over 500,000 satellites, were to materialize? 
-- What is the best location for radar facilities to track the upcoming defense and communications LEO constellations?
-- How good have FCC filings been as a source of information for predicting future space populations?
 
-Enter the Future Space Populations (FSP) Tool - our solution in the making. This tool is crafted not just to answer such complex questions but also to present the insights visually and interactively.
+One area I am particularly excited about is the development of radiation force models for spacecraft in Low Earth Orbit. One of the major challenges that remains in the spacecraft operations community is the lack of an open-source, easy-to-use, and widely accepted community tool for high-accuracy radiation pressure modeling. This gap exists largely because ray-tracing software, which is key to accurate radiation pressure models, is daunting, compute-heavy, and time-consuming to run. Until recently, this level of modeling has been seen as overkill for most low-Earth orbit applications, where drag forces—far more uncertain—dominate the error budget.
 
-I am personally involved in writing the code behind the models but the UCL Future Space Populations tool also has a web-based [interface] (https://fsp-visualizer.netlify.app/).
+However, as we approach start to exit the current solar maximum (~2026 or 2027) accurate radiation force modeling will be of increasing concern relative to drag modeling. Anticipating this shift, I began developing a new radiation force modeling technique early in my PhD. Initially I made use of the Mitsuba 3 Rendering Engine, with some success but overall I found the software to be too slow and was not happy with being tied to an exisitng ecosystem that was not bespoke for spacecraft radiation pressure modelling.
 
-In our quest to promote space sustainability and make it interdisciplinary, we're excited to announce that the FSP tool is now open source. If the universe of space modelling intrigues you, hop on board and contribute. While it's still a nascent project, we're gearing up for an official launch soon.
+I’ve been collaborating with Tobias Richel from UCL Computer Science, my advisor Santosh Bhattarai, and Liz Bates from the Alan Turing insitute. Together, we identified a gap: the need to modernize ray-tracing tools using state-of-the-art techniques. One of our goals was to write the software in Python to make it accessible to a broader community, leveraging libraries like JAX and LAX. These libraries, originally developed to support high-performance computing in machine learning, are also well-suited for ray-tracing and differentiability.
 
-To collaborate or learn more, explore the FSP Simulator's repository [here](https://github.com/ucl-sgnl/FSPSimulator). We'd love to journey with fellow space enthusiasts like you!
+![GFO Ray Trace](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master//images/raddir_GRACE_neg_X.png?raw=true)
+
+The result is a ray-tracer of sorts, but not in the classical sense. Instead of tracing rays from the light source to the spacecraft, this approach uses inverse rendering: rays are traced from random points on the spacecraft surface back to the light source. Using random sampling of the spacecraft surface, we repeat this process in a Monte Carlo process and quickly converge to `the tuth'. Increasing levels of fidelity become exponentially slower to achieve but as with any Monte Carlo process they converge evenutally. This tool can ingest spacecraft geometries of any complexity and runs conveniently on a Google Colab instance. All the user needs to provide is a .obj file of the object they are trying to model and some material properties. Whilst the current implementation only uses a relatively simple specular/diffuse bidirectional reflectance function(BRDF), I have been provided some goniophotometer measurements of spacecraft materials and plan to include these to improve to further increase the physical fidelity of the tool. In addition, the model will also allow for time varying geometry to be included. Currently, no software exists that can model the radiation pressure on a spacecraft with time-varying geometry.
+
+The first and most obvious impact of improved radiation force modeling tools are areas like orbit prediction and probability of collision assessments. Beyond that, because of the differentiable nature of JAX and LAX, this tool opens up new possibilities. For example, one of the concepts I am currently validating involves using gradient descent to refine object parameters based on tracking errors over time. This is a process in which we can differentiate the orbit propagation model with respect to the scene parameters. As a simple example, we know that solar arrays undergo a reddening effect over time. We can decide for example, using measurements to optimize the BRDF parameters of the solar arrays to minimize the tracking error- thus giving us a better estimate of the solar array's degradation. Of course this is dependent on the quality of the measurements and the accuracy of the model, but above (~800km) radiation forces provide the largest source of uncertainty in orbit propagation, and so whilst some error will inevitably be aliased into the orbit, this will still provide a good guess at the true value.
+
+This approach could also be useful in rendez-vous and proximity operations, light curve analysis, and addressing our current inability to measure material degradation in space directly.
+
+As of October 2024, this tool has been benchmarked against the existing UCL software and has been found to be more accurate and orders of magnitude faster. We are currently validating the method against real-world data and plan to release the software as open-source in the near future. If you are interested in collaborating or would like to know more, please feel free to reach out!
