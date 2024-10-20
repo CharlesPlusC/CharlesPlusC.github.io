@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "MSc Project: Aerodynamic Drag Modelling for LEO Mega-Constellations <br/><img src='https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/HCL_drag_diff.png' width='450'>"
+title: "MSc Project: Aerodynamic Drag Modelling for LEO Mega-Constellations <br/><img src='https://raw.githubusercontent.com/CharlesPlusC/CharlesPlusC.github.io/master/images/HCL_drag_diff.png' width='450'>
 collection: posts
 author_profile: true
 share: true

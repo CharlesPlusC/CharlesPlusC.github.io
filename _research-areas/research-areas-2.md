@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Near-Real Time Thermospheric Density Retrieval from Precise Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms"
-excerpt: <br/><img src='https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/select_storms_figure.png?raw=true' width='350'>"
+excerpt: <br/><img src='https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/select_storms_figure.png?raw=true' width='450'>
 collection: research-areas
 author_profile: true
 share: true

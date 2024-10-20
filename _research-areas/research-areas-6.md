@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Probing Thermospheric Response and Operational Impacts during the 2024 Mother’s Day Geomagnetic Storm"
-excerpt: <br/><img src='https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/circulaplots-tsx_gfo.png?raw=true' width='350'>"
+excerpt: <br/><img src='https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/circulaplots-tsx_gfo.png?raw=true' width='350'>
 collection: research-areas
 author_profile: true
 share: true
