@@ -6,6 +6,8 @@ author_profile: true
 share: true
 ---
 
+
+
 One area I am particularly excited about is the development of radiation force models for spacecraft in Low Earth Orbit. One of the major challenges that remains in the spacecraft operations community is the lack of an open-source, easy-to-use, and widely accepted community tool for high-accuracy radiation pressure modeling. This gap exists largely because ray-tracing software, which is key to accurate radiation pressure models, is daunting, compute-heavy, and time-consuming to run. Until recently, this level of modeling has been seen as overkill for most low-Earth orbit applications, where drag forces—far more uncertain—dominate the error budget.
 
 However, as we approach start to exit the current solar maximum (~2026 or 2027) accurate radiation force modeling will be of increasing concern relative to drag modeling. Anticipating this shift, I began developing a new radiation force modeling technique early in my PhD. Initially I made use of the Mitsuba 3 Rendering Engine, with some success but overall I found the software to be too slow and was not happy with being tied to an exisitng ecosystem that was not bespoke for spacecraft radiation pressure modelling.
