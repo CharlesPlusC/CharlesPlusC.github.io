@@ -1,29 +1,28 @@
 ---
 layout: single
-title: "Earth Radiation Pressure in LEO"
-excerpt: CERES Flux Modeller.<br/><img src='https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/combined_flux_animation_nipy.gif' width='350'>"
+title: "Probing Thermospheric Response and Operational Impacts during the 2024 Mother’s Day Geomagnetic Storm"
+excerpt: <br/><img src='https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/circulaplots-tsx_gfo.png?raw=true' width='350'>"
 collection: research-areas
 author_profile: true
 share: true
 ---
 
+In this work, we have been investigating the response of the thermosphere during the significant Mother’s Day geomagnetic storm in May 2024. By leveraging precise orbits, I focused on inverting for thermospheric densities in near real-time.
 
-Earth Radiation Pressure (ERP) is a significant non-conservative force acting on satellites in Low Earth Orbit (LEO). The force is caused by the reflection, absorption and emission of solar radiation by the Earth. Typically the magnitude of the force means that it tends to be outright ignored. Recent research of mine has been focused on assessing how valid this assumption is. In particular I have been looking at using high resoltuion Earth Radiation Budget Experiment (CERES) data to model the Earth's albedo and subsequently the Earth's radiation pressure on satellites, and comparing this to exisitng methods.
+One of the key challenges that remains in POD-density inversion is accessing precise orbits with sufficent latency, and accuracy to provide relevant densities. A standout provider is GFZ Potsdam, which makes near real-time orbits (~35mins after overhead pass) available for several LEO satellites. During the May 2024 storm, I utilized their near real-time orbit data to generate thermospheric density profiles in near real-time. The magnitude of this geomagnetic storm made this analysis especially compelling.
 
-As part of this research I developped a plugin for the Orekit library to model the Earth's albedo using CERES data.
+![tsx_gfo_orbitderiveddensities](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/tsx_gfo_storm_plots.png?raw=true)
 
-To get the highest possible resolution, I made use of the SYN1deg hourly data product from CERES. This provides a 1 degree resolution of the Earth's longwave and shortwave radiation at the top of the Earth's atmosphere. 
+Expanding on this work, I incorporated additional POD data from the European Space Agency, accessed via their Copernicus data portal. This allowed me to analyze thermospheric densities at altitudes reaching up to 786 kilometers, including those for Sentinel-1 and Sentinel-2. Collaborating with other PhD students in my group and from the Atmospheric Physics Lab, we expanded our investigation beyond thermospheric profiles to include ground-based density measurements, and other kinds of indirect observations of the thermosphere.
 
-A couple of light transport equations later, and I had a model for the Earth's albedo. This model was then used to calculate the Earth's radiation pressure on a OneWeb satellite. My first instinct was to focus on OneWeb as the magnitude of the atmospheric drag acceleration they experience is lower than that of radiation forces and so in their case ERP is more significant than for, say, Starlink.
+![s1as2a_ciruclardensities](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/s1as2a_circulardensity.png?raw=true)
 
-![OneWebFluxERP](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/combined_flux_animation_nipy.gif?raw=true)
+The students of the Applied Physics Laboratory (Eliot Dable and Laura Aguilar), who have expertise with Fabry-Perot interferometers, contributed ground-based density measurements, along with temperature and wind observations. These measurements allowed for some cross-validation of the thermospheric response captured by the orbit-derived densities during the storm.
 
-Using Freely available TLEs I computed the flux on the satellite for a number of trajectories.
+Moreover, we tried to make this an operationally-relevant paper by turning our attention to the decay of uncooperatively tracked objects cataloged by the Space Force. This system, though relatively coarse, still allowed us to observe the decay in semi-major axis for objects over time. One key question for both the thermosphere and space operations communities is determining the altitude at which the thermosphere stops having a significant impact during storms. By analyzing catalog-wide changes in semi-major axis, we aimed to pinpoint the altitude up to which drag effects were observable, providing valuable insights for operational models.
 
-One concept I wanted to explore was whether, over any relevant period of time, the distributon of the incoming radiation was biased towards some direction. Since the spacecraft is travelling in an out of eclipse I was wondering if there might be some resonant effect that would mean the sum of the forces would be biased in some direction. To explor this I came up with this "geiger counter" style plot of the flux on the satellite over time. Since the longwave is invariant to incoming radiation, this quickly smooths into a ciruclar shape. But for a short while, the shortwave is biased, however I did not find this to be hugely significant (still a cool plot though :D ).
+In a further extension of my previous work on uncooperative tracking, we compared these coarse orbits with the highly precise orbits, known to have centimeter-level accuracy. This comparison revealed a degradation in tracking accuracy during the storm’s onset, with errors reaching multi-kilometer levels. This analysis has important operational implications, as it highlights the limitations of current uncooperative tracking systems during geomagnetic storms.
 
-![OneWebFluxgeiger](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/cumulative_flux_anim_v3_ow.gif?raw=true)
+Overall, this study underscores the need for improved models and tracking methods in response to geomagnetic events, which have significant operational impacts on satellite navigation, space traffic management, and atmospheric density estimation.
 
-Finally, looking at the magnitude of the forces from the CERES model when compared to the Knocke model, I found some interesting differences. The Knocke ERP model tended to overestimate the force, and the CERES model contained quite a bit of variance. Mainly however, it seems that the importance of high-fidelity ERP was higher for Starlink rather than OneWeb. Looking back, this makes sense. Since Starlink orbits at roughly half the altiude of OneWeb, the Earth covers a much greater surface area below it, meaning that variations in the radiation across the surface of the Earth are likely to induce stronger biases, whereas for OneWeb the Earth is much further and so the light is much more unidirectional.
-
-![SL_RTN_ERP](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/SL_RTN_48hr.jpeg?raw=true)
+We will be presenting this work at the European Space Weather Week in November 2024 and submitting it to the Journal Space Weather.
