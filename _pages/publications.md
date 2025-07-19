@@ -11,9 +11,13 @@ header:
 Journal/Conference Papers
 ------
 
-* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I. Aruliah, A. Ziebart, M.  _Near-Real Time Thermospheric Density Retrieval from Precise Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms_,  <i>[link](arxiv.org/abs/2408.16805) </i>, 2024.
+* Brownhall, I., Lifson, M., Constant, C., Lavezzi, G., Harris, M. F., Linares, M., Ziebart, M., Bhattarai, S. _MOCAT-pySSEM: An open-source Python library and user interface for orbital debris and source sink environmental modeling_, <i>SoftwareX</i>, 30(6667):102062, March 2025. [DOI: 10.1016/j.softx.2025.102062](https://doi.org/10.1016/j.softx.2025.102062) [PDF from esa.int](#) [CC BY 4.0]
 
-* <b>Constant, C.</b>, Bhattarai, S., Ziebart, M.  _Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series_,  <i>[link](https://ui.adsabs.harvard.edu/abs/2023amos.conf...88C/abstract) </i>, 2023.
+* Peto-Madew, F., Bhattarai, S., Constant, C., Brownhall, I. _Investigating the Application of the Orbit Domain Calibration Method in Sun Synchronous Orbits_, Proceedings of the 9th EUROPEAN CONFERENCE ON SPACE DEBRIS, ESA Space Debris Office, 2025/4/4. Description: This paper investigates the application of the Orbit Domain Calibration (ODC) method, designed to increase orbit accuracy by calibrating uncooperative tracking orbits using precise orbits derived from cooperative tracking. The Sentinel-1 mission is used as a case study. [Scholar article](#)
+
+* Bhattarai, S., Brownhall, I., Constant, C., Peto-Madew, F., Rotherham, E. _Orbit Domain Calibration for Space Surveillance & Tracking (ODC4SST): Design Concept, Network Selection & Initial Validation Tests_, 2024/7/18. Description: This project establishes an orbit domain calibration (ODC) system designed to support SST technology developers to achieve accurate orbit solutions across all operational orbital regimes. [Scholar article](#)
+
+* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M.  _Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series_,  <i>[link](https://ui.adsabs.harvard.edu/abs/2023amos.conf...88C/abstract) </i>, 2023.
 
 
 Conference Talks/Posters

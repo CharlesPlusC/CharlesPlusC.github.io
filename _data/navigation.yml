@@ -6,11 +6,11 @@ main:
   - title: "Publications"
     url: /publications/    
         
-  - title: "Blog Posts"
-    url: /posts/
+  # - title: "Blog Posts"
+  #   url: /posts/
     
   - title: "CV"
     url: /cv/
 
-  - title: "Constellation Bot"
-    url: /constellationbot/    
+  # - title: "Constellation Bot"
+  #   url: /constellationbot/    

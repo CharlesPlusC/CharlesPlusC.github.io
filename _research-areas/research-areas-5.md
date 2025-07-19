@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "High Resolution Earth Radiation Pressure Flux Modeller"
-excerpt: Flux Modeller Development<br/><img src='https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/combined_flux_animation_nipy.gif?raw=true' width='450'>
+excerpt: <img src='https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master/images/combined_flux_animation_nipy.gif?raw=true' width='450'>
 collection: research-areas
 author_profile: true
 share: true
