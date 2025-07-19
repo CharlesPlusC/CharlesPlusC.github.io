@@ -1,0 +1,46 @@
+// Publication Cards
+.pub-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.pub-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07), 0 1.5px 4px rgba(0,0,0,0.04);
+  padding: 1.5rem 1.25rem;
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.2s, transform 0.2s;
+  font-family: 'Inter', $global-font-family, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pub-card:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.pub-title {
+  font-size: 1.08em;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+  color: #222;
+  line-height: 1.4;
+}
+
+.pub-meta {
+  font-size: 0.98em;
+  color: #555;
+  margin-top: 0.25em;
+  line-height: 1.5;
+}
+
+.pub-meta a {
+  color: #0077cc;
+  text-decoration: underline;
+  font-weight: 500;
+} 
