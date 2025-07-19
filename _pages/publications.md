@@ -11,6 +11,8 @@ header:
 Journal/Conference Papers
 ------
 
+* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Aruliah, A., Ziebart, M.  _Evaluating Near-Real Time Thermospheric Density Retrieval Methods from Precise Low Earth Orbit Spacecraft Ephemerides During Geomagnetic Storms_, <i>arXiv preprint arXiv:2408.16805</i>, submitted, under review, 2024.
+
 * Brownhall, I., Lifson, M., </b>Constant, C.</b>, Lavezzi, G., Harris, M. F., Linares, M., Ziebart, M., Bhattarai, S. _MOCAT-pySSEM: An open-source Python library and user interface for orbital debris and source sink environmental modeling_, <i>SoftwareX</i>, 30(6667):102062, March 2025. [DOI: 10.1016/j.softx.2025.102062](https://doi.org/10.1016/j.softx.2025.102062) 
 
 * Peto-Madew, F., Bhattarai, S., </b>Constant, C.</b>, Brownhall, I. _Investigating the Application of the Orbit Domain Calibration Method in Sun Synchronous Orbits_, Proceedings of the 9th EUROPEAN CONFERENCE ON SPACE DEBRIS, ESA Space Debris Office, 2025/4/4.<i>[link](https://conference.sdo.esoc.esa.int/proceedings/sdc9/paper/254/SDC9-paper254.pdf) 
