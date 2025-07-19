@@ -18,7 +18,7 @@ Journal/Conference Papers
 * Peto-Madew, F., Bhattarai, S., <b>Constant, C.</b>, Brownhall, I. _Investigating the Application of the Orbit Domain Calibration Method in Sun Synchronous Orbits_, Proceedings of the 9th EUROPEAN CONFERENCE ON SPACE DEBRIS, ESA Space Debris Office, 2025/4/4.<i>[link](https://conference.sdo.esoc.esa.int/proceedings/sdc9/paper/254/SDC9-paper254.pdf) 
 
 
-* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M.  _Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series_,  <i>[link](https://ui.adsabs.harvard.edu/abs/2023amos.conf...88C/abstract) </i>, 2023.
+* <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M.  _Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series_,Proceedings of the AMOS conference 2023 <i>[link](https://ui.adsabs.harvard.edu/abs/2023amos.conf...88C/abstract) </i>, 2023.
 
 
 Conference Talks/Posters
