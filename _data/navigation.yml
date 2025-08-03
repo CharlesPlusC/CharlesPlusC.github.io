@@ -12,5 +12,8 @@ main:
   - title: "CV"
     url: /cv/
 
+  - title: "Workspace Gallery"
+    url: /workspace-gallery/
+
   # - title: "Constellation Bot"
   #   url: /constellationbot/    
