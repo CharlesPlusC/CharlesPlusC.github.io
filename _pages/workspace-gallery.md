@@ -8,29 +8,27 @@ header:
   height: 200px
 ---
 
-This page serves as a personal repository of my workspace environment during moments of breakthrough and productive work sessions. Each image captures the state of my desk, workspace, and environment when I've achieved significant progress in my research or completed important milestones. It's a visual diary of my academic journey and the physical spaces where ideas come to life.
+I’ve always been drawn to history and adventure books, not just for the fact they provide the backstory of the world we currently live in, but for the glimpse they give into how human beings, in eras and places far removed from ours, have faced seemingly insurmountable challenges. Whether they’re crossing unexplored lands or battling the enemy through the desert, every major victory is built from countless smaller ones.
 
-These snapshots represent more than just workspace photos—they're moments frozen in time when everything clicked, when complex problems found solutions, or when long hours of work finally yielded results. Each image tells a story of persistence, creativity, and the messy beauty of productive research.
+Those “micro-victories” are a reminder that every human's journey follows the same instinct to puzzle through obstacles, reshape our surroundings, and inch forward. Progress rarely arrives in one grand epiphany; it’s woven from those subtle shifts in understanding, the experiment that doesn’t fail but teaches you something unexpected.
+
+So here is a (hopefully) growing archive of “where I was” and “what I was doing” each time I felt something click (and I remembered to record it...). Because while, for researchers, citation count and publication numbers measure are our external measure of impact, it’s these quiet advances that really matter.
 
 ---
 
-## Workspace Moments
+## Where I was and what I was doing
 
-### Breakthrough Session 1
-![Workspace during breakthrough session 1]({{ site.baseurl }}/images/IMG_5019.png)
 
-### Productive Work Environment 2
+### Making progress on the ray-tracer in London
 ![Workspace during productive session 2]({{ site.baseurl }}/images/IMG_5295.png)
 
-### Research Milestone 3
+### Tracking the Venus Lander Re-Entry from Black Hawk, CO
 ![Workspace during research milestone 3]({{ site.baseurl }}/images/IMG_6830.png)
 
-### Innovation Session 4
+### POD Density Inversion Work in Boulder, CO
 ![Workspace during innovation session 4]({{ site.baseurl }}/images/IMG_6831.png)
 
-### Achievement Moment 5
+### Probing thermosphere response during the May Storm in London
 ![Workspace during achievement moment 5]({{ site.baseurl }}/images/IMG_7018.png)
 
 ---
-
-*Each workspace tells a story of discovery, persistence, and the pursuit of knowledge. These moments remind me that great work often happens in the midst of organized chaos, surrounded by the tools and resources that fuel creativity and innovation.* 
