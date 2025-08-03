@@ -4,15 +4,15 @@ title: "Workspace Gallery"
 excerpt: "A personal collection of workspace moments during breakthroughs and productive work sessions"
 author_profile: false
 header:
-  image: IMG_5019.png
+  image: NASAreentry.png
   height: 200px
 ---
 
 I’ve always been drawn to history and adventure books, not just for the fact they provide the backstory of the world we currently live in, but for the glimpse they give into how human beings, in eras and places far removed from ours, have faced seemingly insurmountable challenges. Whether they’re crossing unexplored lands or battling the enemy through the desert, every major victory is built from countless smaller ones.
 
-Those “micro-victories” are a reminder that every human's journey follows the same instinct to puzzle through obstacles, reshape our surroundings, and inch forward. Progress rarely arrives in one grand epiphany; it’s woven from those subtle shifts in understanding, the experiment that doesn’t fail but teaches you something unexpected.
+Those “micro-victories” are a reminder that everyone's journey requires puzzling through obstacles, reshaping our surroundings, and inching forward. Progress rarely arrives in one grand epiphany; it’s a combination of those subtle shifts in understanding and those experiment that doen’t fail but teach you something unexpected.
 
-So here is a (hopefully) growing archive of “where I was” and “what I was doing” each time I felt something click (and I remembered to record it...). Because while, for researchers, citation count and publication numbers measure are our external measure of impact, it’s these quiet advances that really matter.
+So, whilst I'm not battling the Afrika Korps across the Libyan desert, I thought I would still share my (hopefully) growing archive of “where I was” and “what I was doing” each time I felt something click (and I remembered to record it...). For researchers, it's often citation count and publication number that are our external measure of impact, but for me, it’s these quiet advances that provide the research journey all its meaning!
 
 ---
 
