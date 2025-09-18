@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Venus Lander Re-Entry Tracking"
-excerpt: "Data visualization of resident space objects across time-scales is one of the specialities of the group. <br/><img src='/images/ow_constellation_animation_oneweb.gif' width='350'>"
+excerpt: "Data visualization of resident space objects across time-scales is one of the specialities of the group. <br/><img src='/images/venus_lander_gtrax_edited.png?raw=true' width='350'>"
 collection: project
 author_profile: true
 share: true

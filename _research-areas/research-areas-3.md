@@ -6,4 +6,4 @@ author_profile: true
 share: true
 ---
 
-![GFO Ray Trace](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master//images/raddir_GRACE_neg_X.png?raw=true)
+<!-- ![GFO Ray Trace](https://github.com/CharlesPlusC/CharlesPlusC.github.io/blob/master//images/raddir_GRACE_neg_X.png?raw=true) -->
