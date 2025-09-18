@@ -1,13 +1,13 @@
 ---
 layout: single
-title: "Space Situational Awareness / Uncooperative Orbits"
+title: "Current Limits of Space Situational Awareness"
 excerpt: "Argument of Latitude at which TLEs are produced for the two largest constellations based on TLE source.<br/><img src='/images/animated_polar_histogram.gif' width='350'>"
 collection: research-areas
 author_profile: true
 share: true
 ---
 
-This research area focuses on the challenges and limitations of current orbital solutions in the context of Space Situational Awareness (SSA), with a particular emphasis on uncooperative orbits. Our work aims to improve orbit solutions for space traffic management operations, analyzing both uncooperative and cooperative tracking methods. We investigate the accuracy of state-of-the-art techniques and develop new approaches to enhance the reliability of orbital data for SSA.
+This research area focuses on the challenges and limitations of current orbit solutions in SSA, with a particular emphasis on uncooperative orbits.
 
 Key results and analysis are presented in the paper "On the Limits of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series" (AMOS 2023).
 

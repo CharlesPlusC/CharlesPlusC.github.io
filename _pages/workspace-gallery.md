@@ -1,18 +1,14 @@
 ---
 permalink: /workspace-gallery/
 title: "Workspace Gallery"
-excerpt: "Where I was and what I was doing when things went well"
+excerpt: "Workspace Gallery"
 author_profile: false
 header:
   image: NASAreentry.png
   height: 200px
 ---
 
-
 ---
-
-## Where I was and what I was doing
-
 
 ### Making progress on the ray-tracer in London
 ![Workspace during productive session 2]({{ site.baseurl }}/images/IMG_5295.png)
