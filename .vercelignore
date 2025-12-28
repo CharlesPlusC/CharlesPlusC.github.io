@@ -1,0 +1,21 @@
+# Jekyll build files
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+
+# Ruby
+vendor
+.bundle
+
+# Git
+.git
+.github
+
+# Assets that don't need to be deployed to Vercel
+assets/cospar24_presentation
+Figures
+
+# Documentation
+README.md
+LICENSE

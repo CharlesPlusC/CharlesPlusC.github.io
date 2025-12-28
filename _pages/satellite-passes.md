@@ -138,8 +138,6 @@ header:
 
 <div id="passes-container"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js"></script>
-
 <script>
 // NOAA APT Satellites
 const satellites = [
@@ -148,115 +146,37 @@ const satellites = [
   { name: 'NOAA 19', frequency: '137.100 MHz', noradId: 33591 }
 ];
 
-let tleData = {};
-
-// Fetch TLE data from Celestrak for each satellite
-async function fetchTLEData() {
+// Fetch satellite passes from Skyfield API
+async function fetchSatellitePasses(lat, lon, alt, days = 7) {
   try {
-    // Fetch TLE for each NOAA satellite individually
-    const fetchPromises = satellites.map(async (sat) => {
-      // Use CORS proxy to fetch TLE data
-      const corsProxy = 'https://api.allorigins.win/raw?url=';
-      const tleUrl = `https://celestrak.org/NORAD/elements/gp.php?CATNR=${sat.noradId}&FORMAT=TLE`;
-      const response = await fetch(corsProxy + encodeURIComponent(tleUrl));
+    // Determine API base URL (production or local development)
+    const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000'
+      : '';
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    const apiUrl = `${apiBase}/api/satellite_passes?lat=${lat}&lon=${lon}&alt=${alt}&days=${days}`;
+    const response = await fetch(apiUrl);
 
-      const text = await response.text();
-      const lines = text.trim().split('\n');
+    if (!response.ok) {
+      throw new Error(`API error! status: ${response.status}`);
+    }
 
-      if (lines.length >= 3) {
-        tleData[sat.noradId] = {
-          name: lines[0].trim(),
-          tle1: lines[1].trim(),
-          tle2: lines[2].trim()
-        };
-        console.log(`Loaded live TLE for ${sat.name}`);
-      } else {
-        throw new Error(`Invalid TLE format for ${sat.name}`);
-      }
-    });
+    const data = await response.json();
 
-    await Promise.all(fetchPromises);
-    return true;
+    if (!data.success) {
+      throw new Error(data.error || 'Unknown API error');
+    }
+
+    return data;
   } catch (error) {
-    console.error('Error fetching TLE data:', error);
+    console.error('Error fetching satellite passes:', error);
     throw error;
   }
 }
 
-// Calculate passes for a satellite
-function calculatePasses(satrec, observerLat, observerLon, observerAlt, daysAhead = 7) {
-  const passes = [];
-  const now = new Date();
-  const endTime = new Date(now.getTime() + daysAhead * 24 * 60 * 60 * 1000);
-
-  const minElevation = 10; // Minimum elevation in degrees
-  const timeStep = 60; // Check every 60 seconds
-
-  let inPass = false;
-  let passStart = null;
-  let passEnd = null;
-  let maxElevation = 0;
-  let maxElevationTime = null;
-
-  for (let time = new Date(now); time <= endTime; time.setSeconds(time.getSeconds() + timeStep)) {
-    const positionAndVelocity = window.satellite.propagate(satrec, time);
-
-    if (positionAndVelocity.position && !positionAndVelocity.position.x) continue;
-
-    const gmst = window.satellite.gstime(time);
-    const observerGd = {
-      latitude: observerLat * (Math.PI / 180),
-      longitude: observerLon * (Math.PI / 180),
-      height: observerAlt / 1000
-    };
-
-    const positionEci = positionAndVelocity.position;
-    const lookAngles = window.satellite.ecfToLookAngles(
-      observerGd,
-      window.satellite.eciToEcf(positionEci, gmst)
-    );
-
-    const elevation = lookAngles.elevation * (180 / Math.PI);
-
-    if (elevation >= minElevation) {
-      if (!inPass) {
-        inPass = true;
-        passStart = new Date(time);
-        maxElevation = elevation;
-        maxElevationTime = new Date(time);
-      }
-
-      if (elevation > maxElevation) {
-        maxElevation = elevation;
-        maxElevationTime = new Date(time);
-      }
-    } else if (inPass) {
-      inPass = false;
-      passEnd = new Date(time);
-
-      const duration = Math.round((passEnd - passStart) / 1000 / 60);
-
-      passes.push({
-        start: passStart,
-        end: passEnd,
-        maxElevation: Math.round(maxElevation * 10) / 10,
-        duration: duration,
-        maxElevationTime: maxElevationTime
-      });
-
-      maxElevation = 0;
-    }
-  }
-
-  return passes;
-}
-
-// Format date and time
-function formatDateTime(date) {
+// Format ISO date string to readable format
+function formatDateTime(isoString) {
+  const date = new Date(isoString);
   const options = {
     year: 'numeric',
     month: 'short',
@@ -269,7 +189,8 @@ function formatDateTime(date) {
   return date.toLocaleString('en-US', options);
 }
 
-function formatTime(date) {
+function formatTime(isoString) {
+  const date = new Date(isoString);
   const options = {
     hour: '2-digit',
     minute: '2-digit',
@@ -280,22 +201,31 @@ function formatTime(date) {
 }
 
 // Display passes
-function displayPasses(allPasses) {
+function displayPasses(satellitesData) {
   const container = document.getElementById('passes-container');
   container.innerHTML = '';
 
-  satellites.forEach((sat, index) => {
-    const passes = allPasses[sat.noradId] || [];
+  satellites.forEach((sat) => {
+    const satData = satellitesData[sat.noradId];
+    if (!satData) return;
+
+    const passes = satData.passes || [];
 
     const section = document.createElement('div');
     section.className = 'satellite-section';
 
     const header = document.createElement('div');
     header.className = 'satellite-header';
-    header.innerHTML = `<h3 style="margin: 0;">${sat.name} - ${sat.frequency}</h3>`;
+    header.innerHTML = `<h3 style="margin: 0;">${satData.name} - ${satData.frequency}</h3>`;
     section.appendChild(header);
 
-    if (passes.length === 0) {
+    if (satData.error) {
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'no-passes';
+      errorDiv.style.color = '#cc0000';
+      errorDiv.textContent = `Error: ${satData.error}`;
+      section.appendChild(errorDiv);
+    } else if (passes.length === 0) {
       const noPassesDiv = document.createElement('div');
       noPassesDiv.className = 'no-passes';
       noPassesDiv.textContent = 'No passes above 10° elevation in the next 7 days';
@@ -318,7 +248,7 @@ function displayPasses(allPasses) {
             <tr>
               <td>${formatDateTime(pass.start)}</td>
               <td>${formatTime(pass.end)}</td>
-              <td class="elevation">${pass.maxElevation}°</td>
+              <td class="elevation">${pass.max_elevation}°</td>
               <td class="duration">${pass.duration} min</td>
             </tr>
           `).join('')}
@@ -348,20 +278,15 @@ async function updatePasses() {
     return;
   }
 
-  showStatus('Calculating passes...');
+  showStatus('Calculating passes using Skyfield...');
 
-  const allPasses = {};
-
-  satellites.forEach(sat => {
-    const tle = tleData[sat.noradId];
-    if (tle) {
-      const satrec = window.satellite.twoline2satrec(tle.tle1, tle.tle2);
-      allPasses[sat.noradId] = calculatePasses(satrec, lat, lon, alt);
-    }
-  });
-
-  displayPasses(allPasses);
-  showStatus(`Showing passes for next 7 days from location: ${lat.toFixed(4)}°, ${lon.toFixed(4)}° at ${alt}m altitude`);
+  try {
+    const data = await fetchSatellitePasses(lat, lon, alt);
+    displayPasses(data.satellites);
+    showStatus(`Showing passes for next 7 days from location: ${lat.toFixed(4)}°, ${lon.toFixed(4)}° at ${alt}m altitude`);
+  } catch (error) {
+    showStatus(`Error calculating passes: ${error.message}`, true);
+  }
 }
 
 // Get geolocation
@@ -395,15 +320,12 @@ function showStatus(message, isError = false) {
 
 // Initialize
 async function init() {
-  showStatus('Fetching live satellite orbital data from Celestrak...');
+  showStatus('Calculating satellite passes using Skyfield (Python library)...');
 
   try {
-    await fetchTLEData();
-    const tleCount = Object.keys(tleData).length;
-    showStatus(`Loaded live TLE data for ${tleCount} satellite${tleCount !== 1 ? 's' : ''}. Calculating passes...`);
     await updatePasses();
   } catch (error) {
-    showStatus('Error loading live satellite data from Celestrak. Please refresh the page or try again later. Check browser console for details.', true);
+    showStatus('Error calculating satellite passes. Please refresh the page or try again later. Check browser console for details.', true);
   }
 }
 
@@ -414,9 +336,10 @@ init();
 <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 4px; font-size: 13px; color: #7f8c8d;">
   <strong>About this page:</strong><br>
   This page shows upcoming passes of NOAA APT (Automatic Picture Transmission) satellites that can be received with simple radio equipment.
-  Passes are calculated in real-time using live TLE (Two-Line Element) orbital data fetched directly from <a href="https://celestrak.org" target="_blank">Celestrak</a>.
+  Passes are calculated using <a href="https://rhodesmill.org/skyfield/" target="_blank">Skyfield</a>, a professional-grade Python astronomy library that provides highly accurate satellite predictions.
+  Fresh TLE (Two-Line Element) orbital data is fetched from <a href="https://celestrak.org" target="_blank">Celestrak</a> on each request.
   Only passes with maximum elevation above 10° are shown, as lower passes may have poor signal quality.
   Default location is set to London, UK. Use your browser's location or enter custom coordinates.<br><br>
-  <strong>Technical:</strong> Fresh TLE data is fetched from Celestrak on each page visit to ensure accuracy.
-  All calculations are performed client-side using the satellite.js library.
+  <strong>Technical:</strong> Pass predictions are calculated server-side using Skyfield's precise SGP4 propagator and astronomical calculations.
+  This provides superior accuracy compared to client-side JavaScript implementations, especially for elevation angles and timing.
 </div>
