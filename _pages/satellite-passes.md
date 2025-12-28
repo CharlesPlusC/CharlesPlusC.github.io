@@ -249,8 +249,13 @@ function showStatus(message, isError = false) {
   status.className = isError ? 'status error' : 'status';
 }
 
-// Load passes on page load
-loadSatellitePasses();
+// Load passes when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadSatellitePasses);
+} else {
+  // DOM is already ready
+  loadSatellitePasses();
+}
 </script>
 
 <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 4px; font-size: 13px; color: #7f8c8d;">
