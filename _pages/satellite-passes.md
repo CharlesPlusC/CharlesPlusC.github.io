@@ -1,6 +1,6 @@
 ---
 layout: archive
-title: "NOAA APT Satellite Passes"
+title: "Meteor-M Weather Satellite Passes"
 permalink: /satellite-passes/
 author_profile: true
 header:
@@ -77,9 +77,8 @@ header:
     font-size: 18px;
     font-weight: 600;
   }
-  .satellite-name.noaa15 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-  .satellite-name.noaa18 { background: linear-gradient(135deg, #10b981, #059669); }
-  .satellite-name.noaa19 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .satellite-name.meteor-n2-3 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+  .satellite-name.meteor-n2-4 { background: linear-gradient(135deg, #10b981, #059669); }
   .satellite-name .freq {
     font-size: 13px;
     font-weight: 400;
@@ -214,9 +213,8 @@ header:
     <span class="filter-label">Satellite:</span>
     <select id="satellite-filter" onchange="updateFilters()">
       <option value="all">All satellites</option>
-      <option value="25338">NOAA 15</option>
-      <option value="28654">NOAA 18</option>
-      <option value="33591">NOAA 19</option>
+      <option value="57166">Meteor-M N2-3</option>
+      <option value="59051">Meteor-M N2-4</option>
     </select>
   </div>
 </div>
@@ -355,14 +353,14 @@ function getDayKey(iso) { return new Date(iso).toDateString(); }
 function displayPasses(satellitesData) {
   var container = document.getElementById('passes-container');
   container.innerHTML = '';
-  var colors = { '25338': '#3b82f6', '28654': '#10b981', '33591': '#f59e0b' };
+  var colors = { '57166': '#3b82f6', '59051': '#10b981' };
 
   var sortedSats = Object.entries(satellitesData).sort(function(a,b) { return parseInt(a[0]) - parseInt(b[0]); });
 
   for (var i = 0; i < sortedSats.length; i++) {
     var noradId = sortedSats[i][0], satData = sortedSats[i][1];
     var passes = satData.passes || [];
-    var satClass = noradId === '25338' ? 'noaa15' : (noradId === '28654' ? 'noaa18' : 'noaa19');
+    var satClass = noradId === '57166' ? 'meteor-n2-3' : 'meteor-n2-4';
     var satColor = colors[noradId] || '#6b7280';
 
     var group = document.createElement('div');
@@ -435,10 +433,12 @@ if (document.readyState === 'loading') {
 </script>
 
 <div class="about-section">
-  <strong>About:</strong> NOAA APT satellites transmit weather images at 137 MHz. The sky chart shows the satellite's path across the sky from your location - the outer ring is the horizon (0°), the center is directly overhead (90°). A filled dot marks the start, an open dot marks the end.
+  <strong>About:</strong> Meteor-M satellites are Russian weather satellites that transmit LRPT (Low Rate Picture Transmission) images at 137 MHz. They replaced the NOAA POES satellites which were decommissioned in 2025. The sky chart shows the satellite's path across the sky - the outer ring is the horizon (0°), the center is directly overhead (90°). A filled dot marks the start, an open dot marks the end.
   <br><br>
   <strong>Quality:</strong>
   <span style="color:#16a34a">Excellent (45°+)</span> = passes near overhead, best signal |
   <span style="color:#ca8a04">Good (25-45°)</span> = reliable reception |
   <span style="color:#ea580c">Fair (10-25°)</span> = low on horizon, may have noise
+  <br><br>
+  <strong>Software:</strong> Use <a href="https://www.satdump.org/" target="_blank">SatDump</a> to decode LRPT signals from Meteor-M satellites.
 </div>
