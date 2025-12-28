@@ -28,6 +28,24 @@ header:
     color: #333;
   }
   .location-coords { opacity: 0.9; font-size: 13px; }
+  .next-pass-banner {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .next-pass-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+  .next-pass-info { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .next-pass-sat { font-size: 15px; font-weight: 600; }
+  .next-pass-countdown { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .next-pass-time { font-size: 13px; opacity: 0.8; }
+  .next-pass-elev { font-size: 12px; padding: 4px 10px; background: rgba(255,255,255,0.15); border-radius: 12px; }
   .filters {
     display: flex;
     flex-wrap: wrap;
@@ -44,6 +62,25 @@ header:
   .filter-value { font-size: 14px; font-weight: 600; color: #1e293b; min-width: 50px; }
   .filter-group input[type="range"] { width: 120px; cursor: pointer; }
   .filter-group select { padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px; cursor: pointer; }
+  .view-toggle {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 3px;
+    margin-left: auto;
+  }
+  .view-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border: none;
+    background: none;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .view-btn.active { background: white; color: #1e293b; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   .stats-bar {
     display: flex;
     gap: 24px;
@@ -107,6 +144,11 @@ header:
   }
   .passes-container.collapsed { max-height: 0; }
   .passes-list { padding: 12px; }
+  .chrono-list {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 12px;
+  }
   .pass-row {
     display: flex;
     align-items: center;
@@ -132,6 +174,16 @@ header:
   .daynight.day { color: #f59e0b; }
   .daynight.twilight { color: #f97316; }
   .daynight.night { color: #6366f1; }
+  .sat-badge {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 3px 6px;
+    border-radius: 4px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .sat-badge.meteor-n2-3 { background: #3b82f6; }
+  .sat-badge.meteor-n2-4 { background: #8b5cf6; }
   .sky-chart-small {
     width: 60px;
     height: 60px;
@@ -179,6 +231,8 @@ header:
     .pass-details { gap: 10px; }
     .pass-stat { min-width: 40px; }
     .pass-datetime { min-width: 100px; }
+    .next-pass-countdown { font-size: 22px; }
+    .view-toggle { margin-left: 0; width: 100%; justify-content: center; }
   }
 </style>
 
@@ -197,6 +251,8 @@ header:
   </select>
   <div id="location-coords" class="location-coords"></div>
 </div>
+
+<div id="next-pass-banner" class="next-pass-banner" style="display:none;"></div>
 
 <div class="filters">
   <div class="filter-group">
@@ -221,6 +277,10 @@ header:
       <option value="59051">Meteor-M N2-4</option>
     </select>
   </div>
+  <div class="view-toggle">
+    <button class="view-btn active" id="view-grouped" onclick="setView('grouped')">By Satellite</button>
+    <button class="view-btn" id="view-chrono" onclick="setView('chrono')">Chronological</button>
+  </div>
 </div>
 
 <div id="stats-bar" class="stats-bar"></div>
@@ -230,6 +290,8 @@ header:
 <script>
 var allData = null;
 var expandedSats = {};
+var currentView = 'grouped';
+var countdownInterval = null;
 
 /* Calculate solar elevation for day/night indicator */
 function getSunElevation(date, lat, lon) {
@@ -249,6 +311,65 @@ function getDayNight(date, lat, lon) {
   return { type: 'night', icon: '\u263D' };
 }
 
+function formatCountdown(ms) {
+  if (ms < 0) return 'now';
+  var totalSecs = Math.floor(ms / 1000);
+  var hours = Math.floor(totalSecs / 3600);
+  var mins = Math.floor((totalSecs % 3600) / 60);
+  var secs = totalSecs % 60;
+  if (hours > 0) return hours + 'h ' + mins + 'm';
+  if (mins > 0) return mins + 'm ' + secs + 's';
+  return secs + 's';
+}
+
+function updateNextPassBanner() {
+  if (!allData) return;
+  var now = new Date();
+  var nextPass = null;
+  var nextSatName = '';
+  var nextNoradId = '';
+
+  var entries = Object.entries(allData.satellites);
+  for (var i = 0; i < entries.length; i++) {
+    var noradId = entries[i][0], satData = entries[i][1];
+    var passes = satData.passes || [];
+    for (var j = 0; j < passes.length; j++) {
+      var passTime = new Date(passes[j].start);
+      if (passTime > now && (!nextPass || passTime < new Date(nextPass.start))) {
+        nextPass = passes[j];
+        nextSatName = satData.name;
+        nextNoradId = noradId;
+      }
+    }
+  }
+
+  var banner = document.getElementById('next-pass-banner');
+  if (!nextPass) {
+    banner.style.display = 'none';
+    return;
+  }
+
+  banner.style.display = 'flex';
+  var passTime = new Date(nextPass.start);
+  var timeUntil = passTime - now;
+  var quality = nextPass.max_elevation >= 45 ? 'Excellent' : (nextPass.max_elevation >= 25 ? 'Good' : 'Fair');
+
+  banner.innerHTML =
+    '<div><div class="next-pass-label">Next Pass</div><div class="next-pass-sat">' + nextSatName + '</div></div>' +
+    '<div class="next-pass-info">' +
+      '<div class="next-pass-countdown">' + formatCountdown(timeUntil) + '</div>' +
+      '<div class="next-pass-time">' + formatTime(nextPass.start) + ' \u2022 ' + formatDate(nextPass.start) + '</div>' +
+      '<div class="next-pass-elev">' + nextPass.max_elevation.toFixed(0) + '\u00B0 ' + quality + '</div>' +
+    '</div>';
+}
+
+function setView(view) {
+  currentView = view;
+  document.getElementById('view-grouped').className = 'view-btn' + (view === 'grouped' ? ' active' : '');
+  document.getElementById('view-chrono').className = 'view-btn' + (view === 'chrono' ? ' active' : '');
+  updateFilters();
+}
+
 async function loadSatellitePasses() {
   try {
     showStatus('Loading pass predictions...');
@@ -264,6 +385,10 @@ async function loadSatellitePasses() {
     document.getElementById('location-coords').textContent =
       data.location.lat.toFixed(2) + '\u00B0N, ' + Math.abs(data.location.lon).toFixed(2) + '\u00B0' + (data.location.lon < 0 ? 'W' : 'E');
     updateFilters();
+    updateNextPassBanner();
+    /* update countdown every second */
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = setInterval(updateNextPassBanner, 1000);
     var genTime = new Date(data.generated_at);
     showStatus('Updated ' + genTime.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' \u2022 Refreshes every 6 hours');
   } catch (error) {
@@ -321,7 +446,11 @@ function updateFilters() {
     '<div class="stat-item"><span class="stat-number" style="color:#1e40af">' + excellentPasses + '</span><span class="stat-label">excellent</span></div>' +
     '<div class="stat-item"><span class="stat-number">' + daysFilter + '</span><span class="stat-label">days</span></div>';
 
-  displayPasses(filteredData);
+  if (currentView === 'chrono') {
+    displayPassesChronological(filteredData);
+  } else {
+    displayPasses(filteredData);
+  }
 }
 
 function createSkyChartSmall(pass, satColor) {
@@ -372,6 +501,78 @@ function formatDate(iso) {
 }
 function formatTime(iso) { return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
 function getDayKey(iso) { return new Date(iso).toDateString(); }
+
+function displayPassesChronological(satellitesData) {
+  var container = document.getElementById('passes-container');
+  container.innerHTML = '';
+  var colors = { '57166': '#3b82f6', '59051': '#8b5cf6' };
+  var lat = allData.location.lat, lon = allData.location.lon;
+
+  /* Collect all passes with satellite info */
+  var allPasses = [];
+  var entries = Object.entries(satellitesData);
+  for (var i = 0; i < entries.length; i++) {
+    var noradId = entries[i][0], satData = entries[i][1];
+    var passes = satData.passes || [];
+    for (var j = 0; j < passes.length; j++) {
+      allPasses.push({
+        pass: passes[j],
+        noradId: noradId,
+        satName: satData.name,
+        satColor: colors[noradId] || '#6b7280'
+      });
+    }
+  }
+
+  /* Sort by start time */
+  allPasses.sort(function(a, b) { return new Date(a.pass.start) - new Date(b.pass.start); });
+
+  if (allPasses.length === 0) {
+    container.innerHTML = '<div class="no-passes">No passes match current filters</div>';
+    return;
+  }
+
+  var list = document.createElement('div');
+  list.className = 'chrono-list';
+  var currentDay = '';
+
+  for (var k = 0; k < allPasses.length; k++) {
+    var item = allPasses[k];
+    var pass = item.pass;
+    var dayKey = getDayKey(pass.start);
+    var quality = getQuality(pass.max_elevation);
+    var passDate = new Date(pass.start);
+    var dn = getDayNight(passDate, lat, lon);
+    var satClass = item.noradId === '57166' ? 'meteor-n2-3' : 'meteor-n2-4';
+
+    if (dayKey !== currentDay) {
+      currentDay = dayKey;
+      var divider = document.createElement('div');
+      divider.className = 'day-divider';
+      divider.textContent = formatDate(pass.start);
+      list.appendChild(divider);
+    }
+
+    var row = document.createElement('div');
+    row.className = 'pass-row';
+    var qualityLabel = quality === 'excellent' ? 'Excellent' : (quality === 'good' ? 'Good' : 'Fair');
+
+    row.innerHTML =
+      '<div class="pass-datetime"><div class="pass-date">' + formatDate(pass.start) + '</div><div class="pass-time">' + formatTime(pass.start) + '<span class="daynight ' + dn.type + '" title="' + dn.type + '">' + dn.icon + '</span></div></div>' +
+      '<span class="sat-badge ' + satClass + '">' + item.satName.replace('Meteor-M ', '') + '</span>' +
+      '<div class="sky-chart-small">' + createSkyChartSmall(pass, item.satColor) + '</div>' +
+      '<div class="pass-details">' +
+        '<div class="pass-stat"><div class="pass-stat-label">Max</div><div class="pass-stat-value">' + pass.max_elevation.toFixed(0) + '\u00B0</div></div>' +
+        '<div class="pass-stat"><div class="pass-stat-label">Dur</div><div class="pass-stat-value">' + pass.duration + 'm</div></div>' +
+        '<div class="pass-stat"><div class="pass-stat-label">End</div><div class="pass-stat-value">' + formatTime(pass.end) + '</div></div>' +
+      '</div>' +
+      '<span class="quality-badge ' + quality + '">' + qualityLabel + '</span>';
+
+    list.appendChild(row);
+  }
+
+  container.appendChild(list);
+}
 
 function displayPasses(satellitesData) {
   var container = document.getElementById('passes-container');
