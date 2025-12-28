@@ -66,116 +66,108 @@ header:
     color: #64748b;
   }
   .status.error { background: #fef2f2; color: #dc2626; }
-  .satellite-group { margin: 30px 0; }
-  .satellite-name {
+  .satellite-group { margin: 20px 0; }
+  .satellite-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 16px 20px;
+    padding: 14px 20px;
     color: white;
-    border-radius: 12px 12px 0 0;
-    font-size: 18px;
+    border-radius: 12px;
+    font-size: 16px;
     font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.15s;
   }
-  .satellite-name.meteor-n2-3 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-  .satellite-name.meteor-n2-4 { background: linear-gradient(135deg, #10b981, #059669); }
-  .satellite-name .freq {
-    font-size: 13px;
+  .satellite-header:hover { opacity: 0.9; }
+  .satellite-header.meteor-n2-3 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+  .satellite-header.meteor-n2-4 { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+  .satellite-header .freq {
+    font-size: 12px;
     font-weight: 400;
     opacity: 0.9;
     background: rgba(255,255,255,0.2);
-    padding: 4px 10px;
-    border-radius: 20px;
+    padding: 3px 8px;
+    border-radius: 12px;
   }
-  .satellite-name .pass-count { margin-left: auto; font-size: 13px; font-weight: 500; opacity: 0.9; }
-  .passes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    padding: 20px;
+  .satellite-header .pass-count { margin-left: auto; font-size: 12px; font-weight: 500; opacity: 0.9; }
+  .satellite-header .toggle-icon {
+    font-size: 12px;
+    transition: transform 0.2s;
+    margin-left: 8px;
+  }
+  .satellite-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+  .passes-container {
+    max-height: 2000px;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
     background: #f8fafc;
     border-radius: 0 0 12px 12px;
   }
-  .pass-card {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
-  .pass-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-  }
-  .pass-card-header {
+  .passes-container.collapsed { max-height: 0; }
+  .passes-list { padding: 12px; }
+  .pass-row {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: box-shadow 0.15s;
   }
-  .pass-date { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-  .pass-time { font-size: 22px; font-weight: 700; color: #1e293b; }
+  .pass-row:hover { box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+  .pass-row:last-child { margin-bottom: 0; }
+  .pass-datetime {
+    min-width: 120px;
+  }
+  .pass-date { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pass-time { font-size: 18px; font-weight: 700; color: #1e293b; }
+  .sky-chart-small {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+  }
+  .sky-chart-small svg { width: 100%; height: 100%; }
+  .pass-details {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+    align-items: center;
+  }
+  .pass-stat { text-align: center; min-width: 50px; }
+  .pass-stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; }
+  .pass-stat-value { font-size: 14px; font-weight: 600; color: #334155; }
   .quality-badge {
-    font-size: 10px;
+    font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    padding: 4px 10px;
-    border-radius: 20px;
+    padding: 4px 8px;
+    border-radius: 12px;
     font-weight: 600;
+    flex-shrink: 0;
   }
-  .quality-badge.excellent { background: #dcfce7; color: #166534; }
+  .quality-badge.excellent { background: #dbeafe; color: #1e40af; }
   .quality-badge.good { background: #fef9c3; color: #854d0e; }
-  .quality-badge.fair { background: #ffedd5; color: #9a3412; }
-  .sky-chart {
-    width: 100%;
-    aspect-ratio: 1;
-    max-width: 200px;
-    margin: 12px auto;
-    position: relative;
-  }
-  .sky-chart svg { width: 100%; height: 100%; }
-  .pass-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid #f1f5f9;
-  }
-  .pass-info-item { text-align: center; }
-  .pass-info-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; }
-  .pass-info-value { font-size: 14px; font-weight: 600; color: #334155; }
-  .no-passes {
-    padding: 40px 20px;
-    text-align: center;
-    color: #94a3b8;
-    background: #f8fafc;
-    border-radius: 0 0 12px 12px;
-    font-size: 14px;
-  }
+  .quality-badge.fair { background: #f1f5f9; color: #64748b; }
   .day-divider {
-    grid-column: 1 / -1;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #475569;
-    padding: 16px 0 8px 4px;
-    border-bottom: 2px solid #e2e8f0;
-    margin-top: 8px;
-  }
-  .day-divider:first-child { margin-top: 0; }
-  .about-section {
-    margin-top: 40px;
-    padding: 20px;
-    background: #f8fafc;
-    border-radius: 12px;
-    font-size: 13px;
     color: #64748b;
-    line-height: 1.6;
+    padding: 12px 4px 6px;
+    margin-top: 4px;
   }
-  .about-section strong { color: #475569; }
-  .about-section a { color: #667eea; }
+  .day-divider:first-child { margin-top: 0; padding-top: 4px; }
+  .no-passes {
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+  }
 </style>
 
 <div class="location-picker">
@@ -225,6 +217,7 @@ header:
 
 <script>
 var allData = null;
+var expandedSats = {};
 
 async function loadSatellitePasses() {
   try {
@@ -235,6 +228,9 @@ async function loadSatellitePasses() {
     var data = await response.json();
     if (!data.success) throw new Error(data.error || 'Unknown error');
     allData = data;
+    /* expand all by default */
+    var entries = Object.entries(data.satellites);
+    for (var i = 0; i < entries.length; i++) { expandedSats[entries[i][0]] = true; }
     document.getElementById('location-coords').textContent =
       data.location.lat.toFixed(2) + '\u00B0N, ' + Math.abs(data.location.lon).toFixed(2) + '\u00B0' + (data.location.lon < 0 ? 'W' : 'E');
     updateFilters();
@@ -242,6 +238,21 @@ async function loadSatellitePasses() {
     showStatus('Updated ' + genTime.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' \u2022 Refreshes every 6 hours');
   } catch (error) {
     showStatus('Error: ' + error.message, true);
+  }
+}
+
+function toggleSatellite(noradId) {
+  expandedSats[noradId] = !expandedSats[noradId];
+  var header = document.querySelector('[data-sat="' + noradId + '"]');
+  var container = document.querySelector('[data-passes="' + noradId + '"]');
+  if (header && container) {
+    if (expandedSats[noradId]) {
+      header.classList.remove('collapsed');
+      container.classList.remove('collapsed');
+    } else {
+      header.classList.add('collapsed');
+      container.classList.add('collapsed');
+    }
   }
 }
 
@@ -277,33 +288,18 @@ function updateFilters() {
 
   document.getElementById('stats-bar').innerHTML =
     '<div class="stat-item"><span class="stat-number">' + totalPasses + '</span><span class="stat-label">passes</span></div>' +
-    '<div class="stat-item"><span class="stat-number" style="color:#16a34a">' + excellentPasses + '</span><span class="stat-label">excellent</span></div>' +
+    '<div class="stat-item"><span class="stat-number" style="color:#1e40af">' + excellentPasses + '</span><span class="stat-label">excellent</span></div>' +
     '<div class="stat-item"><span class="stat-number">' + daysFilter + '</span><span class="stat-label">days</span></div>';
 
   displayPasses(filteredData);
 }
 
-function createSkyChart(pass, satColor) {
-  var size = 200, cx = size/2, cy = size/2, r = size/2 - 10;
+function createSkyChartSmall(pass, satColor) {
+  var size = 60, cx = size/2, cy = size/2, r = size/2 - 4;
 
   var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg">';
-
   svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>';
-  svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r*2/3) + '" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>';
-  svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r/3) + '" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>';
-
-  svg += '<line x1="' + cx + '" y1="' + (cy-r) + '" x2="' + cx + '" y2="' + (cy+r) + '" stroke="#e2e8f0" stroke-width="1"/>';
-  svg += '<line x1="' + (cx-r) + '" y1="' + cy + '" x2="' + (cx+r) + '" y2="' + cy + '" stroke="#e2e8f0" stroke-width="1"/>';
-
-  svg += '<text x="' + cx + '" y="12" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">N</text>';
-  svg += '<text x="' + cx + '" y="' + (size-4) + '" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">S</text>';
-  svg += '<text x="8" y="' + (cy+4) + '" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">W</text>';
-  svg += '<text x="' + (size-8) + '" y="' + (cy+4) + '" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">E</text>';
-
-  svg += '<text x="' + (cx+4) + '" y="' + (cy - r + 14) + '" font-size="8" fill="#94a3b8">0\u00B0</text>';
-  svg += '<text x="' + (cx+4) + '" y="' + (cy - r*2/3 + 10) + '" font-size="8" fill="#94a3b8">30\u00B0</text>';
-  svg += '<text x="' + (cx+4) + '" y="' + (cy - r/3 + 10) + '" font-size="8" fill="#94a3b8">60\u00B0</text>';
-  svg += '<text x="' + (cx+4) + '" y="' + (cy + 4) + '" font-size="8" fill="#94a3b8">90\u00B0</text>';
+  svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r/2) + '" fill="none" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="2,2"/>';
 
   if (pass.track && pass.track.length > 1) {
     var pathData = '';
@@ -315,24 +311,21 @@ function createSkyChart(pass, satColor) {
       var y = cy + dist * Math.sin(azRad);
       pathData += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
     }
-    svg += '<path d="' + pathData + '" fill="none" stroke="' + satColor + '" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>';
+    svg += '<path d="' + pathData + '" fill="none" stroke="' + satColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
 
     var startAz = pass.track[0][0], startEl = pass.track[0][1];
     var startRad = (startAz - 90) * Math.PI / 180;
     var startDist = r * (90 - startEl) / 90;
     var startX = cx + startDist * Math.cos(startRad);
     var startY = cy + startDist * Math.sin(startRad);
-    svg += '<circle cx="' + startX.toFixed(1) + '" cy="' + startY.toFixed(1) + '" r="5" fill="' + satColor + '"/>';
+    svg += '<circle cx="' + startX.toFixed(1) + '" cy="' + startY.toFixed(1) + '" r="3" fill="' + satColor + '"/>';
 
     var endAz = pass.track[pass.track.length-1][0], endEl = pass.track[pass.track.length-1][1];
     var endRad = (endAz - 90) * Math.PI / 180;
     var endDist = r * (90 - endEl) / 90;
     var endX = cx + endDist * Math.cos(endRad);
     var endY = cy + endDist * Math.sin(endRad);
-    svg += '<circle cx="' + endX.toFixed(1) + '" cy="' + endY.toFixed(1) + '" r="4" fill="white" stroke="' + satColor + '" stroke-width="2"/>';
-  } else {
-    svg += '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" font-size="24" font-weight="700" fill="' + satColor + '">' + pass.max_elevation.toFixed(0) + '\u00B0</text>';
-    svg += '<text x="' + cx + '" y="' + (cy+14) + '" text-anchor="middle" font-size="9" fill="#94a3b8">max elevation</text>';
+    svg += '<circle cx="' + endX.toFixed(1) + '" cy="' + endY.toFixed(1) + '" r="2.5" fill="white" stroke="' + satColor + '" stroke-width="1.5"/>';
   }
 
   svg += '</svg>';
@@ -353,7 +346,7 @@ function getDayKey(iso) { return new Date(iso).toDateString(); }
 function displayPasses(satellitesData) {
   var container = document.getElementById('passes-container');
   container.innerHTML = '';
-  var colors = { '57166': '#3b82f6', '59051': '#10b981' };
+  var colors = { '57166': '#3b82f6', '59051': '#8b5cf6' };
 
   var sortedSats = Object.entries(satellitesData).sort(function(a,b) { return parseInt(a[0]) - parseInt(b[0]); });
 
@@ -362,23 +355,27 @@ function displayPasses(satellitesData) {
     var passes = satData.passes || [];
     var satClass = noradId === '57166' ? 'meteor-n2-3' : 'meteor-n2-4';
     var satColor = colors[noradId] || '#6b7280';
+    var isExpanded = expandedSats[noradId] !== false;
 
     var group = document.createElement('div');
     group.className = 'satellite-group';
 
     var header = document.createElement('div');
-    header.className = 'satellite-name ' + satClass;
-    header.innerHTML = satData.name + '<span class="freq">' + satData.frequency + '</span><span class="pass-count">' + passes.length + ' passes</span>';
+    header.className = 'satellite-header ' + satClass + (isExpanded ? '' : ' collapsed');
+    header.setAttribute('data-sat', noradId);
+    header.onclick = function(id) { return function() { toggleSatellite(id); }; }(noradId);
+    header.innerHTML = '<span class="toggle-icon">\u25BC</span>' + satData.name + '<span class="freq">' + satData.frequency + '</span><span class="pass-count">' + passes.length + ' passes</span>';
     group.appendChild(header);
 
+    var passesDiv = document.createElement('div');
+    passesDiv.className = 'passes-container' + (isExpanded ? '' : ' collapsed');
+    passesDiv.setAttribute('data-passes', noradId);
+
     if (passes.length === 0) {
-      var noPassesDiv = document.createElement('div');
-      noPassesDiv.className = 'no-passes';
-      noPassesDiv.textContent = 'No passes match current filters';
-      group.appendChild(noPassesDiv);
+      passesDiv.innerHTML = '<div class="no-passes">No passes match current filters</div>';
     } else {
-      var grid = document.createElement('div');
-      grid.className = 'passes-grid';
+      var list = document.createElement('div');
+      list.className = 'passes-list';
       var currentDay = '';
 
       for (var j = 0; j < passes.length; j++) {
@@ -391,30 +388,28 @@ function displayPasses(satellitesData) {
           var divider = document.createElement('div');
           divider.className = 'day-divider';
           divider.textContent = formatDate(pass.start);
-          grid.appendChild(divider);
+          list.appendChild(divider);
         }
 
-        var card = document.createElement('div');
-        card.className = 'pass-card';
+        var row = document.createElement('div');
+        row.className = 'pass-row';
         var qualityLabel = quality === 'excellent' ? 'Excellent' : (quality === 'good' ? 'Good' : 'Fair');
 
-        card.innerHTML =
-          '<div class="pass-card-header">' +
-            '<div><div class="pass-date">' + formatDate(pass.start) + '</div><div class="pass-time">' + formatTime(pass.start) + '</div></div>' +
-            '<span class="quality-badge ' + quality + '">' + qualityLabel + '</span>' +
+        row.innerHTML =
+          '<div class="pass-datetime"><div class="pass-date">' + formatDate(pass.start) + '</div><div class="pass-time">' + formatTime(pass.start) + '</div></div>' +
+          '<div class="sky-chart-small">' + createSkyChartSmall(pass, satColor) + '</div>' +
+          '<div class="pass-details">' +
+            '<div class="pass-stat"><div class="pass-stat-label">Max</div><div class="pass-stat-value">' + pass.max_elevation.toFixed(0) + '\u00B0</div></div>' +
+            '<div class="pass-stat"><div class="pass-stat-label">Dur</div><div class="pass-stat-value">' + pass.duration + 'm</div></div>' +
+            '<div class="pass-stat"><div class="pass-stat-label">End</div><div class="pass-stat-value">' + formatTime(pass.end) + '</div></div>' +
           '</div>' +
-          '<div class="sky-chart">' + createSkyChart(pass, satColor) + '</div>' +
-          '<div class="pass-info">' +
-            '<div class="pass-info-item"><div class="pass-info-label">Max Elev</div><div class="pass-info-value">' + pass.max_elevation.toFixed(0) + '\u00B0</div></div>' +
-            '<div class="pass-info-item"><div class="pass-info-label">Duration</div><div class="pass-info-value">' + pass.duration + ' min</div></div>' +
-            '<div class="pass-info-item"><div class="pass-info-label">Start</div><div class="pass-info-value">' + formatTime(pass.start) + '</div></div>' +
-            '<div class="pass-info-item"><div class="pass-info-label">End</div><div class="pass-info-value">' + formatTime(pass.end) + '</div></div>' +
-          '</div>';
+          '<span class="quality-badge ' + quality + '">' + qualityLabel + '</span>';
 
-        grid.appendChild(card);
+        list.appendChild(row);
       }
-      group.appendChild(grid);
+      passesDiv.appendChild(list);
     }
+    group.appendChild(passesDiv);
     container.appendChild(group);
   }
 }
@@ -431,14 +426,3 @@ if (document.readyState === 'loading') {
   loadSatellitePasses();
 }
 </script>
-
-<div class="about-section">
-  <strong>About:</strong> Meteor-M satellites are Russian weather satellites that transmit LRPT (Low Rate Picture Transmission) images at 137 MHz. They replaced the NOAA POES satellites which were decommissioned in 2025. The sky chart shows the satellite's path across the sky - the outer ring is the horizon (0°), the center is directly overhead (90°). A filled dot marks the start, an open dot marks the end.
-  <br><br>
-  <strong>Quality:</strong>
-  <span style="color:#16a34a">Excellent (45°+)</span> = passes near overhead, best signal |
-  <span style="color:#ca8a04">Good (25-45°)</span> = reliable reception |
-  <span style="color:#ea580c">Fair (10-25°)</span> = low on horizon, may have noise
-  <br><br>
-  <strong>Software:</strong> Use <a href="https://www.satdump.org/" target="_blank">SatDump</a> to decode LRPT signals from Meteor-M satellites.
-</div>
