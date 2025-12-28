@@ -1,0 +1,626 @@
+{
+  "success": true,
+  "location": {
+    "name": "Lisbon, Portugal",
+    "lat": 38.7223,
+    "lon": -9.1393,
+    "alt": 0
+  },
+  "satellites": {
+    "25338": {
+      "name": "NOAA 15",
+      "frequency": "137.620 MHz",
+      "passes": [
+        {
+          "start": "2025-12-28T18:00:59Z",
+          "max_elevation": 22.7,
+          "max_elevation_time": "2025-12-28T18:05:00Z",
+          "end": "2025-12-28T18:09:00Z",
+          "duration": 8
+        },
+        {
+          "start": "2025-12-28T19:39:25Z",
+          "max_elevation": 43.0,
+          "max_elevation_time": "2025-12-28T19:44:24Z",
+          "end": "2025-12-28T19:49:24Z",
+          "duration": 10
+        },
+        {
+          "start": "2025-12-29T07:54:49Z",
+          "max_elevation": 80.4,
+          "max_elevation_time": "2025-12-29T08:00:03Z",
+          "end": "2025-12-29T08:05:17Z",
+          "duration": 10
+        },
+        {
+          "start": "2025-12-29T09:36:53Z",
+          "max_elevation": 12.6,
+          "max_elevation_time": "2025-12-29T09:39:03Z",
+          "end": "2025-12-29T09:41:13Z",
+          "duration": 4
+        },
+        {
+          "start": "2025-12-29T17:36:43Z",
+          "max_elevation": 13.3,
+          "max_elevation_time": "2025-12-29T17:39:08Z",
+          "end": "2025-12-29T17:41:32Z",
+          "duration": 5
+        },
+        {
+          "start": "2025-12-29T19:12:54Z",
+          "max_elevation": 77.4,
+          "max_elevation_time": "2025-12-29T19:18:09Z",
+          "end": "2025-12-29T19:23:26Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-30T07:28:49Z",
+          "max_elevation": 44.6,
+          "max_elevation_time": "2025-12-30T07:33:49Z",
+          "end": "2025-12-30T07:38:47Z",
+          "duration": 10
+        },
+        {
+          "start": "2025-12-30T09:09:18Z",
+          "max_elevation": 21.7,
+          "max_elevation_time": "2025-12-30T09:13:12Z",
+          "end": "2025-12-30T09:17:05Z",
+          "duration": 8
+        },
+        {
+          "start": "2025-12-30T18:46:51Z",
+          "max_elevation": 60.6,
+          "max_elevation_time": "2025-12-30T18:52:00Z",
+          "end": "2025-12-30T18:57:11Z",
+          "duration": 10
+        },
+        {
+          "start": "2025-12-30T20:29:06Z",
+          "max_elevation": 15.2,
+          "max_elevation_time": "2025-12-30T20:32:06Z",
+          "end": "2025-12-30T20:35:06Z",
+          "duration": 6
+        },
+        {
+          "start": "2025-12-31T07:03:11Z",
+          "max_elevation": 25.2,
+          "max_elevation_time": "2025-12-31T07:07:28Z",
+          "end": "2025-12-31T07:11:44Z",
+          "duration": 9
+        },
+        {
+          "start": "2025-12-31T08:42:28Z",
+          "max_elevation": 36.6,
+          "max_elevation_time": "2025-12-31T08:47:14Z",
+          "end": "2025-12-31T08:51:59Z",
+          "duration": 10
+        },
+        {
+          "start": "2025-12-31T18:21:15Z",
+          "max_elevation": 34.6,
+          "max_elevation_time": "2025-12-31T18:25:57Z",
+          "end": "2025-12-31T18:30:40Z",
+          "duration": 9
+        },
+        {
+          "start": "2025-12-31T20:01:15Z",
+          "max_elevation": 27.1,
+          "max_elevation_time": "2025-12-31T20:05:40Z",
+          "end": "2025-12-31T20:10:06Z",
+          "duration": 9
+        },
+        {
+          "start": "2026-01-01T06:38:21Z",
+          "max_elevation": 14.0,
+          "max_elevation_time": "2026-01-01T06:41:02Z",
+          "end": "2026-01-01T06:43:42Z",
+          "duration": 5
+        },
+        {
+          "start": "2026-01-01T08:15:59Z",
+          "max_elevation": 64.6,
+          "max_elevation_time": "2026-01-01T08:21:10Z",
+          "end": "2026-01-01T08:26:19Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-01T17:56:13Z",
+          "max_elevation": 20.6,
+          "max_elevation_time": "2026-01-01T18:00:00Z",
+          "end": "2026-01-01T18:03:47Z",
+          "duration": 8
+        },
+        {
+          "start": "2026-01-01T19:34:17Z",
+          "max_elevation": 47.9,
+          "max_elevation_time": "2026-01-01T19:39:20Z",
+          "end": "2026-01-01T19:44:25Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-02T07:49:46Z",
+          "max_elevation": 72.4,
+          "max_elevation_time": "2026-01-02T07:55:00Z",
+          "end": "2026-01-02T08:00:12Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-02T09:31:27Z",
+          "max_elevation": 14.1,
+          "max_elevation_time": "2026-01-02T09:34:04Z",
+          "end": "2026-01-02T09:36:42Z",
+          "duration": 5
+        },
+        {
+          "start": "2026-01-02T17:32:17Z",
+          "max_elevation": 11.9,
+          "max_elevation_time": "2026-01-02T17:34:09Z",
+          "end": "2026-01-02T17:36:01Z",
+          "duration": 4
+        },
+        {
+          "start": "2026-01-02T19:07:51Z",
+          "max_elevation": 85.6,
+          "max_elevation_time": "2026-01-02T19:13:06Z",
+          "end": "2026-01-02T19:18:23Z",
+          "duration": 11
+        },
+        {
+          "start": "2026-01-03T07:23:49Z",
+          "max_elevation": 40.0,
+          "max_elevation_time": "2026-01-03T07:28:44Z",
+          "end": "2026-01-03T07:33:37Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-03T09:04:05Z",
+          "max_elevation": 23.9,
+          "max_elevation_time": "2026-01-03T09:08:11Z",
+          "end": "2026-01-03T09:12:17Z",
+          "duration": 8
+        },
+        {
+          "start": "2026-01-03T18:41:52Z",
+          "max_elevation": 54.3,
+          "max_elevation_time": "2026-01-03T18:46:58Z",
+          "end": "2026-01-03T18:52:05Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-03T20:23:39Z",
+          "max_elevation": 17.0,
+          "max_elevation_time": "2026-01-03T20:26:59Z",
+          "end": "2026-01-03T20:30:21Z",
+          "duration": 7
+        },
+        {
+          "start": "2026-01-04T06:58:18Z",
+          "max_elevation": 22.7,
+          "max_elevation_time": "2026-01-04T07:02:23Z",
+          "end": "2026-01-04T07:06:26Z",
+          "duration": 8
+        },
+        {
+          "start": "2026-01-04T08:37:20Z",
+          "max_elevation": 40.5,
+          "max_elevation_time": "2026-01-04T08:42:12Z",
+          "end": "2026-01-04T08:47:04Z",
+          "duration": 10
+        }
+      ]
+    },
+    "28654": {
+      "name": "NOAA 18",
+      "frequency": "137.9125 MHz",
+      "passes": [
+        {
+          "start": "2025-12-28T21:54:23Z",
+          "max_elevation": 27.8,
+          "max_elevation_time": "2025-12-28T21:58:57Z",
+          "end": "2025-12-28T22:03:34Z",
+          "duration": 9
+        },
+        {
+          "start": "2025-12-28T23:34:18Z",
+          "max_elevation": 37.6,
+          "max_elevation_time": "2025-12-28T23:39:21Z",
+          "end": "2025-12-28T23:44:29Z",
+          "duration": 10
+        },
+        {
+          "start": "2025-12-29T10:18:34Z",
+          "max_elevation": 12.4,
+          "max_elevation_time": "2025-12-29T10:20:47Z",
+          "end": "2025-12-29T10:23:00Z",
+          "duration": 4
+        },
+        {
+          "start": "2025-12-29T11:56:25Z",
+          "max_elevation": 78.0,
+          "max_elevation_time": "2025-12-29T12:01:57Z",
+          "end": "2025-12-29T12:07:27Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-29T13:40:47Z",
+          "max_elevation": 10.3,
+          "max_elevation_time": "2025-12-29T13:41:37Z",
+          "end": "2025-12-29T13:42:26Z",
+          "duration": 2
+        },
+        {
+          "start": "2025-12-29T21:42:02Z",
+          "max_elevation": 21.7,
+          "max_elevation_time": "2025-12-29T21:46:07Z",
+          "end": "2025-12-29T21:50:13Z",
+          "duration": 8
+        },
+        {
+          "start": "2025-12-29T23:21:01Z",
+          "max_elevation": 49.6,
+          "max_elevation_time": "2025-12-29T23:26:19Z",
+          "end": "2025-12-29T23:31:42Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-30T11:43:26Z",
+          "max_elevation": 81.3,
+          "max_elevation_time": "2025-12-30T11:49:00Z",
+          "end": "2025-12-30T11:54:30Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-30T13:26:11Z",
+          "max_elevation": 13.7,
+          "max_elevation_time": "2025-12-30T13:28:51Z",
+          "end": "2025-12-30T13:31:30Z",
+          "duration": 5
+        },
+        {
+          "start": "2025-12-30T21:29:54Z",
+          "max_elevation": 16.9,
+          "max_elevation_time": "2025-12-30T21:33:18Z",
+          "end": "2025-12-30T21:36:43Z",
+          "duration": 7
+        },
+        {
+          "start": "2025-12-30T23:07:52Z",
+          "max_elevation": 65.6,
+          "max_elevation_time": "2025-12-30T23:13:19Z",
+          "end": "2025-12-30T23:18:50Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-31T11:30:31Z",
+          "max_elevation": 62.0,
+          "max_elevation_time": "2025-12-31T11:36:00Z",
+          "end": "2025-12-31T11:41:26Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-31T13:12:29Z",
+          "max_elevation": 17.8,
+          "max_elevation_time": "2025-12-31T13:16:03Z",
+          "end": "2025-12-31T13:19:37Z",
+          "duration": 7
+        },
+        {
+          "start": "2025-12-31T21:18:06Z",
+          "max_elevation": 13.0,
+          "max_elevation_time": "2025-12-31T21:20:31Z",
+          "end": "2025-12-31T21:22:56Z",
+          "duration": 5
+        },
+        {
+          "start": "2025-12-31T22:54:49Z",
+          "max_elevation": 85.5,
+          "max_elevation_time": "2025-12-31T23:00:20Z",
+          "end": "2025-12-31T23:05:54Z",
+          "duration": 11
+        },
+        {
+          "start": "2026-01-01T11:17:40Z",
+          "max_elevation": 46.8,
+          "max_elevation_time": "2026-01-01T11:22:59Z",
+          "end": "2026-01-01T11:28:15Z",
+          "duration": 11
+        },
+        {
+          "start": "2026-01-01T12:59:01Z",
+          "max_elevation": 22.8,
+          "max_elevation_time": "2026-01-01T13:03:14Z",
+          "end": "2026-01-01T13:07:26Z",
+          "duration": 8
+        },
+        {
+          "start": "2026-01-01T22:41:53Z",
+          "max_elevation": 74.0,
+          "max_elevation_time": "2026-01-01T22:47:22Z",
+          "end": "2026-01-01T22:52:54Z",
+          "duration": 11
+        },
+        {
+          "start": "2026-01-02T00:25:57Z",
+          "max_elevation": 13.2,
+          "max_elevation_time": "2026-01-02T00:28:30Z",
+          "end": "2026-01-02T00:31:03Z",
+          "duration": 5
+        },
+        {
+          "start": "2026-01-02T11:04:54Z",
+          "max_elevation": 35.6,
+          "max_elevation_time": "2026-01-02T11:09:57Z",
+          "end": "2026-01-02T11:14:56Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-02T12:45:42Z",
+          "max_elevation": 29.2,
+          "max_elevation_time": "2026-01-02T12:50:23Z",
+          "end": "2026-01-02T12:55:03Z",
+          "duration": 9
+        },
+        {
+          "start": "2026-01-02T22:29:04Z",
+          "max_elevation": 56.5,
+          "max_elevation_time": "2026-01-02T22:34:26Z",
+          "end": "2026-01-02T22:39:51Z",
+          "duration": 11
+        },
+        {
+          "start": "2026-01-03T00:11:44Z",
+          "max_elevation": 17.8,
+          "max_elevation_time": "2026-01-03T00:15:22Z",
+          "end": "2026-01-03T00:19:02Z",
+          "duration": 7
+        },
+        {
+          "start": "2026-01-03T10:52:14Z",
+          "max_elevation": 27.2,
+          "max_elevation_time": "2026-01-03T10:56:53Z",
+          "end": "2026-01-03T11:01:29Z",
+          "duration": 9
+        },
+        {
+          "start": "2026-01-03T12:32:28Z",
+          "max_elevation": 37.5,
+          "max_elevation_time": "2026-01-03T12:37:31Z",
+          "end": "2026-01-03T12:42:31Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-03T22:16:21Z",
+          "max_elevation": 43.2,
+          "max_elevation_time": "2026-01-03T22:21:31Z",
+          "end": "2026-01-03T22:26:44Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-03T23:57:55Z",
+          "max_elevation": 23.5,
+          "max_elevation_time": "2026-01-04T00:02:15Z",
+          "end": "2026-01-04T00:06:38Z",
+          "duration": 9
+        },
+        {
+          "start": "2026-01-04T10:39:43Z",
+          "max_elevation": 20.7,
+          "max_elevation_time": "2026-01-04T10:43:47Z",
+          "end": "2026-01-04T10:47:49Z",
+          "duration": 8
+        }
+      ]
+    },
+    "33591": {
+      "name": "NOAA 19",
+      "frequency": "137.100 MHz",
+      "passes": [
+        {
+          "start": "2025-12-28T21:09:24Z",
+          "max_elevation": 28.5,
+          "max_elevation_time": "2025-12-28T21:14:01Z",
+          "end": "2025-12-28T21:18:39Z",
+          "duration": 9
+        },
+        {
+          "start": "2025-12-28T22:49:24Z",
+          "max_elevation": 36.5,
+          "max_elevation_time": "2025-12-28T22:54:27Z",
+          "end": "2025-12-28T22:59:31Z",
+          "duration": 10
+        },
+        {
+          "start": "2025-12-29T09:33:48Z",
+          "max_elevation": 12.2,
+          "max_elevation_time": "2025-12-29T09:35:55Z",
+          "end": "2025-12-29T09:38:02Z",
+          "duration": 4
+        },
+        {
+          "start": "2025-12-29T11:11:38Z",
+          "max_elevation": 77.2,
+          "max_elevation_time": "2025-12-29T11:17:05Z",
+          "end": "2025-12-29T11:22:30Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-29T20:57:17Z",
+          "max_elevation": 22.3,
+          "max_elevation_time": "2025-12-29T21:01:25Z",
+          "end": "2025-12-29T21:05:34Z",
+          "duration": 8
+        },
+        {
+          "start": "2025-12-29T22:36:22Z",
+          "max_elevation": 47.9,
+          "max_elevation_time": "2025-12-29T22:41:40Z",
+          "end": "2025-12-29T22:46:59Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-30T10:58:53Z",
+          "max_elevation": 82.1,
+          "max_elevation_time": "2025-12-30T11:04:22Z",
+          "end": "2025-12-30T11:09:47Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-30T12:41:45Z",
+          "max_elevation": 13.3,
+          "max_elevation_time": "2025-12-30T12:44:13Z",
+          "end": "2025-12-30T12:46:41Z",
+          "duration": 5
+        },
+        {
+          "start": "2025-12-30T20:45:21Z",
+          "max_elevation": 17.5,
+          "max_elevation_time": "2025-12-30T20:48:51Z",
+          "end": "2025-12-30T20:52:20Z",
+          "duration": 7
+        },
+        {
+          "start": "2025-12-30T22:23:27Z",
+          "max_elevation": 63.2,
+          "max_elevation_time": "2025-12-30T22:28:54Z",
+          "end": "2025-12-30T22:34:22Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-31T10:46:12Z",
+          "max_elevation": 62.7,
+          "max_elevation_time": "2025-12-31T10:51:37Z",
+          "end": "2025-12-31T10:56:59Z",
+          "duration": 11
+        },
+        {
+          "start": "2025-12-31T12:28:15Z",
+          "max_elevation": 17.2,
+          "max_elevation_time": "2025-12-31T12:31:40Z",
+          "end": "2025-12-31T12:35:05Z",
+          "duration": 7
+        },
+        {
+          "start": "2025-12-31T20:33:44Z",
+          "max_elevation": 13.5,
+          "max_elevation_time": "2025-12-31T20:36:18Z",
+          "end": "2025-12-31T20:38:51Z",
+          "duration": 5
+        },
+        {
+          "start": "2025-12-31T22:10:39Z",
+          "max_elevation": 82.3,
+          "max_elevation_time": "2025-12-31T22:16:09Z",
+          "end": "2025-12-31T22:21:41Z",
+          "duration": 11
+        },
+        {
+          "start": "2026-01-01T10:33:36Z",
+          "max_elevation": 47.4,
+          "max_elevation_time": "2026-01-01T10:38:51Z",
+          "end": "2026-01-01T10:44:03Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-01T12:15:01Z",
+          "max_elevation": 22.0,
+          "max_elevation_time": "2026-01-01T12:19:05Z",
+          "end": "2026-01-01T12:23:09Z",
+          "duration": 8
+        },
+        {
+          "start": "2026-01-01T20:23:18Z",
+          "max_elevation": 10.1,
+          "max_elevation_time": "2026-01-01T20:23:46Z",
+          "end": "2026-01-01T20:24:15Z",
+          "duration": 1
+        },
+        {
+          "start": "2026-01-01T21:57:57Z",
+          "max_elevation": 77.2,
+          "max_elevation_time": "2026-01-01T22:03:26Z",
+          "end": "2026-01-01T22:08:56Z",
+          "duration": 11
+        },
+        {
+          "start": "2026-01-01T23:42:20Z",
+          "max_elevation": 12.5,
+          "max_elevation_time": "2026-01-01T23:44:35Z",
+          "end": "2026-01-01T23:46:50Z",
+          "duration": 5
+        },
+        {
+          "start": "2026-01-02T10:21:04Z",
+          "max_elevation": 36.0,
+          "max_elevation_time": "2026-01-02T10:26:03Z",
+          "end": "2026-01-02T10:31:01Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-02T12:01:55Z",
+          "max_elevation": 28.1,
+          "max_elevation_time": "2026-01-02T12:06:29Z",
+          "end": "2026-01-02T12:11:02Z",
+          "duration": 9
+        },
+        {
+          "start": "2026-01-02T21:45:22Z",
+          "max_elevation": 59.2,
+          "max_elevation_time": "2026-01-02T21:50:45Z",
+          "end": "2026-01-02T21:56:08Z",
+          "duration": 11
+        },
+        {
+          "start": "2026-01-02T23:28:15Z",
+          "max_elevation": 16.9,
+          "max_elevation_time": "2026-01-02T23:31:42Z",
+          "end": "2026-01-02T23:35:10Z",
+          "duration": 7
+        },
+        {
+          "start": "2026-01-03T10:08:38Z",
+          "max_elevation": 27.5,
+          "max_elevation_time": "2026-01-03T10:13:14Z",
+          "end": "2026-01-03T10:17:49Z",
+          "duration": 9
+        },
+        {
+          "start": "2026-01-03T11:48:56Z",
+          "max_elevation": 36.1,
+          "max_elevation_time": "2026-01-03T11:53:51Z",
+          "end": "2026-01-03T11:58:46Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-03T21:32:52Z",
+          "max_elevation": 45.3,
+          "max_elevation_time": "2026-01-03T21:38:04Z",
+          "end": "2026-01-03T21:43:16Z",
+          "duration": 10
+        },
+        {
+          "start": "2026-01-03T23:14:39Z",
+          "max_elevation": 22.2,
+          "max_elevation_time": "2026-01-03T23:18:51Z",
+          "end": "2026-01-03T23:23:03Z",
+          "duration": 8
+        },
+        {
+          "start": "2026-01-04T09:56:20Z",
+          "max_elevation": 21.1,
+          "max_elevation_time": "2026-01-04T10:00:24Z",
+          "end": "2026-01-04T10:04:26Z",
+          "duration": 8
+        },
+        {
+          "start": "2026-01-04T11:36:01Z",
+          "max_elevation": 46.8,
+          "max_elevation_time": "2026-01-04T11:41:12Z",
+          "end": "2026-01-04T11:46:22Z",
+          "duration": 10
+        }
+      ]
+    }
+  },
+  "generated_at": "2025-12-28T12:13:01.716129+00:00",
+  "valid_for": "7 days from generation time"
+}

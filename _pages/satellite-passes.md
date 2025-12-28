@@ -88,7 +88,18 @@ header:
 </style>
 
 <div id="location-info" class="location-info">
-  <strong>Observer Location:</strong> <span id="location-name">Loading...</span><br>
+  <strong>Select Location:</strong><br>
+  <select id="location-select" onchange="loadSatellitePasses()" style="padding: 8px 12px; font-size: 14px; margin: 10px 0; border-radius: 4px; border: 1px solid #ddd;">
+    <option value="london">London, UK</option>
+    <option value="paris">Paris, France</option>
+    <option value="boulder">Boulder, CO, USA</option>
+    <option value="los-angeles">Los Angeles, CA, USA</option>
+    <option value="reykjavik">Reykjavik, Iceland</option>
+    <option value="brussels">Brussels, Belgium</option>
+    <option value="lisbon">Lisbon, Portugal</option>
+    <option value="biarritz">Biarritz, France</option>
+    <option value="new-york">New York, NY, USA</option>
+  </select><br>
   <small id="location-coords"></small>
 </div>
 
@@ -102,7 +113,9 @@ async function loadSatellitePasses() {
   try {
     showStatus('Loading pass predictions...');
 
-    const response = await fetch('/data/passes.json');
+    // Get selected location
+    const locationSlug = document.getElementById('location-select').value;
+    const response = await fetch(`/data/passes-${locationSlug}.json`);
 
     if (!response.ok) {
       throw new Error(`Failed to load pass data (HTTP ${response.status})`);
@@ -116,9 +129,8 @@ async function loadSatellitePasses() {
 
     // Update location info
     const loc = data.location;
-    document.getElementById('location-name').textContent = loc.name;
     document.getElementById('location-coords').textContent =
-      `${loc.lat.toFixed(4)}°, ${loc.lon.toFixed(4)}° at ${loc.alt}m`;
+      `${loc.name} • ${loc.lat.toFixed(4)}°, ${loc.lon.toFixed(4)}° • ${loc.alt}m elevation`;
 
     // Display passes
     displayPasses(data.satellites);
