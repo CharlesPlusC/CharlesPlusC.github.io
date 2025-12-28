@@ -106,45 +106,52 @@ jobs:
 
               for norad_id, tle_data in tle_cache.items():
                   try:
-                      # Create satellite from cached TLE
                       satellite = EarthSatellite(tle_data['line1'], tle_data['line2'], tle_data['name'], ts)
-
-                      # Find events (rise, culminate, set)
                       t, events = satellite.find_events(observer, t0, t1, altitude_degrees=10.0)
 
                       passes = []
                       current_pass = {}
 
                       for ti, event in zip(t, events):
-                          if event == 0:  # Rise
+                          if event == 0:
                               current_pass = {
                                   'start': ti.utc_iso(),
+                                  'start_time': ti,
                                   'start_timestamp': ti.utc_datetime().timestamp()
                               }
-                          elif event == 1:  # Culminate (max elevation)
+                          elif event == 1:
                               if current_pass:
                                   difference = satellite - observer
                                   topocentric = difference.at(ti)
                                   alt_deg, az_deg, distance = topocentric.altaz()
-
                                   current_pass['max_elevation'] = round(alt_deg.degrees, 1)
                                   current_pass['max_elevation_time'] = ti.utc_iso()
-                          elif event == 2:  # Set
-                              if current_pass:
+                          elif event == 2:
+                              if current_pass and 'start_time' in current_pass:
                                   current_pass['end'] = ti.utc_iso()
                                   current_pass['end_timestamp'] = ti.utc_datetime().timestamp()
+                                  duration_secs = current_pass['end_timestamp'] - current_pass['start_timestamp']
+                                  current_pass['duration'] = round(duration_secs / 60)
 
-                                  duration = (current_pass['end_timestamp'] - current_pass['start_timestamp']) / 60
-                                  current_pass['duration'] = round(duration)
-
-                                  # Only add if we have max elevation
                                   if 'max_elevation' in current_pass:
-                                      # Remove timestamps (only for internal use)
+                                      track = []
+                                      start_dt = current_pass['start_time'].utc_datetime()
+                                      num_points = min(int(duration_secs / 20) + 1, 30)
+                                      for p in range(num_points + 1):
+                                          sample_dt = start_dt + timedelta(seconds=duration_secs * p / num_points)
+                                          sample_t = ts.utc(sample_dt.year, sample_dt.month, sample_dt.day,
+                                                           sample_dt.hour, sample_dt.minute, sample_dt.second + sample_dt.microsecond/1e6)
+                                          topo = (satellite - observer).at(sample_t)
+                                          alt, az, _ = topo.altaz()
+                                          track.append([round(az.degrees, 1), round(alt.degrees, 1)])
+                                      current_pass['track'] = track
+
+                                      del current_pass['start_time']
                                       del current_pass['start_timestamp']
                                       del current_pass['end_timestamp']
                                       passes.append(current_pass)
 
-                                  current_pass = {}
+                              current_pass = {}
 
                       result[str(norad_id)] = {
                           'name': tle_data['name'],
