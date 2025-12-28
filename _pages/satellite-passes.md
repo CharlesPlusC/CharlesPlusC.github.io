@@ -150,32 +150,72 @@ const satellites = [
 
 let tleData = {};
 
-// Fetch TLE data from Celestrak
+// Fetch TLE data from Celestrak for each satellite
 async function fetchTLEData() {
   try {
-    const response = await fetch('https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=tle');
-    const text = await response.text();
-    const lines = text.trim().split('\n');
+    // Fetch TLE for each NOAA satellite individually
+    const fetchPromises = satellites.map(async (sat) => {
+      try {
+        // Use CORS proxy to fetch TLE data
+        const corsProxy = 'https://api.allorigins.win/raw?url=';
+        const tleUrl = `https://celestrak.org/NORAD/elements/gp.php?CATNR=${sat.noradId}&FORMAT=TLE`;
+        const response = await fetch(corsProxy + encodeURIComponent(tleUrl));
 
-    for (let i = 0; i < lines.length; i += 3) {
-      const name = lines[i].trim();
-      const line1 = lines[i + 1];
-      const line2 = lines[i + 2];
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-      // Extract NORAD ID from line 1
-      const noradId = parseInt(line1.substring(2, 7));
+        const text = await response.text();
+        const lines = text.trim().split('\n');
 
-      tleData[noradId] = {
-        name: name,
-        tle1: line1,
-        tle2: line2
-      };
-    }
+        if (lines.length >= 3) {
+          tleData[sat.noradId] = {
+            name: lines[0].trim(),
+            tle1: lines[1].trim(),
+            tle2: lines[2].trim()
+          };
+          console.log(`Loaded TLE for ${sat.name}`);
+        }
+      } catch (error) {
+        console.error(`Error fetching TLE for ${sat.name}:`, error);
+        // Use fallback embedded TLE data
+        useFallbackTLE(sat.noradId);
+      }
+    });
 
-    return true;
+    await Promise.all(fetchPromises);
+    return Object.keys(tleData).length > 0;
   } catch (error) {
     console.error('Error fetching TLE data:', error);
-    return false;
+    // Use all fallback data
+    satellites.forEach(sat => useFallbackTLE(sat.noradId));
+    return Object.keys(tleData).length > 0;
+  }
+}
+
+// Fallback TLE data (updated 2025-12-28)
+function useFallbackTLE(noradId) {
+  const fallbackData = {
+    25338: { // NOAA 15
+      name: 'NOAA 15',
+      tle1: '1 25338U 98030A   25361.97379089  .00000211  00000+0  10407-3 0  9998',
+      tle2: '2 25338  98.5210  22.1184 0011180 125.9589 234.2630 14.27077395436879'
+    },
+    28654: { // NOAA 18
+      name: 'NOAA 18',
+      tle1: '1 28654U 05018A   25362.19974773  .00000185  00000+0  12114-3 0  9999',
+      tle2: '2 28654  98.8278  79.2643 0013227 277.1203  82.8466 14.13688357 62151'
+    },
+    33591: { // NOAA 19
+      name: 'NOAA 19',
+      tle1: '1 33591U 09005A   25362.16842815  .00000062  00000+0  56800-4 0  9998',
+      tle2: '2 33591  98.9747  67.7686 0014312 151.0514 209.1455 14.13439536870320'
+    }
+  };
+
+  if (fallbackData[noradId]) {
+    tleData[noradId] = fallbackData[noradId];
+    console.log(`Using fallback TLE for NORAD ${noradId}`);
   }
 }
 
@@ -387,12 +427,13 @@ function showStatus(message, isError = false) {
 
 // Initialize
 async function init() {
-  showStatus('Fetching satellite data from Celestrak...');
+  showStatus('Fetching latest satellite orbital data...');
 
   const success = await fetchTLEData();
 
   if (success) {
-    showStatus('Satellite data loaded. Calculating passes...');
+    const tleCount = Object.keys(tleData).length;
+    showStatus(`Loaded TLE data for ${tleCount} satellite${tleCount !== 1 ? 's' : ''}. Calculating passes...`);
     await updatePasses();
   } else {
     showStatus('Error loading satellite data. Please refresh the page.', true);
@@ -406,7 +447,9 @@ init();
 <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 4px; font-size: 13px; color: #7f8c8d;">
   <strong>About this page:</strong><br>
   This page shows upcoming passes of NOAA APT (Automatic Picture Transmission) satellites that can be received with simple radio equipment.
-  Passes are calculated in real-time using current TLE data from <a href="https://celestrak.org" target="_blank">Celestrak</a>.
+  Passes are calculated in real-time using the latest TLE (Two-Line Element) orbital data from <a href="https://celestrak.org" target="_blank">Celestrak</a>.
   Only passes with maximum elevation above 10° are shown, as lower passes may have poor signal quality.
-  Default location is set to London, UK. Use your browser's location or enter custom coordinates.
+  Default location is set to London, UK. Use your browser's location or enter custom coordinates.<br><br>
+  <strong>Technical:</strong> The page attempts to fetch live TLE data on each visit. If the fetch fails, it uses embedded fallback data (updated 2025-12-28).
+  All calculations are performed client-side using the satellite.js library.
 </div>
