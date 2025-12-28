@@ -124,7 +124,14 @@ header:
     min-width: 120px;
   }
   .pass-date { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-  .pass-time { font-size: 18px; font-weight: 700; color: #1e293b; }
+  .pass-time { font-size: 18px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px; }
+  .daynight {
+    font-size: 14px;
+    opacity: 0.7;
+  }
+  .daynight.day { color: #f59e0b; }
+  .daynight.twilight { color: #f97316; }
+  .daynight.night { color: #6366f1; }
   .sky-chart-small {
     width: 60px;
     height: 60px;
@@ -167,6 +174,11 @@ header:
     text-align: center;
     color: #94a3b8;
     font-size: 13px;
+  }
+  @media (max-width: 600px) {
+    .pass-details { gap: 10px; }
+    .pass-stat { min-width: 40px; }
+    .pass-datetime { min-width: 100px; }
   }
 </style>
 
@@ -218,6 +230,24 @@ header:
 <script>
 var allData = null;
 var expandedSats = {};
+
+/* Calculate solar elevation for day/night indicator */
+function getSunElevation(date, lat, lon) {
+  var rad = Math.PI / 180;
+  var dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+  var declination = -23.45 * Math.cos(rad * 360 / 365 * (dayOfYear + 10));
+  var hourAngle = (date.getUTCHours() + date.getUTCMinutes() / 60 - 12) * 15 + lon;
+  var sinElev = Math.sin(lat * rad) * Math.sin(declination * rad) +
+                Math.cos(lat * rad) * Math.cos(declination * rad) * Math.cos(hourAngle * rad);
+  return Math.asin(sinElev) / rad;
+}
+
+function getDayNight(date, lat, lon) {
+  var elev = getSunElevation(date, lat, lon);
+  if (elev > 0) return { type: 'day', icon: '\u2600' };
+  if (elev > -6) return { type: 'twilight', icon: '\u25D1' };
+  return { type: 'night', icon: '\u263D' };
+}
 
 async function loadSatellitePasses() {
   try {
@@ -347,6 +377,7 @@ function displayPasses(satellitesData) {
   var container = document.getElementById('passes-container');
   container.innerHTML = '';
   var colors = { '57166': '#3b82f6', '59051': '#8b5cf6' };
+  var lat = allData.location.lat, lon = allData.location.lon;
 
   var sortedSats = Object.entries(satellitesData).sort(function(a,b) { return parseInt(a[0]) - parseInt(b[0]); });
 
@@ -382,6 +413,8 @@ function displayPasses(satellitesData) {
         var pass = passes[j];
         var dayKey = getDayKey(pass.start);
         var quality = getQuality(pass.max_elevation);
+        var passDate = new Date(pass.start);
+        var dn = getDayNight(passDate, lat, lon);
 
         if (dayKey !== currentDay) {
           currentDay = dayKey;
@@ -396,7 +429,7 @@ function displayPasses(satellitesData) {
         var qualityLabel = quality === 'excellent' ? 'Excellent' : (quality === 'good' ? 'Good' : 'Fair');
 
         row.innerHTML =
-          '<div class="pass-datetime"><div class="pass-date">' + formatDate(pass.start) + '</div><div class="pass-time">' + formatTime(pass.start) + '</div></div>' +
+          '<div class="pass-datetime"><div class="pass-date">' + formatDate(pass.start) + '</div><div class="pass-time">' + formatTime(pass.start) + '<span class="daynight ' + dn.type + '" title="' + dn.type + '">' + dn.icon + '</span></div></div>' +
           '<div class="sky-chart-small">' + createSkyChartSmall(pass, satColor) + '</div>' +
           '<div class="pass-details">' +
             '<div class="pass-stat"><div class="pass-stat-label">Max</div><div class="pass-stat-value">' + pass.max_elevation.toFixed(0) + '\u00B0</div></div>' +
