@@ -107,7 +107,7 @@ jobs:
               for norad_id, tle_data in tle_cache.items():
                   try:
                       satellite = EarthSatellite(tle_data['line1'], tle_data['line2'], tle_data['name'], ts)
-                      t, events = satellite.find_events(observer, t0, t1, altitude_degrees=10.0)
+                      t, events = satellite.find_events(observer, t0, t1, altitude_degrees=0.0)
 
                       passes = []
                       current_pass = {}
