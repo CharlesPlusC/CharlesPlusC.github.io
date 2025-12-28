@@ -2,7 +2,34 @@
 
 ## Overview
 
-The satellite pass tracker now uses **Skyfield** (Python) for accurate predictions instead of client-side JavaScript. This requires deploying the backend API to a serverless platform.
+The satellite pass tracker uses **Skyfield** (Python) for accurate predictions instead of client-side JavaScript. This requires deploying the backend API to a serverless platform.
+
+## TLE Data Caching
+
+To avoid overloading Celestrak's API, TLE data is **cached and updated automatically**:
+
+- **GitHub Actions** workflow runs every 6 hours (`.github/workflows/update-tles.yml`)
+- Fetches fresh TLE data from Celestrak (only 4 times per day)
+- Commits updated data to `data/tles.json` in the repository
+- API reads from this cached file instead of hitting Celestrak on every request
+
+**Benefits:**
+- Minimal load on Celestrak (4 requests/day vs. thousands)
+- Faster API responses (no external HTTP calls during requests)
+- TLE updates are tracked in version control
+- Automatic updates with no manual intervention
+
+**Note:** TLEs update slowly (orbit changes are gradual), so 6-hour refresh is more than sufficient for accurate predictions.
+
+### Enable GitHub Actions (Required)
+
+If this is the first time using GitHub Actions in your repository:
+
+1. Go to your repository on GitHub
+2. Click "Actions" tab
+3. If prompted, click "I understand my workflows, go ahead and enable them"
+4. The TLE update workflow will run automatically every 6 hours
+5. You can also trigger it manually: Actions → "Update Satellite TLEs" → "Run workflow"
 
 ## Deployment to Vercel (Recommended)
 

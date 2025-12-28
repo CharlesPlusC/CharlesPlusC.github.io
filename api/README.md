@@ -48,10 +48,21 @@ GET /api/satellite_passes?lat=51.5074&lon=-0.1278&alt=0&days=7
 }
 ```
 
+## TLE Data Source
+
+This API uses **cached TLE data** to avoid overloading Celestrak:
+
+- TLE data is stored in `data/tles.json`
+- Updated automatically every 6 hours by GitHub Actions
+- API reads from cache (no external HTTP calls during requests)
+- Only 4 requests per day to Celestrak instead of per-user-request
+
+See `.github/workflows/update-tles.yml` for the update workflow.
+
 ## Deployment
 
 This API is designed to run as a Vercel serverless function. It will automatically:
-- Fetch fresh TLE data from Celestrak
+- Read cached TLE data from `data/tles.json`
 - Calculate pass predictions using Skyfield
 - Return accurate timing and elevation data
 

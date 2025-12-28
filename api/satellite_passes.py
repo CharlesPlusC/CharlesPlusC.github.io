@@ -1,10 +1,32 @@
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import json
+import os
 from datetime import datetime, timedelta, timezone
 from skyfield.api import load, wgs84, EarthSatellite
 from skyfield import almanac
 import numpy as np
+
+def load_cached_tles():
+    """Load TLE data from cached file"""
+    # Try to find the data file in different possible locations
+    possible_paths = [
+        'data/tles.json',
+        '../data/tles.json',
+        os.path.join(os.path.dirname(__file__), '../data/tles.json'),
+    ]
+
+    for path in possible_paths:
+        try:
+            if os.path.exists(path):
+                with open(path, 'r') as f:
+                    data = json.load(f)
+                    return data.get('satellites', {})
+        except Exception as e:
+            print(f"Error loading TLE cache from {path}: {e}")
+            continue
+
+    raise FileNotFoundError("TLE cache file not found. Please run the GitHub Action to generate it.")
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -27,12 +49,8 @@ class handler(BaseHTTPRequestHandler):
             alt = float(params.get('alt', ['0'])[0])
             days = int(params.get('days', ['7'])[0])
 
-            # NOAA satellites
-            satellites = [
-                {'name': 'NOAA 15', 'frequency': '137.620 MHz', 'noradId': 25338},
-                {'name': 'NOAA 18', 'frequency': '137.9125 MHz', 'noradId': 28654},
-                {'name': 'NOAA 19', 'frequency': '137.100 MHz', 'noradId': 33591}
-            ]
+            # Load cached TLE data
+            tle_cache = load_cached_tles()
 
             # Load timescale
             ts = load.timescale()
@@ -43,16 +61,15 @@ class handler(BaseHTTPRequestHandler):
             # Calculate passes for all satellites
             result = {}
 
-            for sat_info in satellites:
+            for norad_id, sat_data in tle_cache.items():
                 try:
-                    # Fetch TLE data from Celestrak
-                    url = f'https://celestrak.org/NORAD/elements/gp.php?CATNR={sat_info["noradId"]}&FORMAT=TLE'
-                    satellites_data = load.tle_file(url)
-
-                    if not satellites_data:
-                        continue
-
-                    satellite = satellites_data[0]
+                    # Create EarthSatellite from cached TLE
+                    satellite = EarthSatellite(
+                        sat_data['tle_line1'],
+                        sat_data['tle_line2'],
+                        sat_data['name'],
+                        ts
+                    )
 
                     # Time range for pass predictions
                     t0 = ts.now()
@@ -94,17 +111,18 @@ class handler(BaseHTTPRequestHandler):
 
                                 current_pass = {}
 
-                    result[sat_info['noradId']] = {
-                        'name': sat_info['name'],
-                        'frequency': sat_info['frequency'],
-                        'passes': passes
+                    result[norad_id] = {
+                        'name': sat_data['name'],
+                        'frequency': sat_data['frequency'],
+                        'passes': passes,
+                        'tle_age': sat_data.get('fetched_at', 'unknown')
                     }
 
                 except Exception as e:
-                    print(f"Error processing {sat_info['name']}: {e}")
-                    result[sat_info['noradId']] = {
-                        'name': sat_info['name'],
-                        'frequency': sat_info['frequency'],
+                    print(f"Error processing {sat_data['name']}: {e}")
+                    result[norad_id] = {
+                        'name': sat_data['name'],
+                        'frequency': sat_data['frequency'],
                         'passes': [],
                         'error': str(e)
                     }
@@ -113,7 +131,8 @@ class handler(BaseHTTPRequestHandler):
                 'success': True,
                 'location': {'lat': lat, 'lon': lon, 'alt': alt},
                 'satellites': result,
-                'generated_at': datetime.now(timezone.utc).isoformat()
+                'generated_at': datetime.now(timezone.utc).isoformat(),
+                'note': 'TLE data cached and updated periodically via GitHub Actions'
             }
 
             self.wfile.write(json.dumps(response).encode())
