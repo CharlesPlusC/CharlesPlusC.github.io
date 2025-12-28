@@ -15,5 +15,8 @@ main:
   - title: "Workspace Gallery"
     url: /workspace-gallery/
 
+  - title: "Satellite Passes"
+    url: /satellite-passes/
+
   # - title: "Constellation Bot"
   #   url: /constellationbot/    
