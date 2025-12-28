@@ -108,36 +108,25 @@ header:
 <div id="passes-container"></div>
 
 <script>
-// Fetch pre-calculated satellite passes from static JSON file
+/* Fetch pre-calculated satellite passes from static JSON file */
 async function loadSatellitePasses() {
   try {
     showStatus('Loading pass predictions...');
-
-    // Get selected location
-    const locationSlug = document.getElementById('location-select').value;
-    const response = await fetch(`/data/passes-${locationSlug}.json`);
-
+    var locationSlug = document.getElementById('location-select').value;
+    var response = await fetch('/data/passes-' + locationSlug + '.json');
     if (!response.ok) {
-      throw new Error(`Failed to load pass data (HTTP ${response.status})`);
+      throw new Error('Failed to load pass data (HTTP ' + response.status + ')');
     }
-
-    const data = await response.json();
-
+    var data = await response.json();
     if (!data.success) {
       throw new Error(data.error || 'Unknown error in passes data');
     }
-
-    // Update location info
-    const loc = data.location;
+    var loc = data.location;
     document.getElementById('location-coords').textContent =
-      `${loc.name} • ${loc.lat.toFixed(4)}°, ${loc.lon.toFixed(4)}° • ${loc.alt}m elevation`;
-
-    // Display passes
+      loc.name + ' \u2022 ' + loc.lat.toFixed(4) + '\u00B0, ' + loc.lon.toFixed(4) + '\u00B0 \u2022 ' + loc.alt + 'm elevation';
     displayPasses(data.satellites);
-
-    // Show status with generation time
-    const genTime = new Date(data.generated_at);
-    const timeStr = genTime.toLocaleString('en-US', {
+    var genTime = new Date(data.generated_at);
+    var timeStr = genTime.toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -145,18 +134,15 @@ async function loadSatellitePasses() {
       minute: '2-digit',
       timeZoneName: 'short'
     });
-
-    showStatus(`Pass predictions generated at ${timeStr}. Updates automatically every 6 hours.`);
-
+    showStatus('Pass predictions generated at ' + timeStr + '. Updates automatically every 6 hours.');
   } catch (error) {
-    showStatus(`Error: ${error.message}. Please refresh the page or try again later.`, true);
+    showStatus('Error: ' + error.message + '. Please refresh the page or try again later.', true);
     console.error('Error loading satellite passes:', error);
   }
 }
 
-// Format ISO date string to readable format
 function formatDateTime(isoString) {
-  const date = new Date(isoString);
+  var date = new Date(isoString);
   return date.toLocaleString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -169,7 +155,7 @@ function formatDateTime(isoString) {
 }
 
 function formatTime(isoString) {
-  const date = new Date(isoString);
+  var date = new Date(isoString);
   return date.toLocaleString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
@@ -178,82 +164,58 @@ function formatTime(isoString) {
   });
 }
 
-// Display passes
 function displayPasses(satellitesData) {
-  const container = document.getElementById('passes-container');
+  var container = document.getElementById('passes-container');
   container.innerHTML = '';
-
-  // Sort satellites by NORAD ID for consistent ordering
-  const sortedSats = Object.entries(satellitesData).sort((a, b) =>
-    parseInt(a[0]) - parseInt(b[0])
-  );
-
-  for (const [noradId, satData] of sortedSats) {
-    const passes = satData.passes || [];
-
-    const section = document.createElement('div');
+  var sortedSats = Object.entries(satellitesData).sort(function(a, b) {
+    return parseInt(a[0]) - parseInt(b[0]);
+  });
+  for (var i = 0; i < sortedSats.length; i++) {
+    var noradId = sortedSats[i][0];
+    var satData = sortedSats[i][1];
+    var passes = satData.passes || [];
+    var section = document.createElement('div');
     section.className = 'satellite-section';
-
-    const header = document.createElement('div');
+    var header = document.createElement('div');
     header.className = 'satellite-header';
-    header.innerHTML = `<h3 style="margin: 0;">${satData.name} - ${satData.frequency}</h3>`;
+    header.innerHTML = '<h3 style="margin: 0;">' + satData.name + ' - ' + satData.frequency + '</h3>';
     section.appendChild(header);
-
     if (satData.error) {
-      const errorDiv = document.createElement('div');
+      var errorDiv = document.createElement('div');
       errorDiv.className = 'no-passes';
       errorDiv.style.color = '#cc0000';
-      errorDiv.textContent = `Error: ${satData.error}`;
+      errorDiv.textContent = 'Error: ' + satData.error;
       section.appendChild(errorDiv);
     } else if (passes.length === 0) {
-      const noPassesDiv = document.createElement('div');
+      var noPassesDiv = document.createElement('div');
       noPassesDiv.className = 'no-passes';
-      noPassesDiv.textContent = 'No passes above 10° elevation in the next 7 days';
+      noPassesDiv.textContent = 'No passes above 10\u00B0 elevation in the next 7 days';
       section.appendChild(noPassesDiv);
     } else {
-      const table = document.createElement('table');
+      var table = document.createElement('table');
       table.className = 'pass-table';
-
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Max Elevation</th>
-            <th>Duration</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${passes.map(pass => `
-            <tr>
-              <td>${formatDateTime(pass.start)}</td>
-              <td>${formatTime(pass.end)}</td>
-              <td class="elevation">${pass.max_elevation}°</td>
-              <td class="duration">${pass.duration} min</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      `;
-
+      var tableHTML = '<thead><tr><th>Start Time</th><th>End Time</th><th>Max Elevation</th><th>Duration</th></tr></thead><tbody>';
+      for (var j = 0; j < passes.length; j++) {
+        var pass = passes[j];
+        tableHTML += '<tr><td>' + formatDateTime(pass.start) + '</td><td>' + formatTime(pass.end) + '</td><td class="elevation">' + pass.max_elevation + '\u00B0</td><td class="duration">' + pass.duration + ' min</td></tr>';
+      }
+      tableHTML += '</tbody>';
+      table.innerHTML = tableHTML;
       section.appendChild(table);
     }
-
     container.appendChild(section);
   }
 }
 
-// Show status message
-function showStatus(message, isError = false) {
-  const status = document.getElementById('status');
+function showStatus(message, isError) {
+  var status = document.getElementById('status');
   status.textContent = message;
   status.className = isError ? 'status error' : 'status';
 }
 
-// Load passes when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', loadSatellitePasses);
 } else {
-  // DOM is already ready
   loadSatellitePasses();
 }
 </script>
