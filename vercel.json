@@ -1,8 +1,0 @@
-{
-  "functions": {
-    "api/satellite_passes.py": {
-      "runtime": "python3.9",
-      "maxDuration": 30
-    }
-  }
-}

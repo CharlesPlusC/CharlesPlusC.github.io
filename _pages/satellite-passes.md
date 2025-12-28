@@ -9,34 +9,12 @@ header:
 ---
 
 <style>
-  .location-input {
+  .location-info {
     margin: 20px 0;
     padding: 15px;
-    background: #f5f5f5;
+    background: #e8f4f8;
     border-radius: 8px;
-  }
-
-  .location-input input {
-    padding: 8px 12px;
-    margin: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
-  .location-input button {
-    padding: 8px 20px;
-    background: #0066cc;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    margin: 5px;
-  }
-
-  .location-input button:hover {
-    background: #0052a3;
+    text-align: center;
   }
 
   .status {
@@ -45,6 +23,7 @@ header:
     background: #e8f4f8;
     border-radius: 4px;
     font-size: 14px;
+    text-align: center;
   }
 
   .error {
@@ -79,28 +58,11 @@ header:
     background: #f8f9fa;
   }
 
-  .satellite-name {
-    font-weight: 600;
-    color: #2c3e50;
-  }
-
-  .frequency {
-    font-family: monospace;
-    color: #27ae60;
-  }
-
   .elevation {
     font-weight: 500;
   }
 
   .duration {
-    color: #7f8c8d;
-  }
-
-  .loading {
-    text-align: center;
-    padding: 40px;
-    font-size: 16px;
     color: #7f8c8d;
   }
 
@@ -125,59 +87,65 @@ header:
   }
 </style>
 
-<div class="location-input">
-  <strong>Observer Location:</strong><br>
-  <input type="number" id="lat" placeholder="Latitude" step="0.0001" value="51.5074">
-  <input type="number" id="lon" placeholder="Longitude" step="0.0001" value="-0.1278">
-  <input type="number" id="alt" placeholder="Altitude (m)" step="1" value="0">
-  <button onclick="updatePasses()">Update Passes</button>
-  <button onclick="getGeolocation()">Use My Location</button>
+<div id="location-info" class="location-info">
+  <strong>Observer Location:</strong> <span id="location-name">Loading...</span><br>
+  <small id="location-coords"></small>
 </div>
 
-<div id="status" class="status">Loading satellite data...</div>
+<div id="status" class="status">Loading satellite pass predictions...</div>
 
 <div id="passes-container"></div>
 
 <script>
-// NOAA APT Satellites
-const satellites = [
-  { name: 'NOAA 15', frequency: '137.620 MHz', noradId: 25338 },
-  { name: 'NOAA 18', frequency: '137.9125 MHz', noradId: 28654 },
-  { name: 'NOAA 19', frequency: '137.100 MHz', noradId: 33591 }
-];
-
-// Fetch satellite passes from Skyfield API
-async function fetchSatellitePasses(lat, lon, alt, days = 7) {
+// Fetch pre-calculated satellite passes from static JSON file
+async function loadSatellitePasses() {
   try {
-    // Determine API base URL (production or local development)
-    const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:3000'
-      : '';
+    showStatus('Loading pass predictions...');
 
-    const apiUrl = `${apiBase}/api/satellite_passes?lat=${lat}&lon=${lon}&alt=${alt}&days=${days}`;
-    const response = await fetch(apiUrl);
+    const response = await fetch('/data/passes.json');
 
     if (!response.ok) {
-      throw new Error(`API error! status: ${response.status}`);
+      throw new Error(`Failed to load pass data (HTTP ${response.status})`);
     }
 
     const data = await response.json();
 
     if (!data.success) {
-      throw new Error(data.error || 'Unknown API error');
+      throw new Error(data.error || 'Unknown error in passes data');
     }
 
-    return data;
+    // Update location info
+    const loc = data.location;
+    document.getElementById('location-name').textContent = loc.name;
+    document.getElementById('location-coords').textContent =
+      `${loc.lat.toFixed(4)}°, ${loc.lon.toFixed(4)}° at ${loc.alt}m`;
+
+    // Display passes
+    displayPasses(data.satellites);
+
+    // Show status with generation time
+    const genTime = new Date(data.generated_at);
+    const timeStr = genTime.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short'
+    });
+
+    showStatus(`Pass predictions generated at ${timeStr}. Updates automatically every 6 hours.`);
+
   } catch (error) {
-    console.error('Error fetching satellite passes:', error);
-    throw error;
+    showStatus(`Error: ${error.message}. Please refresh the page or try again later.`, true);
+    console.error('Error loading satellite passes:', error);
   }
 }
 
 // Format ISO date string to readable format
 function formatDateTime(isoString) {
   const date = new Date(isoString);
-  const options = {
+  return date.toLocaleString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -185,19 +153,17 @@ function formatDateTime(isoString) {
     minute: '2-digit',
     second: '2-digit',
     hour12: false
-  };
-  return date.toLocaleString('en-US', options);
+  });
 }
 
 function formatTime(isoString) {
   const date = new Date(isoString);
-  const options = {
+  return date.toLocaleString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
     hour12: false
-  };
-  return date.toLocaleString('en-US', options);
+  });
 }
 
 // Display passes
@@ -205,10 +171,12 @@ function displayPasses(satellitesData) {
   const container = document.getElementById('passes-container');
   container.innerHTML = '';
 
-  satellites.forEach((sat) => {
-    const satData = satellitesData[sat.noradId];
-    if (!satData) return;
+  // Sort satellites by NORAD ID for consistent ordering
+  const sortedSats = Object.entries(satellitesData).sort((a, b) =>
+    parseInt(a[0]) - parseInt(b[0])
+  );
 
+  for (const [noradId, satData] of sortedSats) {
     const passes = satData.passes || [];
 
     const section = document.createElement('div');
@@ -259,56 +227,7 @@ function displayPasses(satellitesData) {
     }
 
     container.appendChild(section);
-  });
-}
-
-// Update passes based on observer location
-async function updatePasses() {
-  const lat = parseFloat(document.getElementById('lat').value);
-  const lon = parseFloat(document.getElementById('lon').value);
-  const alt = parseFloat(document.getElementById('alt').value);
-
-  if (isNaN(lat) || isNaN(lon) || isNaN(alt)) {
-    showStatus('Please enter valid coordinates', true);
-    return;
   }
-
-  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-    showStatus('Invalid coordinates. Latitude: -90 to 90, Longitude: -180 to 180', true);
-    return;
-  }
-
-  showStatus('Calculating passes using Skyfield...');
-
-  try {
-    const data = await fetchSatellitePasses(lat, lon, alt);
-    displayPasses(data.satellites);
-    showStatus(`Showing passes for next 7 days from location: ${lat.toFixed(4)}°, ${lon.toFixed(4)}° at ${alt}m altitude`);
-  } catch (error) {
-    showStatus(`Error calculating passes: ${error.message}`, true);
-  }
-}
-
-// Get geolocation
-function getGeolocation() {
-  if (!navigator.geolocation) {
-    showStatus('Geolocation is not supported by your browser', true);
-    return;
-  }
-
-  showStatus('Getting your location...');
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      document.getElementById('lat').value = position.coords.latitude.toFixed(4);
-      document.getElementById('lon').value = position.coords.longitude.toFixed(4);
-      document.getElementById('alt').value = Math.round(position.coords.altitude || 0);
-      updatePasses();
-    },
-    (error) => {
-      showStatus('Unable to get your location: ' + error.message, true);
-    }
-  );
 }
 
 // Show status message
@@ -318,28 +237,15 @@ function showStatus(message, isError = false) {
   status.className = isError ? 'status error' : 'status';
 }
 
-// Initialize
-async function init() {
-  showStatus('Calculating satellite passes using Skyfield (Python library)...');
-
-  try {
-    await updatePasses();
-  } catch (error) {
-    showStatus('Error calculating satellite passes. Please refresh the page or try again later. Check browser console for details.', true);
-  }
-}
-
-// Run on page load
-init();
+// Load passes on page load
+loadSatellitePasses();
 </script>
 
 <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 4px; font-size: 13px; color: #7f8c8d;">
   <strong>About this page:</strong><br>
   This page shows upcoming passes of NOAA APT (Automatic Picture Transmission) satellites that can be received with simple radio equipment.
-  Passes are calculated using <a href="https://rhodesmill.org/skyfield/" target="_blank">Skyfield</a>, a professional-grade Python astronomy library that provides highly accurate satellite predictions.
-  Fresh TLE (Two-Line Element) orbital data is fetched from <a href="https://celestrak.org" target="_blank">Celestrak</a> on each request.
-  Only passes with maximum elevation above 10° are shown, as lower passes may have poor signal quality.
-  Default location is set to London, UK. Use your browser's location or enter custom coordinates.<br><br>
-  <strong>Technical:</strong> Pass predictions are calculated server-side using Skyfield's precise SGP4 propagator and astronomical calculations.
-  This provides superior accuracy compared to client-side JavaScript implementations, especially for elevation angles and timing.
+  Pass predictions are calculated using <a href="https://rhodesmill.org/skyfield/" target="_blank">Skyfield</a>, a professional-grade Python astronomy library.
+  Fresh TLE (Two-Line Element) orbital data is fetched from <a href="https://celestrak.org" target="_blank">Celestrak</a> and predictions are recalculated automatically every 6 hours via GitHub Actions.
+  Only passes with maximum elevation above 10° are shown, as lower passes may have poor signal quality.<br><br>
+  <strong>Technical:</strong> This page is completely static - no backend API required. All calculations are performed by a GitHub Actions workflow using Skyfield's precise SGP4 propagator and saved to a JSON file. The page simply displays the pre-calculated results. Updates happen automatically in the background.
 </div>

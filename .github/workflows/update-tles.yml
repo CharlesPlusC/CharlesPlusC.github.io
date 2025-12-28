@@ -1,4 +1,4 @@
-name: Update Satellite TLEs
+name: Update Satellite Passes
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Allow manual trigger
 
 jobs:
-  update-tles:
+  update-passes:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,14 +21,21 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests
+          pip install requests skyfield numpy
 
-      - name: Fetch TLE data from Celestrak
+      - name: Fetch TLEs and calculate satellite passes
         run: |
           python3 << 'EOF'
           import requests
           import json
-          from datetime import datetime, timezone
+          from datetime import datetime, timedelta, timezone
+          from skyfield.api import load, wgs84, EarthSatellite
+
+          # Observer location - CHANGE THESE TO YOUR LOCATION
+          OBSERVER_LAT = 51.5074  # Latitude in degrees
+          OBSERVER_LON = -0.1278   # Longitude in degrees
+          OBSERVER_ALT = 0         # Altitude in meters
+          OBSERVER_NAME = "London, UK"
 
           # NOAA satellites
           satellites = [
@@ -37,55 +44,128 @@ jobs:
               {'name': 'NOAA 19', 'frequency': '137.100 MHz', 'noradId': 33591}
           ]
 
-          tle_data = {}
+          print("="*60)
+          print(f"Observer location: {OBSERVER_NAME}")
+          print(f"Coordinates: {OBSERVER_LAT}°, {OBSERVER_LON}° at {OBSERVER_ALT}m")
+          print("="*60)
 
-          for sat in satellites:
+          # Load timescale
+          ts = load.timescale()
+
+          # Create observer location
+          observer = wgs84.latlon(OBSERVER_LAT, OBSERVER_LON, elevation_m=OBSERVER_ALT)
+
+          # Time range for predictions (next 7 days)
+          t0 = ts.now()
+          t1 = ts.utc(t0.utc_datetime() + timedelta(days=7))
+
+          result = {}
+
+          for sat_info in satellites:
               try:
-                  url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={sat['noradId']}&FORMAT=TLE"
+                  print(f"\nProcessing {sat_info['name']}...")
+
+                  # Fetch TLE from Celestrak
+                  url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={sat_info['noradId']}&FORMAT=TLE"
                   response = requests.get(url, timeout=10)
                   response.raise_for_status()
 
                   lines = response.text.strip().split('\n')
 
-                  if len(lines) >= 3:
-                      tle_data[str(sat['noradId'])] = {
-                          'name': sat['name'],
-                          'frequency': sat['frequency'],
-                          'tle_line1': lines[1].strip(),
-                          'tle_line2': lines[2].strip(),
-                          'fetched_at': datetime.now(timezone.utc).isoformat()
-                      }
-                      print(f"✓ Fetched TLE for {sat['name']}")
-                  else:
-                      print(f"✗ Invalid TLE format for {sat['name']}")
+                  if len(lines) < 3:
+                      print(f"  ✗ Invalid TLE format")
+                      continue
+
+                  # Create satellite from TLE
+                  satellite = EarthSatellite(lines[1], lines[2], sat_info['name'], ts)
+
+                  # Find events (rise, culminate, set)
+                  t, events = satellite.find_events(observer, t0, t1, altitude_degrees=10.0)
+
+                  passes = []
+                  current_pass = {}
+
+                  for ti, event in zip(t, events):
+                      if event == 0:  # Rise
+                          current_pass = {
+                              'start': ti.utc_iso(),
+                              'start_timestamp': ti.utc_datetime().timestamp()
+                          }
+                      elif event == 1:  # Culminate (max elevation)
+                          if current_pass:
+                              difference = satellite - observer
+                              topocentric = difference.at(ti)
+                              alt_deg, az_deg, distance = topocentric.altaz()
+
+                              current_pass['max_elevation'] = round(alt_deg.degrees, 1)
+                              current_pass['max_elevation_time'] = ti.utc_iso()
+                      elif event == 2:  # Set
+                          if current_pass:
+                              current_pass['end'] = ti.utc_iso()
+                              current_pass['end_timestamp'] = ti.utc_datetime().timestamp()
+
+                              duration = (current_pass['end_timestamp'] - current_pass['start_timestamp']) / 60
+                              current_pass['duration'] = round(duration)
+
+                              # Only add if we have max elevation
+                              if 'max_elevation' in current_pass:
+                                  # Remove timestamps (only for internal use)
+                                  del current_pass['start_timestamp']
+                                  del current_pass['end_timestamp']
+                                  passes.append(current_pass)
+
+                              current_pass = {}
+
+                  result[str(sat_info['noradId'])] = {
+                      'name': sat_info['name'],
+                      'frequency': sat_info['frequency'],
+                      'passes': passes
+                  }
+
+                  print(f"  ✓ Found {len(passes)} passes above 10° elevation")
 
               except Exception as e:
-                  print(f"✗ Error fetching {sat['name']}: {e}")
+                  print(f"  ✗ Error: {e}")
+                  result[str(sat_info['noradId'])] = {
+                      'name': sat_info['name'],
+                      'frequency': sat_info['frequency'],
+                      'passes': [],
+                      'error': str(e)
+                  }
 
-          # Save to file
+          # Save results
           output = {
-              'satellites': tle_data,
-              'updated_at': datetime.now(timezone.utc).isoformat(),
-              'source': 'Celestrak'
+              'success': True,
+              'location': {
+                  'name': OBSERVER_NAME,
+                  'lat': OBSERVER_LAT,
+                  'lon': OBSERVER_LON,
+                  'alt': OBSERVER_ALT
+              },
+              'satellites': result,
+              'generated_at': datetime.now(timezone.utc).isoformat(),
+              'valid_for': '7 days from generation time'
           }
 
-          with open('data/tles.json', 'w') as f:
+          with open('data/passes.json', 'w') as f:
               json.dump(output, f, indent=2)
 
-          print(f"\n✓ Saved TLE data for {len(tle_data)} satellites to data/tles.json")
+          print(f"\n{'='*60}")
+          print(f"✓ Saved pass predictions to data/passes.json")
+          print(f"{'='*60}")
           EOF
 
       - name: Commit and push if changed
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/tles.json
+          git add data/passes.json
 
           # Only commit if there are changes
           if git diff --staged --quiet; then
-            echo "No changes to TLE data"
+            echo "No changes to satellite pass data"
           else
-            git commit -m "Update satellite TLEs from Celestrak [automated]"
+            git commit -m "Update satellite pass predictions [automated]"
             git push
-            echo "✓ Pushed updated TLE data"
+            echo "✓ Pushed updated pass predictions"
           fi

@@ -2,145 +2,121 @@
 
 ## Overview
 
-The satellite pass tracker uses **Skyfield** (Python) for accurate predictions instead of client-side JavaScript. This requires deploying the backend API to a serverless platform.
+The satellite pass tracker is a **completely static** GitHub Pages site. No backend API, no Vercel, no serverless functions required!
 
-## TLE Data Caching
+## How It Works
 
-To avoid overloading Celestrak's API, TLE data is **cached and updated automatically**:
+**GitHub Actions** automatically:
+1. Fetches fresh TLE data from Celestrak
+2. Calculates satellite passes using Skyfield (Python)
+3. Saves results to `data/passes.json`
+4. Commits and pushes updates every 6 hours
 
-- **GitHub Actions** workflow runs every 6 hours (`.github/workflows/update-tles.yml`)
-- Fetches fresh TLE data from Celestrak (only 4 times per day)
-- Commits updated data to `data/tles.json` in the repository
-- API reads from this cached file instead of hitting Celestrak on every request
+**The website** simply displays the pre-calculated data from the JSON file. No dynamic calculations happen in the browser.
 
-**Benefits:**
-- Minimal load on Celestrak (4 requests/day vs. thousands)
-- Faster API responses (no external HTTP calls during requests)
-- TLE updates are tracked in version control
-- Automatic updates with no manual intervention
+## Configuration
 
-**Note:** TLEs update slowly (orbit changes are gradual), so 6-hour refresh is more than sufficient for accurate predictions.
+### Set Your Location
 
-### Enable GitHub Actions (Required)
+Edit `.github/workflows/update-tles.yml` and change these values (lines 34-38):
 
-If this is the first time using GitHub Actions in your repository:
+```python
+OBSERVER_LAT = 51.5074  # Your latitude in degrees
+OBSERVER_LON = -0.1278   # Your longitude in degrees
+OBSERVER_ALT = 0         # Your altitude in meters
+OBSERVER_NAME = "London, UK"  # Location name
+```
+
+### Enable GitHub Actions
 
 1. Go to your repository on GitHub
-2. Click "Actions" tab
+2. Click the "Actions" tab
 3. If prompted, click "I understand my workflows, go ahead and enable them"
-4. The TLE update workflow will run automatically every 6 hours
-5. You can also trigger it manually: Actions → "Update Satellite TLEs" → "Run workflow"
+4. The workflow will run automatically every 6 hours
+5. Manual trigger: Actions → "Update Satellite Passes" → "Run workflow"
 
-## Deployment to Vercel (Recommended)
+## Deployment
 
-### Step 1: Install Vercel CLI (Optional)
+**That's it!** No additional deployment needed. GitHub Pages will automatically serve the site.
 
-```bash
-npm install -g vercel
+The workflow runs every 6 hours (00:00, 06:00, 12:00, 18:00 UTC) and keeps your satellite pass predictions fresh.
+
+## Files
+
+- **`.github/workflows/update-tles.yml`**: GitHub Actions workflow that calculates passes
+- **`data/passes.json`**: Pre-calculated satellite pass predictions (updated automatically)
+- **`_pages/satellite-passes.md`**: The webpage that displays the passes
+
+## Benefits of This Approach
+
+✅ **No backend required** - Everything runs on GitHub Pages
+✅ **No API costs** - No Vercel, AWS, or other cloud services
+✅ **Minimal Celestrak load** - Only 3 requests every 6 hours
+✅ **Fast page loads** - No API calls, just static JSON
+✅ **Accurate predictions** - Uses professional Skyfield library
+✅ **Fully automated** - Updates happen in the background
+
+## Customization
+
+### Multiple Locations
+
+To calculate passes for multiple locations, modify the workflow to loop through locations and save separate JSON files (e.g., `data/passes-london.json`, `data/passes-newyork.json`). Then create multiple pages or add a location selector to the frontend.
+
+### Different Satellites
+
+To add more satellites, edit the `satellites` array in the workflow (line 41):
+
+```python
+satellites = [
+    {'name': 'NOAA 15', 'frequency': '137.620 MHz', 'noradId': 25338},
+    {'name': 'NOAA 18', 'frequency': '137.9125 MHz', 'noradId': 28654},
+    {'name': 'NOAA 19', 'frequency': '137.100 MHz', 'noradId': 33591},
+    # Add more here
+]
 ```
 
-### Step 2: Deploy to Vercel
+Find NORAD catalog numbers at [Celestrak](https://celestrak.org/satcat/search.php).
 
-You have two options:
+### Update Frequency
 
-#### Option A: Deploy via Vercel Dashboard (Easiest)
+To change how often passes are recalculated, edit the cron schedule (line 5):
 
-1. Go to [vercel.com](https://vercel.com) and sign in with your GitHub account
-2. Click "Add New..." → "Project"
-3. Import your `CharlesPlusC.github.io` repository
-4. Vercel will automatically detect the serverless functions in the `api/` directory
-5. Click "Deploy"
-6. Once deployed, note your Vercel deployment URL (e.g., `your-site.vercel.app`)
-
-#### Option B: Deploy via CLI
-
-```bash
-cd ~/CharlesPlusC.github.io
-vercel
-```
-
-Follow the prompts. Vercel will automatically configure the project.
-
-### Step 3: Update Frontend Configuration
-
-The frontend is already configured to work with Vercel! It will automatically:
-- Use `/api/satellite_passes` when deployed on Vercel
-- Work with both GitHub Pages and Vercel seamlessly
-
-### Step 4: Keep GitHub Pages for Frontend (Optional)
-
-You can keep your main site on GitHub Pages and only use Vercel for the API:
-
-1. Deploy to Vercel as above
-2. Note your Vercel API URL (e.g., `https://your-site.vercel.app`)
-3. Update the API base URL in `_pages/satellite-passes.md` if needed
-
-## What Was Changed
-
-### Backend (New)
-- **`api/satellite_passes.py`**: Python serverless function using Skyfield
-- **`api/requirements.txt`**: Python dependencies (Skyfield, NumPy)
-- **`vercel.json`**: Vercel configuration for serverless functions
-- **`.vercelignore`**: Files to ignore during Vercel deployment
-
-### Frontend (Updated)
-- **`_pages/satellite-passes.md`**: Now calls backend API instead of client-side calculations
-- Removed satellite.js dependency
-- Simplified code significantly
-
-## Why Skyfield?
-
-Skyfield provides:
-- **Professional-grade accuracy**: Used by NASA and professional astronomers
-- **Precise timing**: Accounts for light-time, aberration, observer motion
-- **Better elevation calculations**: Uses proper astronomical frames (GCRS)
-- **More reliable**: Battle-tested library maintained by Brandon Rhodes
-
-The old satellite.js implementation had issues with:
-- 60-second time steps causing timing errors
-- Simple coordinate transforms
-- Approximations in elevation calculations
-
-## Testing the API
-
-Once deployed, test the API:
-
-```bash
-curl "https://your-site.vercel.app/api/satellite_passes?lat=51.5074&lon=-0.1278&alt=0&days=7"
+```yaml
+- cron: '0 */6 * * *'  # Every 6 hours
+# Examples:
+# - cron: '0 */4 * * *'  # Every 4 hours
+# - cron: '0 0,12 * * *' # Twice daily (00:00 and 12:00 UTC)
+# - cron: '0 0 * * *'    # Once daily (00:00 UTC)
 ```
 
 ## Troubleshooting
 
-### API not working?
-- Check Vercel deployment logs
-- Ensure Python 3.9 is specified in `vercel.json`
-- Verify `requirements.txt` is in the `api/` directory
+### Passes not updating?
 
-### CORS errors?
-- The API includes CORS headers by default
-- Check browser console for specific errors
+1. Check GitHub Actions tab for workflow runs
+2. Click on latest run to see logs
+3. Look for errors in the Python execution
 
-### Slow response?
-- First request may be slow (cold start)
-- Subsequent requests should be faster
-- Consider upgrading Vercel plan for better performance
+### Wrong location?
 
-## Cost
+Edit the coordinates in `.github/workflows/update-tles.yml` (lines 34-38) and manually trigger the workflow or wait for the next scheduled run.
 
-- **Vercel Free Tier**: 100GB bandwidth, 100 hours serverless execution/month
-- More than enough for a personal satellite tracker
-- Upgrade only if you get significant traffic
+### Page shows "Loading..." forever?
 
-## Alternative: Self-Hosted
+The `data/passes.json` file might be missing. Run the workflow manually to generate it.
 
-If you prefer self-hosting, you can run the Flask equivalent:
+## Why This Approach?
 
-```python
-# Install dependencies
-pip install flask skyfield numpy
+Previously, I implemented this with:
+- Vercel serverless functions
+- API that calculated passes on-demand
+- Complex caching system
 
-# Create app.py with similar logic to satellite_passes.py
-# Run with: flask run
-```
+But that was overkill for a personal satellite tracker. This new approach is:
+- **Simpler**: No backend infrastructure
+- **Cheaper**: Completely free
+- **Faster**: Pre-calculated data
+- **More reliable**: No API dependencies
+- **Easier to maintain**: Just edit one YAML file
 
-But Vercel is recommended for simplicity and reliability.
+The satellite pass predictions don't change that frequently (orbits are predictable), so pre-calculating them every 6 hours is more than sufficient for accuracy.
