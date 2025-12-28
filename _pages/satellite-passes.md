@@ -27,10 +27,7 @@ header:
     background: white;
     color: #333;
   }
-  .location-coords {
-    opacity: 0.9;
-    font-size: 13px;
-  }
+  .location-coords { opacity: 0.9; font-size: 13px; }
   .filters {
     display: flex;
     flex-wrap: wrap;
@@ -42,33 +39,11 @@ header:
     margin: 20px 0;
     align-items: center;
   }
-  .filter-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .filter-label {
-    font-size: 13px;
-    color: #64748b;
-    font-weight: 500;
-  }
-  .filter-value {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1e293b;
-    min-width: 50px;
-  }
-  .filter-group input[type="range"] {
-    width: 120px;
-    cursor: pointer;
-  }
-  .filter-group select {
-    padding: 6px 12px;
-    border-radius: 6px;
-    border: 1px solid #e2e8f0;
-    font-size: 13px;
-    cursor: pointer;
-  }
+  .filter-group { display: flex; align-items: center; gap: 10px; }
+  .filter-label { font-size: 13px; color: #64748b; font-weight: 500; }
+  .filter-value { font-size: 14px; font-weight: 600; color: #1e293b; min-width: 50px; }
+  .filter-group input[type="range"] { width: 120px; cursor: pointer; }
+  .filter-group select { padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px; cursor: pointer; }
   .stats-bar {
     display: flex;
     gap: 24px;
@@ -78,111 +53,9 @@ header:
     margin-bottom: 20px;
     flex-wrap: wrap;
   }
-  .stat-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .stat-number {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1e293b;
-  }
-  .stat-label {
-    font-size: 12px;
-    color: #64748b;
-  }
-  .timeline-section {
-    margin: 30px 0;
-    padding: 20px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  }
-  .timeline-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 16px;
-  }
-  .timeline-day {
-    margin-bottom: 20px;
-  }
-  .timeline-day-label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #64748b;
-    margin-bottom: 8px;
-  }
-  .timeline-track {
-    position: relative;
-    height: 36px;
-    background: #f1f5f9;
-    border-radius: 6px;
-    overflow: hidden;
-  }
-  .timeline-hours {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    pointer-events: none;
-  }
-  .timeline-hour {
-    flex: 1;
-    border-right: 1px solid #e2e8f0;
-    font-size: 9px;
-    color: #94a3b8;
-    padding: 2px 4px;
-  }
-  .timeline-pass {
-    position: absolute;
-    top: 4px;
-    bottom: 4px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: transform 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 600;
-    color: white;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    min-width: 20px;
-  }
-  .timeline-pass:hover {
-    transform: scaleY(1.15);
-    z-index: 10;
-  }
-  .timeline-pass.noaa15 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-  .timeline-pass.noaa18 { background: linear-gradient(135deg, #10b981, #059669); }
-  .timeline-pass.noaa19 { background: linear-gradient(135deg, #f59e0b, #d97706); }
-  .timeline-legend {
-    display: flex;
-    gap: 16px;
-    margin-top: 12px;
-    justify-content: center;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #64748b;
-  }
-  .legend-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
-  }
-  .legend-dot.noaa15 { background: #3b82f6; }
-  .legend-dot.noaa18 { background: #10b981; }
-  .legend-dot.noaa19 { background: #f59e0b; }
+  .stat-item { display: flex; align-items: center; gap: 8px; }
+  .stat-number { font-size: 20px; font-weight: 700; color: #1e293b; }
+  .stat-label { font-size: 12px; color: #64748b; }
   .status {
     margin: 15px 0;
     padding: 12px 20px;
@@ -192,13 +65,8 @@ header:
     text-align: center;
     color: #64748b;
   }
-  .status.error {
-    background: #fef2f2;
-    color: #dc2626;
-  }
-  .satellite-group {
-    margin: 30px 0;
-  }
+  .status.error { background: #fef2f2; color: #dc2626; }
+  .satellite-group { margin: 30px 0; }
   .satellite-name {
     display: flex;
     align-items: center;
@@ -220,32 +88,25 @@ header:
     padding: 4px 10px;
     border-radius: 20px;
   }
-  .satellite-name .pass-count {
-    margin-left: auto;
-    font-size: 13px;
-    font-weight: 500;
-    opacity: 0.9;
-  }
+  .satellite-name .pass-count { margin-left: auto; font-size: 13px; font-weight: 500; opacity: 0.9; }
   .passes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 12px;
-    padding: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 20px;
     background: #f8fafc;
     border-radius: 0 0 12px 12px;
   }
   .pass-card {
     background: white;
-    border-radius: 10px;
-    padding: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     transition: transform 0.15s, box-shadow 0.15s;
-    position: relative;
-    overflow: hidden;
   }
   .pass-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
   }
   .pass-card-header {
     display: flex;
@@ -253,108 +114,38 @@ header:
     align-items: flex-start;
     margin-bottom: 12px;
   }
-  .pass-date {
-    font-size: 11px;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .pass-time {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1e293b;
-  }
+  .pass-date { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pass-time { font-size: 22px; font-weight: 700; color: #1e293b; }
   .quality-badge {
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    padding: 4px 8px;
-    border-radius: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
     font-weight: 600;
   }
   .quality-badge.excellent { background: #dcfce7; color: #166534; }
   .quality-badge.good { background: #fef9c3; color: #854d0e; }
   .quality-badge.fair { background: #ffedd5; color: #9a3412; }
-  .elevation-arc {
-    height: 50px;
-    margin: 8px 0 12px;
+  .sky-chart {
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 200px;
+    margin: 12px auto;
     position: relative;
   }
-  .arc-bg {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 50px;
-    border: 2px dashed #e2e8f0;
-    border-bottom: none;
-    border-radius: 50px 50px 0 0;
+  .sky-chart svg { width: 100%; height: 100%; }
+  .pass-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
   }
-  .arc-fill {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 50px;
-    border-radius: 50px 50px 0 0;
-    overflow: hidden;
-  }
-  .arc-fill-inner {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, #22c55e, #86efac);
-    border-radius: 50px 50px 0 0;
-  }
-  .arc-fill-inner.good { background: linear-gradient(to top, #eab308, #fde047); }
-  .arc-fill-inner.fair { background: linear-gradient(to top, #f97316, #fdba74); }
-  .arc-label {
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 14px;
-    font-weight: 700;
-    color: #1e293b;
-  }
-  .arc-horizon {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #cbd5e1;
-  }
-  .arc-degrees {
-    position: absolute;
-    font-size: 9px;
-    color: #94a3b8;
-  }
-  .arc-degrees.left { left: 0; bottom: 4px; }
-  .arc-degrees.right { right: 0; bottom: 4px; }
-  .arc-degrees.top { left: 50%; top: -2px; transform: translateX(-50%); }
-  .pass-stats {
-    display: flex;
-    gap: 16px;
-  }
-  .pass-stat {
-    flex: 1;
-    text-align: center;
-  }
-  .pass-stat-label {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #94a3b8;
-  }
-  .pass-stat-value {
-    font-size: 15px;
-    font-weight: 600;
-    color: #334155;
-  }
+  .pass-info-item { text-align: center; }
+  .pass-info-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; }
+  .pass-info-value { font-size: 14px; font-weight: 600; color: #334155; }
   .no-passes {
     padding: 40px 20px;
     text-align: center;
@@ -365,14 +156,14 @@ header:
   }
   .day-divider {
     grid-column: 1 / -1;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #64748b;
-    padding: 12px 0 4px 4px;
-    border-bottom: 1px solid #e2e8f0;
-    margin-top: 4px;
+    color: #475569;
+    padding: 16px 0 8px 4px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-top: 8px;
   }
   .day-divider:first-child { margin-top: 0; }
   .about-section {
@@ -431,11 +222,7 @@ header:
 </div>
 
 <div id="stats-bar" class="stats-bar"></div>
-
 <div id="status" class="status">Loading satellite pass predictions...</div>
-
-<div id="timeline-container"></div>
-
 <div id="passes-container"></div>
 
 <script>
@@ -449,17 +236,12 @@ async function loadSatellitePasses() {
     if (!response.ok) throw new Error('Failed to load (HTTP ' + response.status + ')');
     var data = await response.json();
     if (!data.success) throw new Error(data.error || 'Unknown error');
-
     allData = data;
-    var loc = data.location;
     document.getElementById('location-coords').textContent =
-      loc.lat.toFixed(2) + '\u00B0N, ' + Math.abs(loc.lon).toFixed(2) + '\u00B0' + (loc.lon < 0 ? 'W' : 'E');
-
+      data.location.lat.toFixed(2) + '\u00B0N, ' + Math.abs(data.location.lon).toFixed(2) + '\u00B0' + (data.location.lon < 0 ? 'W' : 'E');
     updateFilters();
-
     var genTime = new Date(data.generated_at);
-    var timeStr = genTime.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    showStatus('Updated ' + timeStr + ' \u2022 Refreshes every 6 hours');
+    showStatus('Updated ' + genTime.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' \u2022 Refreshes every 6 hours');
   } catch (error) {
     showStatus('Error: ' + error.message, true);
   }
@@ -470,40 +252,29 @@ function updateFilters() {
   var daysFilter = parseInt(document.getElementById('days-filter').value);
   var elevFilter = parseInt(document.getElementById('elevation-filter').value);
   var satFilter = document.getElementById('satellite-filter').value;
-
   document.getElementById('days-value').textContent = daysFilter;
 
   var cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() + daysFilter);
 
   var filteredData = {};
-  var totalPasses = 0;
-  var excellentPasses = 0;
+  var totalPasses = 0, excellentPasses = 0;
 
   var entries = Object.entries(allData.satellites);
   for (var i = 0; i < entries.length; i++) {
-    var noradId = entries[i][0];
-    var satData = entries[i][1];
-
+    var noradId = entries[i][0], satData = entries[i][1];
     if (satFilter !== 'all' && satFilter !== noradId) continue;
-
     var filteredPasses = [];
     var passes = satData.passes || [];
     for (var j = 0; j < passes.length; j++) {
       var pass = passes[j];
-      var passDate = new Date(pass.start);
-      if (passDate <= cutoffDate && pass.max_elevation >= elevFilter) {
+      if (new Date(pass.start) <= cutoffDate && pass.max_elevation >= elevFilter) {
         filteredPasses.push(pass);
         totalPasses++;
         if (pass.max_elevation >= 45) excellentPasses++;
       }
     }
-
-    filteredData[noradId] = {
-      name: satData.name,
-      frequency: satData.frequency,
-      passes: filteredPasses
-    };
+    filteredData[noradId] = { name: satData.name, frequency: satData.frequency, passes: filteredPasses };
   }
 
   document.getElementById('stats-bar').innerHTML =
@@ -511,104 +282,88 @@ function updateFilters() {
     '<div class="stat-item"><span class="stat-number" style="color:#16a34a">' + excellentPasses + '</span><span class="stat-label">excellent</span></div>' +
     '<div class="stat-item"><span class="stat-number">' + daysFilter + '</span><span class="stat-label">days</span></div>';
 
-  renderTimeline(filteredData, daysFilter);
   displayPasses(filteredData);
 }
 
-function renderTimeline(satellitesData, days) {
-  var container = document.getElementById('timeline-container');
-  var today = new Date();
-  today.setHours(0, 0, 0, 0);
+function createSkyChart(pass, satColor) {
+  var size = 200, cx = size/2, cy = size/2, r = size/2 - 10;
 
-  var html = '<div class="timeline-section"><div class="timeline-title">Pass Timeline</div>';
+  var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg">';
 
-  for (var d = 0; d < days; d++) {
-    var dayDate = new Date(today);
-    dayDate.setDate(dayDate.getDate() + d);
-    var dayEnd = new Date(dayDate);
-    dayEnd.setDate(dayEnd.getDate() + 1);
+  svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>';
+  svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r*2/3) + '" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>';
+  svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r/3) + '" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4,4"/>';
 
-    var dayLabel = d === 0 ? 'Today' : (d === 1 ? 'Tomorrow' : dayDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
+  svg += '<line x1="' + cx + '" y1="' + (cy-r) + '" x2="' + cx + '" y2="' + (cy+r) + '" stroke="#e2e8f0" stroke-width="1"/>';
+  svg += '<line x1="' + (cx-r) + '" y1="' + cy + '" x2="' + (cx+r) + '" y2="' + cy + '" stroke="#e2e8f0" stroke-width="1"/>';
 
-    html += '<div class="timeline-day"><div class="timeline-day-label">' + dayLabel + '</div><div class="timeline-track"><div class="timeline-hours">';
-    for (var h = 0; h < 24; h += 3) {
-      html += '<div class="timeline-hour">' + (h < 10 ? '0' : '') + h + '</div>';
+  svg += '<text x="' + cx + '" y="12" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">N</text>';
+  svg += '<text x="' + cx + '" y="' + (size-4) + '" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">S</text>';
+  svg += '<text x="8" y="' + (cy+4) + '" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">W</text>';
+  svg += '<text x="' + (size-8) + '" y="' + (cy+4) + '" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b">E</text>';
+
+  svg += '<text x="' + (cx+4) + '" y="' + (cy - r + 14) + '" font-size="8" fill="#94a3b8">0\u00B0</text>';
+  svg += '<text x="' + (cx+4) + '" y="' + (cy - r*2/3 + 10) + '" font-size="8" fill="#94a3b8">30\u00B0</text>';
+  svg += '<text x="' + (cx+4) + '" y="' + (cy - r/3 + 10) + '" font-size="8" fill="#94a3b8">60\u00B0</text>';
+  svg += '<text x="' + (cx+4) + '" y="' + (cy + 4) + '" font-size="8" fill="#94a3b8">90\u00B0</text>';
+
+  if (pass.track && pass.track.length > 1) {
+    var pathData = '';
+    for (var i = 0; i < pass.track.length; i++) {
+      var az = pass.track[i][0], el = pass.track[i][1];
+      var azRad = (az - 90) * Math.PI / 180;
+      var dist = r * (90 - el) / 90;
+      var x = cx + dist * Math.cos(azRad);
+      var y = cy + dist * Math.sin(azRad);
+      pathData += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
     }
-    html += '</div>';
+    svg += '<path d="' + pathData + '" fill="none" stroke="' + satColor + '" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>';
 
-    var satEntries = Object.entries(satellitesData);
-    for (var i = 0; i < satEntries.length; i++) {
-      var noradId = satEntries[i][0];
-      var satData = satEntries[i][1];
-      var satClass = noradId === '25338' ? 'noaa15' : (noradId === '28654' ? 'noaa18' : 'noaa19');
-      var satLabel = noradId === '25338' ? '15' : (noradId === '28654' ? '18' : '19');
+    var startAz = pass.track[0][0], startEl = pass.track[0][1];
+    var startRad = (startAz - 90) * Math.PI / 180;
+    var startDist = r * (90 - startEl) / 90;
+    var startX = cx + startDist * Math.cos(startRad);
+    var startY = cy + startDist * Math.sin(startRad);
+    svg += '<circle cx="' + startX.toFixed(1) + '" cy="' + startY.toFixed(1) + '" r="5" fill="' + satColor + '"/>';
 
-      var passes = satData.passes || [];
-      for (var j = 0; j < passes.length; j++) {
-        var pass = passes[j];
-        var passStart = new Date(pass.start);
-        var passEnd = new Date(pass.end);
-
-        if (passStart >= dayDate && passStart < dayEnd) {
-          var startMins = passStart.getHours() * 60 + passStart.getMinutes();
-          var endMins = passEnd.getHours() * 60 + passEnd.getMinutes();
-          var leftPct = (startMins / 1440) * 100;
-          var widthPct = Math.max(((endMins - startMins) / 1440) * 100, 1.5);
-
-          html += '<div class="timeline-pass ' + satClass + '" style="left:' + leftPct + '%;width:' + widthPct + '%" title="' + satData.name + ' ' + formatTime(pass.start) + ' - ' + pass.max_elevation.toFixed(0) + '\u00B0">' + satLabel + '</div>';
-        }
-      }
-    }
-    html += '</div></div>';
+    var endAz = pass.track[pass.track.length-1][0], endEl = pass.track[pass.track.length-1][1];
+    var endRad = (endAz - 90) * Math.PI / 180;
+    var endDist = r * (90 - endEl) / 90;
+    var endX = cx + endDist * Math.cos(endRad);
+    var endY = cy + endDist * Math.sin(endRad);
+    svg += '<circle cx="' + endX.toFixed(1) + '" cy="' + endY.toFixed(1) + '" r="4" fill="white" stroke="' + satColor + '" stroke-width="2"/>';
+  } else {
+    svg += '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" font-size="24" font-weight="700" fill="' + satColor + '">' + pass.max_elevation.toFixed(0) + '\u00B0</text>';
+    svg += '<text x="' + cx + '" y="' + (cy+14) + '" text-anchor="middle" font-size="9" fill="#94a3b8">max elevation</text>';
   }
 
-  html += '<div class="timeline-legend">' +
-    '<div class="legend-item"><div class="legend-dot noaa15"></div>NOAA 15</div>' +
-    '<div class="legend-item"><div class="legend-dot noaa18"></div>NOAA 18</div>' +
-    '<div class="legend-item"><div class="legend-dot noaa19"></div>NOAA 19</div>' +
-    '</div></div>';
-
-  container.innerHTML = html;
+  svg += '</svg>';
+  return svg;
 }
 
-function getQuality(elevation) {
-  if (elevation >= 45) return 'excellent';
-  if (elevation >= 25) return 'good';
-  return 'fair';
-}
-
-function formatDate(isoString) {
-  var date = new Date(isoString);
-  var today = new Date();
-  var tomorrow = new Date(today);
+function getQuality(el) { return el >= 45 ? 'excellent' : (el >= 25 ? 'good' : 'fair'); }
+function formatDate(iso) {
+  var d = new Date(iso), today = new Date(), tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  if (date.toDateString() === today.toDateString()) return 'Today';
-  if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
-  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  if (d.toDateString() === today.toDateString()) return 'Today';
+  if (d.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
-
-function formatTime(isoString) {
-  var date = new Date(isoString);
-  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-}
-
-function getDayKey(isoString) {
-  return new Date(isoString).toDateString();
-}
+function formatTime(iso) { return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); }
+function getDayKey(iso) { return new Date(iso).toDateString(); }
 
 function displayPasses(satellitesData) {
   var container = document.getElementById('passes-container');
   container.innerHTML = '';
+  var colors = { '25338': '#3b82f6', '28654': '#10b981', '33591': '#f59e0b' };
 
-  var sortedSats = Object.entries(satellitesData).sort(function(a, b) {
-    return parseInt(a[0]) - parseInt(b[0]);
-  });
+  var sortedSats = Object.entries(satellitesData).sort(function(a,b) { return parseInt(a[0]) - parseInt(b[0]); });
 
   for (var i = 0; i < sortedSats.length; i++) {
-    var noradId = sortedSats[i][0];
-    var satData = sortedSats[i][1];
+    var noradId = sortedSats[i][0], satData = sortedSats[i][1];
     var passes = satData.passes || [];
     var satClass = noradId === '25338' ? 'noaa15' : (noradId === '28654' ? 'noaa18' : 'noaa19');
+    var satColor = colors[noradId] || '#6b7280';
 
     var group = document.createElement('div');
     group.className = 'satellite-group';
@@ -626,8 +381,8 @@ function displayPasses(satellitesData) {
     } else {
       var grid = document.createElement('div');
       grid.className = 'passes-grid';
-
       var currentDay = '';
+
       for (var j = 0; j < passes.length; j++) {
         var pass = passes[j];
         var dayKey = getDayKey(pass.start);
@@ -643,28 +398,19 @@ function displayPasses(satellitesData) {
 
         var card = document.createElement('div');
         card.className = 'pass-card';
-
-        var elevPct = Math.min(pass.max_elevation / 90, 1) * 100;
         var qualityLabel = quality === 'excellent' ? 'Excellent' : (quality === 'good' ? 'Good' : 'Fair');
 
         card.innerHTML =
           '<div class="pass-card-header">' +
-            '<div><div class="pass-date">' + formatDate(pass.start) + '</div>' +
-            '<div class="pass-time">' + formatTime(pass.start) + '</div></div>' +
+            '<div><div class="pass-date">' + formatDate(pass.start) + '</div><div class="pass-time">' + formatTime(pass.start) + '</div></div>' +
             '<span class="quality-badge ' + quality + '">' + qualityLabel + '</span>' +
           '</div>' +
-          '<div class="elevation-arc">' +
-            '<div class="arc-bg"></div>' +
-            '<div class="arc-fill"><div class="arc-fill-inner ' + quality + '" style="height:' + elevPct + '%"></div></div>' +
-            '<div class="arc-horizon"></div>' +
-            '<div class="arc-label">' + pass.max_elevation.toFixed(0) + '\u00B0</div>' +
-            '<div class="arc-degrees left">0\u00B0</div>' +
-            '<div class="arc-degrees right">0\u00B0</div>' +
-            '<div class="arc-degrees top">90\u00B0</div>' +
-          '</div>' +
-          '<div class="pass-stats">' +
-            '<div class="pass-stat"><div class="pass-stat-label">Duration</div><div class="pass-stat-value">' + pass.duration + ' min</div></div>' +
-            '<div class="pass-stat"><div class="pass-stat-label">Ends</div><div class="pass-stat-value">' + formatTime(pass.end) + '</div></div>' +
+          '<div class="sky-chart">' + createSkyChart(pass, satColor) + '</div>' +
+          '<div class="pass-info">' +
+            '<div class="pass-info-item"><div class="pass-info-label">Max Elev</div><div class="pass-info-value">' + pass.max_elevation.toFixed(0) + '\u00B0</div></div>' +
+            '<div class="pass-info-item"><div class="pass-info-label">Duration</div><div class="pass-info-value">' + pass.duration + ' min</div></div>' +
+            '<div class="pass-info-item"><div class="pass-info-label">Start</div><div class="pass-info-value">' + formatTime(pass.start) + '</div></div>' +
+            '<div class="pass-info-item"><div class="pass-info-label">End</div><div class="pass-info-value">' + formatTime(pass.end) + '</div></div>' +
           '</div>';
 
         grid.appendChild(card);
@@ -675,10 +421,10 @@ function displayPasses(satellitesData) {
   }
 }
 
-function showStatus(message, isError) {
-  var status = document.getElementById('status');
-  status.textContent = message;
-  status.className = isError ? 'status error' : 'status';
+function showStatus(msg, isError) {
+  var s = document.getElementById('status');
+  s.textContent = msg;
+  s.className = isError ? 'status error' : 'status';
 }
 
 if (document.readyState === 'loading') {
@@ -689,11 +435,10 @@ if (document.readyState === 'loading') {
 </script>
 
 <div class="about-section">
-  <strong>About:</strong> NOAA APT satellites transmit weather images at 137 MHz that can be received with simple equipment.
-  Predictions use <a href="https://rhodesmill.org/skyfield/" target="_blank">Skyfield</a> with TLE data from <a href="https://celestrak.org" target="_blank">Celestrak</a>.
+  <strong>About:</strong> NOAA APT satellites transmit weather images at 137 MHz. The sky chart shows the satellite's path across the sky from your location - the outer ring is the horizon (0°), the center is directly overhead (90°). A filled dot marks the start, an open dot marks the end.
   <br><br>
   <strong>Quality:</strong>
-  <span style="color:#16a34a">Excellent (45°+)</span> = overhead, best signal |
-  <span style="color:#ca8a04">Good (25-45°)</span> = reliable |
-  <span style="color:#ea580c">Fair (10-25°)</span> = may have noise
+  <span style="color:#16a34a">Excellent (45°+)</span> = passes near overhead, best signal |
+  <span style="color:#ca8a04">Good (25-45°)</span> = reliable reception |
+  <span style="color:#ea580c">Fair (10-25°)</span> = low on horizon, may have noise
 </div>
