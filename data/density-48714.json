@@ -1,0 +1,14 @@
+{
+  "norad_id": "48714",
+  "name": "LEMUR 2",
+  "cd": 2.2,
+  "area": 0.01,
+  "mass": 4.6,
+  "times": [],
+  "densities": [],
+  "perigees": [],
+  "apogees": [],
+  "smas": [],
+  "generated_at": "2024-12-29T00:00:00+00:00",
+  "note": "Run the 'Bootstrap TLE Density Data' workflow to populate with historical data"
+}

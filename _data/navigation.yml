@@ -15,5 +15,8 @@ main:
   - title: "Satellite Passes"
     url: /satellite-passes/
 
+  - title: "Density Inversion"
+    url: /density-inversion/
+
   # - title: "Constellation Bot"
-  #   url: /constellationbot/    
+  #   url: /constellationbot/

@@ -1,0 +1,281 @@
+name: Bootstrap TLE Density Data (Initial Historical Load)
+
+on:
+  workflow_dispatch: # Manual trigger only
+    inputs:
+      days_history:
+        description: 'Number of days of historical data to fetch'
+        required: false
+        default: '730'
+        type: string
+
+jobs:
+  bootstrap-density:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests numpy
+
+      - name: Fetch historical TLEs and calculate densities
+        env:
+          DAYS_HISTORY: ${{ github.event.inputs.days_history }}
+        run: |
+          python3 << 'EOF'
+          import requests
+          import json
+          import numpy as np
+          from datetime import datetime, timedelta, timezone
+          import os
+          import time
+
+          # Constants
+          MU = 398600.4418e9       # Earth's gravitational parameter in m³/s²
+          R_EARTH = 6378137.0      # Earth radius in m
+
+          # Satellite configurations
+          SATELLITES = {
+              '39212': {
+                  'name': 'CALSPHERE 4A',
+                  'cd': 2.2,
+                  'area': 0.0314,
+                  'mass': 0.95
+              },
+              '48714': {
+                  'name': 'LEMUR 2',
+                  'cd': 2.2,
+                  'area': 0.01,
+                  'mass': 4.6
+              },
+              '64631': {
+                  'name': 'STARLINK-30123',
+                  'cd': 2.2,
+                  'area': 10.0,
+                  'mass': 800
+              }
+          }
+
+          def parse_mean_motion(line2):
+              """Extract mean motion from TLE line 2 (revs per day)"""
+              return float(line2[52:63])
+
+          def parse_mean_motion_derivative(line1):
+              """Extract mean motion first derivative from TLE line 1 (revs per day²)"""
+              raw = line1[33:43].strip()
+              return float(raw)
+
+          def parse_eccentricity(line2):
+              """Extract eccentricity from TLE line 2"""
+              return float("0." + line2[26:33])
+
+          def tle_epoch_to_datetime(line1):
+              """Convert TLE epoch to datetime"""
+              epoch = line1[18:32]
+              year_2digit = int(epoch[:2])
+              year = 2000 + year_2digit if year_2digit < 57 else 1900 + year_2digit
+              day = float(epoch[2:])
+              dt = datetime(year, 1, 1, tzinfo=timezone.utc) + timedelta(days=day - 1)
+              return dt
+
+          def calculate_density_and_orbit(line1, line2, cd, area, mass):
+              """Calculate atmospheric density and orbital parameters from TLE"""
+              try:
+                  epoch = tle_epoch_to_datetime(line1)
+                  N = parse_mean_motion(line2)
+                  N_dot = parse_mean_motion_derivative(line1)
+
+                  n = N * 2 * np.pi / 86400.0
+                  n_dot = N_dot * 2 * np.pi / (86400.0**2)
+
+                  a = (MU / n**2)**(1/3)
+                  e = parse_eccentricity(line2)
+                  perigee_alt = (a * (1 - e) - R_EARTH) / 1000
+                  apogee_alt = (a * (1 + e) - R_EARTH) / 1000
+
+                  if perigee_alt < 100 or perigee_alt > 2000:
+                      return None
+
+                  v = np.sqrt(MU / a)
+                  rho = (2 * mass * n_dot) / (3 * cd * area * n * v)
+
+                  if rho < 0:
+                      return None
+
+                  return {
+                      'epoch': epoch.isoformat(),
+                      'density': float(rho),
+                      'perigee': float(perigee_alt),
+                      'apogee': float(apogee_alt),
+                      'sma': float(a / 1000)
+                  }
+              except Exception as e:
+                  return None
+
+          def fetch_tle_from_celestrak_history(norad_id, start_date, end_date):
+              """Fetch TLE history from Celestrak GP History API"""
+              tles = []
+
+              # Celestrak GP History API
+              # Format: gp-history.php?CATNR=<norad>&ORDER=ASC&FORMAT=TLE&EPOCH=<start>,<end>
+              start_str = start_date.strftime("%Y-%m-%d")
+              end_str = end_date.strftime("%Y-%m-%d")
+
+              url = f"https://celestrak.org/NORAD/elements/gp-history.php?CATNR={norad_id}&ORDER=ASC&FORMAT=TLE"
+
+              print(f"    Fetching from Celestrak GP History API...")
+
+              try:
+                  response = requests.get(url, timeout=60)
+                  if response.status_code == 200:
+                      lines = response.text.strip().split('\n')
+                      # Parse TLE pairs (may have name lines)
+                      i = 0
+                      while i < len(lines):
+                          line = lines[i].strip()
+                          if line.startswith('1 '):
+                              line1 = line
+                              if i + 1 < len(lines):
+                                  line2 = lines[i + 1].strip()
+                                  if line2.startswith('2 '):
+                                      tles.append((line1, line2))
+                                      i += 2
+                                      continue
+                          i += 1
+                      print(f"    Retrieved {len(tles)} TLEs from Celestrak")
+                  else:
+                      print(f"    Celestrak returned status {response.status_code}")
+              except Exception as e:
+                  print(f"    Error fetching from Celestrak: {e}")
+
+              return tles
+
+          def main():
+              days_history = int(os.environ.get('DAYS_HISTORY', '730'))
+
+              print("=" * 60)
+              print("TLE DENSITY BOOTSTRAP - HISTORICAL DATA LOADER")
+              print(f"Fetching {days_history} days of historical TLE data")
+              print("=" * 60)
+
+              os.makedirs('data', exist_ok=True)
+
+              end_date = datetime.now(timezone.utc)
+              start_date = end_date - timedelta(days=days_history)
+
+              for norad_id, sat_config in SATELLITES.items():
+                  print(f"\nProcessing: {sat_config['name']} (NORAD {norad_id})")
+                  print("-" * 40)
+
+                  # Fetch historical TLE data
+                  tles = fetch_tle_from_celestrak_history(norad_id, start_date, end_date)
+
+                  if not tles:
+                      print(f"  No historical TLE data retrieved for {norad_id}")
+                      # Create empty data file
+                      data = {
+                          'norad_id': norad_id,
+                          'name': sat_config['name'],
+                          'cd': sat_config['cd'],
+                          'area': sat_config['area'],
+                          'mass': sat_config['mass'],
+                          'times': [],
+                          'densities': [],
+                          'perigees': [],
+                          'apogees': [],
+                          'smas': [],
+                          'generated_at': datetime.now(timezone.utc).isoformat()
+                      }
+                      output_file = f"data/density-{norad_id}.json"
+                      with open(output_file, 'w') as f:
+                          json.dump(data, f)
+                      continue
+
+                  # Process TLEs
+                  data = {
+                      'times': [],
+                      'densities': [],
+                      'perigees': [],
+                      'apogees': [],
+                      'smas': []
+                  }
+
+                  seen_epochs = set()
+                  for line1, line2 in tles:
+                      result = calculate_density_and_orbit(
+                          line1, line2,
+                          sat_config['cd'],
+                          sat_config['area'],
+                          sat_config['mass']
+                      )
+
+                      if result and result['epoch'] not in seen_epochs:
+                          seen_epochs.add(result['epoch'])
+                          data['times'].append(result['epoch'])
+                          data['densities'].append(result['density'])
+                          data['perigees'].append(result['perigee'])
+                          data['apogees'].append(result['apogee'])
+                          data['smas'].append(result['sma'])
+
+                  print(f"  Processed {len(data['times'])} valid data points")
+
+                  # Sort by time
+                  if data['times']:
+                      combined = list(zip(
+                          data['times'],
+                          data['densities'],
+                          data['perigees'],
+                          data['apogees'],
+                          data['smas']
+                      ))
+                      combined.sort(key=lambda x: x[0])
+
+                      data['times'] = [x[0] for x in combined]
+                      data['densities'] = [x[1] for x in combined]
+                      data['perigees'] = [x[2] for x in combined]
+                      data['apogees'] = [x[3] for x in combined]
+                      data['smas'] = [x[4] for x in combined]
+
+                  # Add metadata
+                  data['norad_id'] = norad_id
+                  data['name'] = sat_config['name']
+                  data['cd'] = sat_config['cd']
+                  data['area'] = sat_config['area']
+                  data['mass'] = sat_config['mass']
+                  data['generated_at'] = datetime.now(timezone.utc).isoformat()
+
+                  # Save results
+                  output_file = f"data/density-{norad_id}.json"
+                  with open(output_file, 'w') as f:
+                      json.dump(data, f)
+                  print(f"  Saved to {output_file}")
+
+              print("\n" + "=" * 60)
+              print("Bootstrap complete!")
+              print("=" * 60)
+
+          if __name__ == "__main__":
+              main()
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/density-*.json
+
+          if git diff --staged --quiet; then
+            echo "No changes to density data"
+          else
+            git commit -m "Bootstrap TLE density historical data [automated]"
+            git push
+            echo "Pushed bootstrapped density data"
+          fi
