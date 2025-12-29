@@ -40,22 +40,22 @@ jobs:
           # Satellite configurations
           SATELLITES = {
               '39212': {
-                  'name': 'CALSPHERE 4A',
+                  'name': 'CZ-4C DEB',
                   'cd': 2.2,
-                  'area': 0.0314,  # 0.1m radius sphere
-                  'mass': 0.95    # ~1kg calibration sphere
+                  'area': 1.0,
+                  'mass': 50.0
               },
               '48714': {
-                  'name': 'LEMUR 2',
+                  'name': 'NOAA 17 DEB',
                   'cd': 2.2,
-                  'area': 0.01,   # 3U CubeSat cross-section
-                  'mass': 4.6    # ~4.6kg 3U CubeSat
+                  'area': 0.5,
+                  'mass': 25.0
               },
               '64631': {
-                  'name': 'STARLINK-30123',
+                  'name': 'CZ-6A DEB',
                   'cd': 2.2,
-                  'area': 10.0,   # Starlink v2 mini cross-section estimate
-                  'mass': 800    # Starlink v2 mini mass estimate
+                  'area': 1.0,
+                  'mass': 50.0
               }
           }
 

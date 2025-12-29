@@ -1,14 +1,23 @@
 {
   "norad_id": "48714",
-  "name": "LEMUR 2",
+  "name": "NOAA 17 DEB",
   "cd": 2.2,
-  "area": 0.01,
-  "mass": 4.6,
-  "times": [],
-  "densities": [],
-  "perigees": [],
-  "apogees": [],
-  "smas": [],
-  "generated_at": "2024-12-29T00:00:00+00:00",
-  "note": "Run the 'Bootstrap TLE Density Data' workflow to populate with historical data"
+  "area": 0.5,
+  "mass": 25.0,
+  "times": [
+    "2025-12-23T20:45:50.485824+00:00"
+  ],
+  "densities": [
+    9.644712865035618e-12
+  ],
+  "perigees": [
+    406.9605696325386
+  ],
+  "apogees": [
+    436.6273083331333
+  ],
+  "smas": [
+    6799.930938982836
+  ],
+  "generated_at": "2025-12-29T11:38:28.834873+00:00"
 }

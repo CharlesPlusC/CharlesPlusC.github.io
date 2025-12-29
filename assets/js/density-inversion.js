@@ -4,29 +4,30 @@
  */
 
 // Satellite configuration
+// Note: Area and mass are estimates for debris objects - adjust as needed
 const SATELLITES = {
   '39212': {
-    name: 'CALSPHERE 4A',
+    name: 'CZ-4C DEB',
     noradId: 39212,
     cd: 2.2,
-    area: 0.0314,  // 0.1m radius sphere
-    mass: 0.95,    // ~1kg calibration sphere
+    area: 1.0,     // Estimated debris cross-section (m²)
+    mass: 50.0,    // Estimated debris mass (kg)
     color: '#0ea5e9'
   },
   '48714': {
-    name: 'LEMUR 2 (Various)',
+    name: 'NOAA 17 DEB',
     noradId: 48714,
     cd: 2.2,
-    area: 0.01,    // 3U CubeSat cross-section
-    mass: 4.6,     // ~4.6kg 3U CubeSat
+    area: 0.5,     // Estimated debris cross-section (m²)
+    mass: 25.0,    // Estimated debris mass (kg)
     color: '#8b5cf6'
   },
   '64631': {
-    name: 'STARLINK-30123',
+    name: 'CZ-6A DEB',
     noradId: 64631,
     cd: 2.2,
-    area: 10.0,    // Starlink v2 mini cross-section estimate
-    mass: 800,     // Starlink v2 mini mass estimate
+    area: 1.0,     // Estimated debris cross-section (m²)
+    mass: 50.0,    // Estimated debris mass (kg)
     color: '#f59e0b'
   }
 };
