@@ -39,6 +39,18 @@ jobs:
 
           # Satellite configurations
           SATELLITES = {
+              '43476': {
+                  'name': 'GRACE-FO-A',
+                  'cd': 2.2,
+                  'area': 3.0,
+                  'mass': 580.0
+              },
+              '43877': {
+                  'name': 'Kanopus-V 6',
+                  'cd': 2.2,
+                  'area': 2.0,
+                  'mass': 500.0
+              },
               '39212': {
                   'name': 'CZ-4C DEB',
                   'cd': 2.2,
