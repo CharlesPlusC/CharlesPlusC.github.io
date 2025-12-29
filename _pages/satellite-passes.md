@@ -418,6 +418,7 @@ function updateFilters() {
   var satFilter = document.getElementById('satellite-filter').value;
   document.getElementById('days-value').textContent = daysFilter;
 
+  var now = new Date();
   var cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() + daysFilter);
 
@@ -432,7 +433,9 @@ function updateFilters() {
     var passes = satData.passes || [];
     for (var j = 0; j < passes.length; j++) {
       var pass = passes[j];
-      if (new Date(pass.start) <= cutoffDate && pass.max_elevation >= elevFilter) {
+      var passEnd = new Date(pass.end);
+      var passStart = new Date(pass.start);
+      if (passEnd > now && passStart <= cutoffDate && pass.max_elevation >= elevFilter) {
         filteredPasses.push(pass);
         totalPasses++;
         if (pass.max_elevation >= 45) excellentPasses++;
