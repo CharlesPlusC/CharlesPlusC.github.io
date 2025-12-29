@@ -1,0 +1,520 @@
+/**
+ * Satellite Passes Page Styles
+ * Styles for the Meteor-M weather satellite pass prediction feature
+ */
+
+/* Location Picker */
+.location-picker {
+  margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+}
+
+.location-picker select {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  margin: 10px 0;
+  cursor: pointer;
+  background: white;
+  color: #333;
+}
+
+.location-coords {
+  opacity: 0.9;
+  font-size: 13px;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Geolocation Button */
+.geolocate-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.geolocate-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.geolocate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.geolocate-btn .icon {
+  font-size: 16px;
+}
+
+.or-divider {
+  opacity: 0.7;
+  font-size: 13px;
+}
+
+.custom-location {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 8px;
+}
+
+/* Next Pass Banner */
+.next-pass-banner {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.next-pass-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+
+.next-pass-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.next-pass-sat {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.next-pass-countdown {
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.next-pass-time {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.next-pass-elev {
+  font-size: 12px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin: 20px 0;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.filter-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  min-width: 50px;
+}
+
+.filter-group input[type="range"] {
+  width: 120px;
+  cursor: pointer;
+}
+
+.filter-group select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* View Toggle */
+.view-toggle {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+  margin-left: auto;
+}
+
+.view-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  background: none;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.view-btn.active {
+  background: white;
+  color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Stats Bar */
+.stats-bar {
+  display: flex;
+  gap: 24px;
+  padding: 12px 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Status Message */
+.status {
+  margin: 15px 0;
+  padding: 12px 20px;
+  background: #f0f4f8;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+  color: #64748b;
+}
+
+.status.error {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* Satellite Groups */
+.satellite-group {
+  margin: 20px 0;
+}
+
+.satellite-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  color: white;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.satellite-header:hover {
+  opacity: 0.9;
+}
+
+.satellite-header.meteor-n2-3 {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.satellite-header.meteor-n2-4 {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+}
+
+.satellite-header .freq {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.satellite-header .pass-count {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.satellite-header .toggle-icon {
+  font-size: 12px;
+  transition: transform 0.2s;
+  margin-left: 8px;
+}
+
+.satellite-header.collapsed .toggle-icon {
+  transform: rotate(-90deg);
+}
+
+/* Passes Container */
+.passes-container {
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background: #f8fafc;
+  border-radius: 0 0 12px 12px;
+}
+
+.passes-container.collapsed {
+  max-height: 0;
+}
+
+.passes-list {
+  padding: 12px;
+}
+
+.chrono-list {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+/* Pass Row */
+.pass-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.15s;
+}
+
+.pass-row:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pass-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Pass DateTime */
+.pass-datetime {
+  min-width: 120px;
+}
+
+.pass-date {
+  font-size: 10px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pass-time {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Day/Night Indicator */
+.daynight {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.daynight.day {
+  color: #f59e0b;
+}
+
+.daynight.twilight {
+  color: #f97316;
+}
+
+.daynight.night {
+  color: #6366f1;
+}
+
+/* Satellite Badge */
+.sat-badge {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 4px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.sat-badge.meteor-n2-3 {
+  background: #3b82f6;
+}
+
+.sat-badge.meteor-n2-4 {
+  background: #8b5cf6;
+}
+
+/* Sky Chart */
+.sky-chart-small {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.sky-chart-small svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Pass Details */
+.pass-details {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  align-items: center;
+}
+
+.pass-stat {
+  text-align: center;
+  min-width: 50px;
+}
+
+.pass-stat-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+}
+
+.pass-stat-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Quality Badge */
+.quality-badge {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.quality-badge.excellent {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.quality-badge.good {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.quality-badge.fair {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Day Divider */
+.day-divider {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+  padding: 12px 4px 6px;
+  margin-top: 4px;
+}
+
+.day-divider:first-child {
+  margin-top: 0;
+  padding-top: 4px;
+}
+
+/* No Passes Message */
+.no-passes {
+  padding: 30px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+  .pass-details {
+    gap: 10px;
+  }
+
+  .pass-stat {
+    min-width: 40px;
+  }
+
+  .pass-datetime {
+    min-width: 100px;
+  }
+
+  .next-pass-countdown {
+    font-size: 22px;
+  }
+
+  .view-toggle {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .location-row {
+    flex-direction: column;
+  }
+}

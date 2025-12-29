@@ -12,9 +12,6 @@ main:
   - title: "CV"
     url: /cv/
 
-  - title: "Workspace Gallery"
-    url: /workspace-gallery/
-
   - title: "Satellite Passes"
     url: /satellite-passes/
 

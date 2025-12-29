@@ -8,6 +8,14 @@ header:
   overlay_filter: 0.3
 ---
 
+<link rel="stylesheet" href="/assets/css/research-timeline.css">
+
+<div id="research-timeline"></div>
+
+<script src="/assets/js/research-timeline.js"></script>
+
+---
+
 ## Journal / Conference Papers
 ------
 
@@ -22,7 +30,7 @@ header:
 ## Conference Talks / Posters
 ------
 
-* <b>Constant, C.</b>, Brownhall, I., Aguilar, L., Dable, E., Ziebart, M., Aruliah, A., Bhattarai, S. *Thermospheric Response and Operational Impacts During the 2024 “Mother’s Day” Geomagnetic Storm.* *European Space Weather Week*, 2024. [Poster](https://charlesplusc.github.io/assets/MothersDayStormPoster_v2.pdf)
+* <b>Constant, C.</b>, Brownhall, I., Aguilar, L., Dable, E., Ziebart, M., Aruliah, A., Bhattarai, S. *Thermospheric Response and Operational Impacts During the 2024 "Mother's Day" Geomagnetic Storm.* *European Space Weather Week*, 2024. [Poster](https://charlesplusc.github.io/assets/MothersDayStormPoster_v2.pdf)
 
 * <b>Constant, C.</b>, Hanson, B., Bhattarai, S., Brownhall, I., Ziebart, M. *An Evaluation of Physics-Based Force Model Performance in Low Earth Orbit: Implications for Next-Generation Space Traffic Management.* *Committee on Space Research (COSPAR)*, 2024. [Interactive Results & Presentation](https://charlesplusc.github.io//assets/cospar24_presentation/reveal.js-master/index.html)
 
