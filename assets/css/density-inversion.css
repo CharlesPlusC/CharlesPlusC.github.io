@@ -1,13 +1,12 @@
 /**
  * Density Inversion Page Styles
- * Styles for TLE-based atmospheric density estimation feature
  */
 
 /* Header */
 .density-header {
   margin: 20px 0;
-  padding: 20px;
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
   border-radius: 12px;
   text-align: center;
   color: white;
@@ -18,18 +17,18 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 20px;
+  padding: 14px 20px;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   margin: 20px 0;
   flex-wrap: wrap;
 }
 
 .selector-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: #64748b;
 }
 
 .satellite-buttons {
@@ -39,37 +38,47 @@
 }
 
 .sat-btn {
-  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
   font-size: 13px;
   font-weight: 500;
-  border: 2px solid #e2e8f0;
-  background: white;
-  color: #64748b;
-  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .sat-btn:hover {
-  border-color: #0ea5e9;
-  color: #0ea5e9;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
 .sat-btn.active {
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  border-color: transparent;
+  background: #1e293b;
+  border-color: #1e293b;
   color: white;
+}
+
+.sat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* Info Panel */
 .info-panel {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  padding: 16px 20px;
+  display: flex;
+  gap: 32px;
+  padding: 14px 20px;
   background: #f8fafc;
-  border-radius: 12px;
-  margin: 20px 0;
+  border-radius: 10px;
+  margin: 16px 0;
+  flex-wrap: wrap;
 }
 
 .info-row {
@@ -79,15 +88,15 @@
 }
 
 .info-label {
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: #94a3b8;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .info-value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #1e293b;
 }
@@ -96,7 +105,7 @@
 .status {
   margin: 15px 0;
   padding: 12px 20px;
-  background: #f0f4f8;
+  background: #f1f5f9;
   border-radius: 8px;
   font-size: 13px;
   text-align: center;
@@ -114,61 +123,16 @@
 
 /* Chart Container */
 .chart-container {
-  margin: 20px 0;
-  padding: 20px;
+  margin: 16px 0;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
 .chart {
   width: 100%;
-  height: 400px;
-}
-
-/* Method Info Section */
-.method-info {
-  margin: 30px 0;
-  padding: 24px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border-left: 4px solid #0ea5e9;
-}
-
-.method-info h3 {
-  margin: 0 0 16px 0;
-  font-size: 18px;
-  color: #0284c7;
-}
-
-.method-info p {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #475569;
-  margin: 12px 0;
-}
-
-.method-info ul {
-  margin: 12px 0;
-  padding-left: 24px;
-}
-
-.method-info li {
-  font-size: 14px;
-  line-height: 1.8;
-  color: #475569;
-}
-
-.equation {
-  font-family: 'Times New Roman', serif;
-  font-size: 18px;
-  font-style: italic;
-  text-align: center;
-  padding: 16px;
-  background: white;
-  border-radius: 8px;
-  margin: 16px 0;
-  color: #1e293b;
+  height: 420px;
 }
 
 /* Responsive Styles */
@@ -184,14 +148,14 @@
 
   .sat-btn {
     flex: 1;
-    text-align: center;
+    justify-content: center;
   }
 
   .chart {
-    height: 300px;
+    height: 320px;
   }
 
   .info-panel {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 }

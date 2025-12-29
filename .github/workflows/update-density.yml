@@ -60,20 +60,16 @@ jobs:
           }
 
           def parse_mean_motion(line2):
-              """Extract mean motion from TLE line 2 (revs per day)"""
               return float(line2[52:63])
 
           def parse_mean_motion_derivative(line1):
-              """Extract mean motion first derivative from TLE line 1 (revs per day²)"""
               raw = line1[33:43].strip()
               return float(raw)
 
           def parse_eccentricity(line2):
-              """Extract eccentricity from TLE line 2"""
               return float("0." + line2[26:33])
 
           def tle_epoch_to_datetime(line1):
-              """Convert TLE epoch to datetime"""
               epoch = line1[18:32]
               year_2digit = int(epoch[:2])
               year = 2000 + year_2digit if year_2digit < 57 else 1900 + year_2digit
@@ -82,39 +78,25 @@ jobs:
               return dt
 
           def calculate_density_and_orbit(line1, line2, cd, area, mass):
-              """Calculate atmospheric density and orbital parameters from TLE"""
               try:
-                  # Epoch time
                   epoch = tle_epoch_to_datetime(line1)
+                  N = parse_mean_motion(line2)
+                  N_dot = parse_mean_motion_derivative(line1)
 
-                  # Mean motion and its derivative
-                  N = parse_mean_motion(line2)       # revs per day
-                  N_dot = parse_mean_motion_derivative(line1)  # revs per day²
-
-                  # Convert to rad/s and rad/s²
                   n = N * 2 * np.pi / 86400.0
                   n_dot = N_dot * 2 * np.pi / (86400.0**2)
 
-                  # Semi-major axis from mean motion
                   a = (MU / n**2)**(1/3)
-
-                  # Eccentricity and altitudes
                   e = parse_eccentricity(line2)
-                  perigee_alt = (a * (1 - e) - R_EARTH) / 1000  # km
-                  apogee_alt = (a * (1 + e) - R_EARTH) / 1000   # km
+                  perigee_alt = (a * (1 - e) - R_EARTH) / 1000
+                  apogee_alt = (a * (1 + e) - R_EARTH) / 1000
 
-                  # Skip if orbit is unrealistic
                   if perigee_alt < 100 or perigee_alt > 2000:
                       return None
 
-                  # Orbital velocity
                   v = np.sqrt(MU / a)
-
-                  # Density from mean-motion derivative
-                  # rho = (2 * M * n_dot) / (3 * Cd * A * n * v)
                   rho = (2 * mass * n_dot) / (3 * cd * area * n * v)
 
-                  # Skip negative densities (satellite boosting)
                   if rho < 0:
                       return None
 
@@ -123,49 +105,30 @@ jobs:
                       'density': float(rho),
                       'perigee': float(perigee_alt),
                       'apogee': float(apogee_alt),
-                      'sma': float(a / 1000)  # km
+                      'sma': float(a / 1000)
                   }
               except Exception as e:
                   print(f"    Error parsing TLE: {e}")
                   return None
 
-          def fetch_tle_history(norad_id, max_retries=3):
-              """Fetch TLE history from Celestrak GP History"""
-              # Use Celestrak's GP History endpoint
+          def fetch_current_tle(norad_id, max_retries=3):
               url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={norad_id}&FORMAT=TLE"
 
-              # First try to get current TLE
-              current_tles = []
               for attempt in range(max_retries):
                   try:
                       response = requests.get(url, timeout=30)
                       if response.status_code == 200:
                           lines = response.text.strip().split('\n')
                           if len(lines) >= 2:
-                              # Skip name line if present (3-line format)
                               if len(lines) >= 3 and not lines[0].startswith('1 '):
-                                  current_tles = [(lines[1].strip(), lines[2].strip())]
+                                  return [(lines[1].strip(), lines[2].strip())]
                               else:
-                                  current_tles = [(lines[0].strip(), lines[1].strip())]
-                          break
+                                  return [(lines[0].strip(), lines[1].strip())]
                   except Exception as e:
                       print(f"    Attempt {attempt + 1} failed: {e}")
                       if attempt < max_retries - 1:
                           time.sleep(2 ** attempt)
-
-              # Try to load existing data
-              existing_data = {'times': [], 'densities': [], 'perigees': [], 'apogees': [], 'smas': []}
-              data_file = f"data/density-{norad_id}.json"
-
-              if os.path.exists(data_file):
-                  try:
-                      with open(data_file, 'r') as f:
-                          existing_data = json.load(f)
-                      print(f"    Loaded {len(existing_data.get('times', []))} existing data points")
-                  except Exception as e:
-                      print(f"    Could not load existing data: {e}")
-
-              return current_tles, existing_data
+              return []
 
           def main():
               print("=" * 60)
@@ -178,17 +141,26 @@ jobs:
                   print(f"\nProcessing: {sat_config['name']} (NORAD {norad_id})")
                   print("-" * 40)
 
-                  # Fetch TLE data
-                  tles, existing_data = fetch_tle_history(norad_id)
+                  tles = fetch_current_tle(norad_id)
 
                   if not tles:
                       print(f"  No TLE data retrieved for {norad_id}")
                       continue
 
-                  # Get existing timestamps to avoid duplicates
+                  # Load existing data
+                  existing_data = {'times': [], 'densities': [], 'perigees': [], 'apogees': [], 'smas': []}
+                  data_file = f"data/density-{norad_id}.json"
+
+                  if os.path.exists(data_file):
+                      try:
+                          with open(data_file, 'r') as f:
+                              existing_data = json.load(f)
+                          print(f"    Loaded {len(existing_data.get('times', []))} existing data points")
+                      except Exception as e:
+                          print(f"    Could not load existing data: {e}")
+
                   existing_times = set(existing_data.get('times', []))
 
-                  # Process new TLEs
                   new_count = 0
                   for line1, line2 in tles:
                       result = calculate_density_and_orbit(
@@ -235,10 +207,9 @@ jobs:
                   existing_data['generated_at'] = datetime.now(timezone.utc).isoformat()
 
                   # Save results
-                  output_file = f"data/density-{norad_id}.json"
-                  with open(output_file, 'w') as f:
+                  with open(data_file, 'w') as f:
                       json.dump(existing_data, f)
-                  print(f"  Saved to {output_file}")
+                  print(f"  Saved to {data_file}")
 
               print("\n" + "=" * 60)
               print("Processing complete!")
@@ -248,17 +219,90 @@ jobs:
               main()
           EOF
 
+      - name: Fetch Kp index data
+        run: |
+          python3 << 'EOF'
+          import json
+          import urllib.request
+          from datetime import datetime, timezone
+
+          print("=" * 60)
+          print("FETCHING Kp INDEX DATA")
+          print("=" * 60)
+
+          # Fetch from GFZ Potsdam
+          url = "https://kp.gfz.de/app/files/Kp_ap_Ap_SN_F107_since_1932.txt"
+
+          try:
+              with urllib.request.urlopen(url, timeout=60) as response:
+                  content = response.read().decode('utf-8')
+          except Exception as e:
+              print(f"Failed to fetch GFZ data: {e}")
+              exit(0)  # Don't fail the workflow
+
+          # Parse data - get current year and previous year
+          current_year = datetime.now().year
+          times = []
+          values = []
+
+          for line in content.split('\n'):
+              if not line.strip() or line.startswith('#'):
+                  continue
+
+              parts = line.split()
+              if len(parts) < 14:
+                  continue
+
+              try:
+                  year = int(parts[0])
+                  month = int(parts[1])
+                  day = int(parts[2])
+
+                  # Get current and previous year
+                  if year < current_year - 1:
+                      continue
+
+                  # Kp values in columns 7-14 (8 values per day)
+                  for i, hour in enumerate([0, 3, 6, 9, 12, 15, 18, 21]):
+                      kp_value = float(parts[6 + i])
+                      dt = datetime(year, month, day, hour, 0, 0, tzinfo=timezone.utc)
+                      times.append(dt.strftime('%Y-%m-%d %H:%M:%S.000'))
+                      values.append(kp_value)
+              except (ValueError, IndexError):
+                  continue
+
+          print(f"Parsed {len(times)} Kp values")
+
+          if times:
+              print(f"Date range: {times[0]} to {times[-1]}")
+
+              kp_data = {
+                  'times': times,
+                  'values': values,
+                  'source': 'GFZ Potsdam',
+                  'generated_at': datetime.now(timezone.utc).isoformat()
+              }
+
+              with open('data/kp-index.json', 'w') as f:
+                  json.dump(kp_data, f)
+
+              print("Saved to data/kp-index.json")
+          else:
+              print("No Kp data found")
+
+          print("=" * 60)
+          EOF
+
       - name: Commit and push if changed
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/density-*.json
+          git add data/density-*.json data/kp-index.json
 
-          # Only commit if there are changes
           if git diff --staged --quiet; then
-            echo "No changes to density data"
+            echo "No changes to data"
           else
-            git commit -m "Update TLE density data [automated]"
+            git commit -m "Update TLE density and Kp index data [automated]"
             git push
-            echo "Pushed updated density data"
+            echo "Pushed updated data"
           fi
