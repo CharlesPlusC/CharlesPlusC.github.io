@@ -28,6 +28,31 @@ header:
     color: #333;
   }
   .location-coords { opacity: 0.9; font-size: 13px; }
+  .location-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .geolocate-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .geolocate-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); }
+  .geolocate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .geolocate-btn .icon { font-size: 16px; }
+  .or-divider { opacity: 0.7; font-size: 13px; }
+  .custom-location { font-size: 12px; opacity: 0.8; margin-top: 8px; }
   .next-pass-banner {
     background: linear-gradient(135deg, #0f172a, #1e293b);
     color: white;
@@ -162,93 +187,61 @@ header:
   }
   .pass-row:hover { box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
   .pass-row:last-child { margin-bottom: 0; }
-  .pass-datetime {
-    min-width: 120px;
-  }
+  .pass-datetime { min-width: 120px; }
   .pass-date { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
   .pass-time { font-size: 18px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px; }
-  .daynight {
-    font-size: 14px;
-    opacity: 0.7;
-  }
+  .daynight { font-size: 14px; opacity: 0.7; }
   .daynight.day { color: #f59e0b; }
   .daynight.twilight { color: #f97316; }
   .daynight.night { color: #6366f1; }
-  .sat-badge {
-    font-size: 9px;
-    font-weight: 600;
-    padding: 3px 6px;
-    border-radius: 4px;
-    color: white;
-    flex-shrink: 0;
-  }
+  .sat-badge { font-size: 9px; font-weight: 600; padding: 3px 6px; border-radius: 4px; color: white; flex-shrink: 0; }
   .sat-badge.meteor-n2-3 { background: #3b82f6; }
   .sat-badge.meteor-n2-4 { background: #8b5cf6; }
-  .sky-chart-small {
-    width: 60px;
-    height: 60px;
-    flex-shrink: 0;
-  }
+  .sky-chart-small { width: 60px; height: 60px; flex-shrink: 0; }
   .sky-chart-small svg { width: 100%; height: 100%; }
-  .pass-details {
-    display: flex;
-    gap: 16px;
-    flex: 1;
-    align-items: center;
-  }
+  .pass-details { display: flex; gap: 16px; flex: 1; align-items: center; }
   .pass-stat { text-align: center; min-width: 50px; }
   .pass-stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; }
   .pass-stat-value { font-size: 14px; font-weight: 600; color: #334155; }
-  .quality-badge {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: 600;
-    flex-shrink: 0;
-  }
+  .quality-badge { font-size: 9px; text-transform: uppercase; letter-spacing: 0.3px; padding: 4px 8px; border-radius: 12px; font-weight: 600; flex-shrink: 0; }
   .quality-badge.excellent { background: #dbeafe; color: #1e40af; }
   .quality-badge.good { background: #fef9c3; color: #854d0e; }
   .quality-badge.fair { background: #f1f5f9; color: #64748b; }
-  .day-divider {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #64748b;
-    padding: 12px 4px 6px;
-    margin-top: 4px;
-  }
+  .day-divider { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748b; padding: 12px 4px 6px; margin-top: 4px; }
   .day-divider:first-child { margin-top: 0; padding-top: 4px; }
-  .no-passes {
-    padding: 30px 20px;
-    text-align: center;
-    color: #94a3b8;
-    font-size: 13px;
-  }
+  .no-passes { padding: 30px 20px; text-align: center; color: #94a3b8; font-size: 13px; }
   @media (max-width: 600px) {
     .pass-details { gap: 10px; }
     .pass-stat { min-width: 40px; }
     .pass-datetime { min-width: 100px; }
     .next-pass-countdown { font-size: 22px; }
     .view-toggle { margin-left: 0; width: 100%; justify-content: center; }
+    .location-row { flex-direction: column; }
   }
 </style>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/4.0.0/satellite.min.js"></script>
+
 <div class="location-picker">
   <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Select your location</div>
-  <select id="location-select" onchange="loadSatellitePasses()">
-    <option value="london">London, UK</option>
-    <option value="paris">Paris, France</option>
-    <option value="boulder">Boulder, CO, USA</option>
-    <option value="los-angeles">Los Angeles, CA, USA</option>
-    <option value="reykjavik">Reykjavik, Iceland</option>
-    <option value="brussels">Brussels, Belgium</option>
-    <option value="lisbon">Lisbon, Portugal</option>
-    <option value="biarritz">Biarritz, France</option>
-    <option value="new-york">New York, NY, USA</option>
-  </select>
+  <div class="location-row">
+    <select id="location-select" onchange="loadSatellitePasses()">
+      <option value="london">London, UK</option>
+      <option value="paris">Paris, France</option>
+      <option value="boulder">Boulder, CO, USA</option>
+      <option value="los-angeles">Los Angeles, CA, USA</option>
+      <option value="reykjavik">Reykjavik, Iceland</option>
+      <option value="brussels">Brussels, Belgium</option>
+      <option value="lisbon">Lisbon, Portugal</option>
+      <option value="biarritz">Biarritz, France</option>
+      <option value="new-york">New York, NY, USA</option>
+      <option value="custom" disabled style="display:none;">My Location</option>
+    </select>
+    <span class="or-divider">or</span>
+    <button class="geolocate-btn" id="geolocate-btn" onclick="useMyLocation()">
+      <span class="icon">&#x1F4CD;</span> Use my location
+    </button>
+  </div>
   <div id="location-coords" class="location-coords"></div>
 </div>
 
@@ -263,7 +256,8 @@ header:
   <div class="filter-group">
     <span class="filter-label">Min elevation:</span>
     <select id="elevation-filter" onchange="updateFilters()">
-      <option value="10">10° (All)</option>
+      <option value="0">0° (All)</option>
+      <option value="10">10°+</option>
       <option value="20">20°+</option>
       <option value="30">30°+</option>
       <option value="45">45°+ (Best)</option>
@@ -292,6 +286,183 @@ var allData = null;
 var expandedSats = {};
 var currentView = 'grouped';
 var countdownInterval = null;
+var customLocation = null;
+
+var SATELLITES = [
+  { name: 'Meteor-M N2-3', frequency: '137.9 MHz LRPT', noradId: 57166 },
+  { name: 'Meteor-M N2-4', frequency: '137.1 MHz LRPT', noradId: 59051 }
+];
+
+/* Fetch TLE from Celestrak */
+async function fetchTLE(noradId) {
+  var urls = [
+    'https://celestrak.org/NORAD/elements/gp.php?CATNR=' + noradId + '&FORMAT=TLE',
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://celestrak.org/NORAD/elements/gp.php?CATNR=' + noradId + '&FORMAT=TLE')
+  ];
+  for (var i = 0; i < urls.length; i++) {
+    try {
+      var response = await fetch(urls[i], { timeout: 10000 });
+      if (response.ok) {
+        var text = await response.text();
+        var lines = text.trim().split('\n');
+        if (lines.length >= 3) {
+          return { line1: lines[1].trim(), line2: lines[2].trim() };
+        }
+      }
+    } catch (e) { /* try next */ }
+  }
+  return null;
+}
+
+/* Compute satellite passes using satellite.js */
+function computePasses(tle, lat, lon, alt, startDate, days) {
+  var satrec = satellite.twoline2satrec(tle.line1, tle.line2);
+  var passes = [];
+  var stepMinutes = 1;
+  var endDate = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
+  var observerGd = { longitude: satellite.degreesToRadians(lon), latitude: satellite.degreesToRadians(lat), height: alt / 1000 };
+
+  var inPass = false;
+  var currentPass = null;
+  var track = [];
+
+  for (var t = new Date(startDate); t < endDate; t = new Date(t.getTime() + stepMinutes * 60 * 1000)) {
+    var positionAndVelocity = satellite.propagate(satrec, t);
+    if (!positionAndVelocity.position) continue;
+
+    var gmst = satellite.gstime(t);
+    var positionEcf = satellite.eciToEcf(positionAndVelocity.position, gmst);
+    var lookAngles = satellite.ecfToLookAngles(observerGd, positionEcf);
+
+    var elevation = satellite.radiansToDegrees(lookAngles.elevation);
+    var azimuth = satellite.radiansToDegrees(lookAngles.azimuth);
+    if (azimuth < 0) azimuth += 360;
+
+    if (elevation > 0) {
+      if (!inPass) {
+        inPass = true;
+        currentPass = { start: new Date(t), maxEl: elevation, maxElTime: new Date(t), track: [] };
+        track = [];
+      }
+      if (elevation > currentPass.maxEl) {
+        currentPass.maxEl = elevation;
+        currentPass.maxElTime = new Date(t);
+      }
+      track.push([Math.round(azimuth * 10) / 10, Math.round(elevation * 10) / 10]);
+    } else if (inPass) {
+      inPass = false;
+      currentPass.end = new Date(t);
+      currentPass.duration = Math.round((currentPass.end - currentPass.start) / 60000);
+      /* Sample track to max 30 points */
+      if (track.length > 30) {
+        var sampled = [];
+        for (var i = 0; i < 30; i++) {
+          sampled.push(track[Math.floor(i * track.length / 30)]);
+        }
+        track = sampled;
+      }
+      currentPass.track = track;
+      passes.push(currentPass);
+      currentPass = null;
+    }
+  }
+
+  return passes;
+}
+
+/* Convert computed passes to our data format */
+function formatComputedPasses(passes) {
+  return passes.map(function(p) {
+    return {
+      start: p.start.toISOString(),
+      end: p.end.toISOString(),
+      max_elevation: Math.round(p.maxEl * 10) / 10,
+      max_elevation_time: p.maxElTime.toISOString(),
+      duration: p.duration,
+      track: p.track
+    };
+  });
+}
+
+/* Use browser geolocation */
+async function useMyLocation() {
+  var btn = document.getElementById('geolocate-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="icon">&#x23F3;</span> Getting location...';
+
+  if (!navigator.geolocation) {
+    alert('Geolocation is not supported by your browser');
+    btn.disabled = false;
+    btn.innerHTML = '<span class="icon">&#x1F4CD;</span> Use my location';
+    return;
+  }
+
+  try {
+    var position = await new Promise(function(resolve, reject) {
+      navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
+    });
+
+    customLocation = {
+      lat: position.coords.latitude,
+      lon: position.coords.longitude,
+      alt: position.coords.altitude || 0
+    };
+
+    btn.innerHTML = '<span class="icon">&#x23F3;</span> Computing passes...';
+    showStatus('Computing passes for your location...');
+
+    /* Fetch TLEs and compute passes */
+    var satellites = {};
+    for (var i = 0; i < SATELLITES.length; i++) {
+      var sat = SATELLITES[i];
+      var tle = await fetchTLE(sat.noradId);
+      if (tle) {
+        var passes = computePasses(tle, customLocation.lat, customLocation.lon, customLocation.alt, new Date(), 7);
+        satellites[sat.noradId] = {
+          name: sat.name,
+          frequency: sat.frequency,
+          passes: formatComputedPasses(passes)
+        };
+      }
+    }
+
+    allData = {
+      success: true,
+      location: { name: 'My Location', lat: customLocation.lat, lon: customLocation.lon, alt: customLocation.alt },
+      satellites: satellites,
+      generated_at: new Date().toISOString()
+    };
+
+    /* Update UI */
+    var select = document.getElementById('location-select');
+    var customOpt = select.querySelector('option[value="custom"]');
+    customOpt.style.display = '';
+    customOpt.disabled = false;
+    customOpt.textContent = 'My Location (' + customLocation.lat.toFixed(2) + ', ' + customLocation.lon.toFixed(2) + ')';
+    select.value = 'custom';
+
+    document.getElementById('location-coords').textContent =
+      customLocation.lat.toFixed(4) + '\u00B0' + (customLocation.lat >= 0 ? 'N' : 'S') + ', ' +
+      Math.abs(customLocation.lon).toFixed(4) + '\u00B0' + (customLocation.lon >= 0 ? 'E' : 'W');
+
+    var entries = Object.entries(allData.satellites);
+    for (var j = 0; j < entries.length; j++) { expandedSats[entries[j][0]] = true; }
+
+    updateFilters();
+    updateNextPassBanner();
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = setInterval(updateNextPassBanner, 1000);
+
+    showStatus('Computed passes for your exact location');
+    btn.innerHTML = '<span class="icon">&#x2714;</span> Location set';
+
+  } catch (error) {
+    var msg = error.code === 1 ? 'Location permission denied' : 'Could not get location';
+    alert(msg);
+    btn.disabled = false;
+    btn.innerHTML = '<span class="icon">&#x1F4CD;</span> Use my location';
+  }
+}
 
 /* Calculate solar elevation for day/night indicator */
 function getSunElevation(date, lat, lon) {
@@ -327,7 +498,6 @@ function updateNextPassBanner() {
   var now = new Date();
   var nextPass = null;
   var nextSatName = '';
-  var nextNoradId = '';
 
   var entries = Object.entries(allData.satellites);
   for (var i = 0; i < entries.length; i++) {
@@ -338,16 +508,12 @@ function updateNextPassBanner() {
       if (passTime > now && (!nextPass || passTime < new Date(nextPass.start))) {
         nextPass = passes[j];
         nextSatName = satData.name;
-        nextNoradId = noradId;
       }
     }
   }
 
   var banner = document.getElementById('next-pass-banner');
-  if (!nextPass) {
-    banner.style.display = 'none';
-    return;
-  }
+  if (!nextPass) { banner.style.display = 'none'; return; }
 
   banner.style.display = 'flex';
   var passTime = new Date(nextPass.start);
@@ -371,22 +537,26 @@ function setView(view) {
 }
 
 async function loadSatellitePasses() {
+  var locationSlug = document.getElementById('location-select').value;
+  if (locationSlug === 'custom' && customLocation && allData) {
+    /* Already have custom location data */
+    updateFilters();
+    return;
+  }
+
   try {
     showStatus('Loading pass predictions...');
-    var locationSlug = document.getElementById('location-select').value;
     var response = await fetch('/data/passes-' + locationSlug + '.json');
     if (!response.ok) throw new Error('Failed to load (HTTP ' + response.status + ')');
     var data = await response.json();
     if (!data.success) throw new Error(data.error || 'Unknown error');
     allData = data;
-    /* expand all by default */
     var entries = Object.entries(data.satellites);
     for (var i = 0; i < entries.length; i++) { expandedSats[entries[i][0]] = true; }
     document.getElementById('location-coords').textContent =
       data.location.lat.toFixed(2) + '\u00B0N, ' + Math.abs(data.location.lon).toFixed(2) + '\u00B0' + (data.location.lon < 0 ? 'W' : 'E');
     updateFilters();
     updateNextPassBanner();
-    /* update countdown every second */
     if (countdownInterval) clearInterval(countdownInterval);
     countdownInterval = setInterval(updateNextPassBanner, 1000);
     var genTime = new Date(data.generated_at);
@@ -458,7 +628,6 @@ function updateFilters() {
 
 function createSkyChartSmall(pass, satColor) {
   var size = 60, cx = size/2, cy = size/2, r = size/2 - 4;
-
   var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg">';
   svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>';
   svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r/2) + '" fill="none" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="2,2"/>';
@@ -489,7 +658,6 @@ function createSkyChartSmall(pass, satColor) {
     var endY = cy + endDist * Math.sin(endRad);
     svg += '<circle cx="' + endX.toFixed(1) + '" cy="' + endY.toFixed(1) + '" r="2.5" fill="white" stroke="' + satColor + '" stroke-width="1.5"/>';
   }
-
   svg += '</svg>';
   return svg;
 }
@@ -511,23 +679,16 @@ function displayPassesChronological(satellitesData) {
   var colors = { '57166': '#3b82f6', '59051': '#8b5cf6' };
   var lat = allData.location.lat, lon = allData.location.lon;
 
-  /* Collect all passes with satellite info */
   var allPasses = [];
   var entries = Object.entries(satellitesData);
   for (var i = 0; i < entries.length; i++) {
     var noradId = entries[i][0], satData = entries[i][1];
     var passes = satData.passes || [];
     for (var j = 0; j < passes.length; j++) {
-      allPasses.push({
-        pass: passes[j],
-        noradId: noradId,
-        satName: satData.name,
-        satColor: colors[noradId] || '#6b7280'
-      });
+      allPasses.push({ pass: passes[j], noradId: noradId, satName: satData.name, satColor: colors[noradId] || '#6b7280' });
     }
   }
 
-  /* Sort by start time */
   allPasses.sort(function(a, b) { return new Date(a.pass.start) - new Date(b.pass.start); });
 
   if (allPasses.length === 0) {
@@ -573,7 +734,6 @@ function displayPassesChronological(satellitesData) {
 
     list.appendChild(row);
   }
-
   container.appendChild(list);
 }
 
