@@ -262,9 +262,9 @@ jobs:
                   if year < current_year - 1:
                       continue
 
-                  # Kp values in columns 7-14 (8 values per day)
+                  # Kp values in columns 7-14 (8 values per day, 0-indexed: 7-14)
                   for i, hour in enumerate([0, 3, 6, 9, 12, 15, 18, 21]):
-                      kp_value = float(parts[6 + i])
+                      kp_value = float(parts[7 + i])
                       dt = datetime(year, month, day, hour, 0, 0, tzinfo=timezone.utc)
                       times.append(dt.strftime('%Y-%m-%d %H:%M:%S.000'))
                       values.append(kp_value)
