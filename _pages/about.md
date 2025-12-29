@@ -1,6 +1,6 @@
 ---
 permalink: /
-title: "Spaceflight Dynamics and Geodesy Research Student"
+title: ""
 excerpt: "About me"
 author_profile: true
 header:
