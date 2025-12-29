@@ -2,19 +2,27 @@
  * Density Inversion Page - Card Layout
  */
 
-.density-header {
+.density-note {
   margin: 20px 0;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
-  border-radius: 10px;
-  text-align: center;
-  color: white;
+  padding: 14px 18px;
+  background: #f8fafc;
+  border-left: 3px solid #64748b;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
 }
 
-.density-header p {
+.density-note p {
   margin: 0;
-  font-size: 14px;
-  opacity: 0.9;
+}
+
+.density-note strong {
+  color: #334155;
+}
+
+.density-note em {
+  font-style: italic;
 }
 
 .status {

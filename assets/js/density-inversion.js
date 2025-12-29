@@ -3,9 +3,11 @@
  */
 
 const SATELLITES = {
-  '39212': { name: 'CZ-4C DEB', color: '#2563eb' },
-  '48714': { name: 'NOAA 17 DEB', color: '#7c3aed' },
-  '64631': { name: 'CZ-6A DEB', color: '#db2777' }
+  '43476': { name: 'GRACE-FO-A', color: '#2563eb' },
+  '43877': { name: 'Kanopus-V 6', color: '#7c3aed' },
+  '39212': { name: 'CZ-4C DEB', color: '#db2777' },
+  '48714': { name: 'NOAA 17 DEB', color: '#059669' },
+  '64631': { name: 'CZ-6A DEB', color: '#d97706' }
 };
 
 let allData = {};
