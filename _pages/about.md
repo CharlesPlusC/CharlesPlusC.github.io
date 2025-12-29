@@ -27,8 +27,21 @@ If you're interested in collaboration, operational applications, or the underlyi
       <input type="range" id="velocity-slider" min="5000" max="9000" value="7000" step="100">
       <span id="velocity-value">7000 m/s</span>
     </div>
+    <div class="control-group">
+      <label>Sun Latitude</label>
+      <input type="range" id="sun-lat-slider" min="-90" max="90" value="23" step="1">
+      <span id="sun-lat-value">23°</span>
+    </div>
+    <div class="control-group">
+      <label>Sun Longitude</label>
+      <input type="range" id="sun-lon-slider" min="-180" max="180" value="45" step="1">
+      <span id="sun-lon-value">45°</span>
+    </div>
     <div id="drag-graph-container">
       <canvas id="drag-graph"></canvas>
+    </div>
+    <div id="srp-graph-container">
+      <canvas id="srp-graph"></canvas>
     </div>
   </div>
 </div>
