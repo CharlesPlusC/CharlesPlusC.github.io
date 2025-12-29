@@ -1,14 +1,1 @@
-{
-  "norad_id": "64631",
-  "name": "STARLINK-30123",
-  "cd": 2.2,
-  "area": 10.0,
-  "mass": 800,
-  "times": [],
-  "densities": [],
-  "perigees": [],
-  "apogees": [],
-  "smas": [],
-  "generated_at": "2024-12-29T00:00:00+00:00",
-  "note": "Run the 'Bootstrap TLE Density Data' workflow to populate with historical data"
-}
+{"norad_id": "64631", "name": "STARLINK-30123", "cd": 2.2, "area": 10.0, "mass": 800, "times": [], "densities": [], "perigees": [], "apogees": [], "smas": [], "generated_at": "2025-12-29T11:25:54.159977+00:00"}
