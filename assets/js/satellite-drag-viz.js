@@ -59,14 +59,23 @@
     // Use darker background for hero section, lighter for standalone viz
     scene.background = isBackgroundMode ? new THREE.Color(0x0f172a) : new THREE.Color(0x0f172a);
 
-    const container = canvas.parentElement;
-    const rect = container.getBoundingClientRect();
+    // In background mode, use full viewport dimensions
+    let width, height;
+    if (isBackgroundMode) {
+      width = window.innerWidth;
+      height = window.innerHeight - 56; // Account for nav bar
+    } else {
+      const container = canvas.parentElement;
+      const rect = container.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+    }
 
-    camera = new THREE.PerspectiveCamera(40, rect.width / rect.height, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
     camera.position.set(0, 8, 22);
 
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(rect.width, rect.height);
+    renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     controls = new THREE.OrbitControls(camera, canvas);
@@ -74,6 +83,14 @@
     controls.dampingFactor = 0.05;
     controls.minDistance = 10;
     controls.maxDistance = 40;
+
+    // Auto-rotate in background mode
+    if (isBackgroundMode) {
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.5; // Slow rotation
+      controls.enableZoom = false;
+      controls.enablePan = false;
+    }
 
     // Soft, pleasant lighting
     scene.add(new THREE.AmbientLight(0xffffff, 0.65));
@@ -479,12 +496,21 @@
   }
 
   function onResize() {
-    const container = canvas.parentElement;
-    const rect = container.getBoundingClientRect();
+    let width, height;
 
-    camera.aspect = rect.width / rect.height;
+    if (isBackgroundMode) {
+      width = window.innerWidth;
+      height = window.innerHeight - 56;
+    } else {
+      const container = canvas.parentElement;
+      const rect = container.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+    }
+
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(rect.width, rect.height);
+    renderer.setSize(width, height);
 
     [dragGraph, srpGraph].forEach(g => {
       if (g?.parentElement) {

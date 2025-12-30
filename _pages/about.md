@@ -11,29 +11,38 @@ redirect_from:
 <style>
 /* Full-page background animation */
 #satellite-bg-container {
-  position: fixed;
-  top: 56px;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed !important;
+  top: 56px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: calc(100vh - 56px) !important;
   z-index: -1;
   overflow: hidden;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 #satellite-bg-container canvas {
-  width: 100% !important;
-  height: 100% !important;
+  display: block !important;
+  width: 100vw !important;
+  height: calc(100vh - 56px) !important;
 }
 
 #satellite-bg-overlay {
-  position: fixed;
-  top: 56px;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed !important;
+  top: 56px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: calc(100vh - 56px) !important;
   background: rgba(255, 255, 255, 0.55);
   z-index: -1;
   pointer-events: none;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 </style>
 
