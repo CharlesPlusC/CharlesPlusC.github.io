@@ -47,13 +47,17 @@
 
   if (!canvas) return;
 
+  // Check if we're in background mode (no controls)
+  const isBackgroundMode = !velocitySlider;
+
   init();
   loadSRPTables();
   animate();
 
   function init() {
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf5f7fa);
+    // Use darker background for hero section, lighter for standalone viz
+    scene.background = isBackgroundMode ? new THREE.Color(0x0f172a) : new THREE.Color(0x0f172a);
 
     const container = canvas.parentElement;
     const rect = container.getBoundingClientRect();
@@ -86,25 +90,33 @@
     createFlowLines();
 
     sunRayGroup = new THREE.Group();
-    scene.add(sunRayGroup);
+    if (!isBackgroundMode) {
+      scene.add(sunRayGroup);
+    }
 
-    // Events
-    velocitySlider?.addEventListener('input', (e) => {
-      velocity = parseInt(e.target.value);
-      velocityValue.textContent = velocity + ' m/s';
-    });
+    // Events - only bind if controls exist
+    if (velocitySlider) {
+      velocitySlider.addEventListener('input', (e) => {
+        velocity = parseInt(e.target.value);
+        velocityValue.textContent = velocity + ' m/s';
+      });
+    }
 
-    sunLatSlider?.addEventListener('input', (e) => {
-      sunLat = parseInt(e.target.value);
-      sunLatValue.textContent = sunLat + '°';
-      updateSunRays();
-    });
+    if (sunLatSlider) {
+      sunLatSlider.addEventListener('input', (e) => {
+        sunLat = parseInt(e.target.value);
+        sunLatValue.textContent = sunLat + '°';
+        updateSunRays();
+      });
+    }
 
-    sunLonSlider?.addEventListener('input', (e) => {
-      sunLon = parseInt(e.target.value);
-      sunLonValue.textContent = sunLon + '°';
-      updateSunRays();
-    });
+    if (sunLonSlider) {
+      sunLonSlider.addEventListener('input', (e) => {
+        sunLon = parseInt(e.target.value);
+        sunLonValue.textContent = sunLon + '°';
+        updateSunRays();
+      });
+    }
 
     window.addEventListener('resize', onResize);
     setTimeout(onResize, 50);

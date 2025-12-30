@@ -1,14 +1,11 @@
 # main links links
 main:
-  - title: "Research Areas"
-    url: /research-areas/
-
   - title: "Publications"
-    url: /publications/    
-        
+    url: /publications/
+
   # - title: "Blog Posts"
   #   url: /posts/
-    
+
   - title: "CV"
     url: /cv/
 
@@ -20,3 +17,6 @@ main:
 
   # - title: "Constellation Bot"
   #   url: /constellationbot/
+
+  # - title: "Research Areas"
+  #   url: /research-areas/
