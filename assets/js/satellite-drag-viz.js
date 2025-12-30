@@ -63,7 +63,7 @@
     let width, height;
     if (isBackgroundMode) {
       width = window.innerWidth;
-      height = window.innerHeight - 56; // Account for nav bar
+      height = window.innerHeight;
     } else {
       const container = canvas.parentElement;
       const rect = container.getBoundingClientRect();
@@ -506,9 +506,7 @@
 
     if (isBackgroundMode) {
       width = window.innerWidth;
-      height = window.innerHeight - 56;
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
+      height = window.innerHeight;
     } else {
       const container = canvas.parentElement;
       const rect = container.getBoundingClientRect();

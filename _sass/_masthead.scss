@@ -3,17 +3,16 @@
    ========================================================================== */
 
 .masthead {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.85);
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-  -webkit-animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-          animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-  z-index: 1000;
+  -webkit-animation: intro 0.3s both;
+          animation: intro 0.3s both;
+  -webkit-animation-delay: 0.15s;
+          animation-delay: 0.15s;
+  z-index: 20;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   &__inner-wrap {

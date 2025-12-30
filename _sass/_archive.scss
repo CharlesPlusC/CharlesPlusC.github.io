@@ -3,9 +3,7 @@
    ========================================================================== */
 
 .archive {
-  margin-top: 0 !important;
   margin-bottom: 2em;
-  padding-top: 0 !important;
 
   @include breakpoint($medium) {
     @include span(12 of 12);
@@ -14,11 +12,6 @@
   @include breakpoint($large) {
     @include span(10 of 12 last);
     @include prefix(0.5 of 12);
-  }
-
-  h1.page__title:first-child {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
   }
 
   a {

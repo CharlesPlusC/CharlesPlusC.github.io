@@ -11,18 +11,13 @@
           transform: translate3d(0, 0 , 0);
 
   @include clearfix();
-  margin-top: 0 !important;
   margin-bottom: 1.5em;
-  padding-top: 0 !important;
 
   @include breakpoint($large) {
     @include span(2.5 of 12);
     opacity: 1;
-    -webkit-transition: all 0.3s ease;
-            transition: all 0.3s ease;
-    position: sticky;
-    top: 70px;
-    height: fit-content;
+    -webkit-transition: opacity 0.2s ease-in-out;
+            transition: opacity 0.2s ease-in-out;
 
     &:hover {
       opacity: 1;

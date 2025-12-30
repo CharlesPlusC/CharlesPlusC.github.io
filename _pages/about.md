@@ -10,42 +10,31 @@ redirect_from:
 
 <style>
 /* Full-page background animation - edge to edge */
-html, body {
-  overflow-x: hidden;
-}
-
 #satellite-bg-container {
-  position: fixed !important;
-  top: 56px !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: calc(100vh - 56px) !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
   z-index: -1;
   overflow: hidden;
-  margin: 0 !important;
-  padding: 0 !important;
 }
 
 #satellite-bg-container canvas {
-  display: block !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 #satellite-bg-overlay {
-  position: fixed !important;
-  top: 56px !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: calc(100vh - 56px) !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
   background: rgba(255, 255, 255, 0.55);
   z-index: -1;
   pointer-events: none;
-  margin: 0 !important;
-  padding: 0 !important;
 }
 </style>
 
