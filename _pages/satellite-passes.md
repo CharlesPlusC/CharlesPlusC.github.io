@@ -3,9 +3,6 @@ layout: archive
 title: "Meteor-M Weather Satellite Passes"
 permalink: /satellite-passes/
 author_profile: true
-header:
-  overlay_image: NASAreentry.png
-  overlay_filter: 0.3
 ---
 
 <link rel="stylesheet" href="/assets/css/satellite-passes.css">

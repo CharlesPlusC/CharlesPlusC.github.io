@@ -3,9 +3,6 @@ layout: archive
 title: "Publications"
 permalink: /publications/
 author_profile: true
-header:
-  overlay_image: NASAreentry.png
-  overlay_filter: 0.3
 ---
 
 ## Journal & Conference Papers

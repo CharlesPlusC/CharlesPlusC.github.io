@@ -3,9 +3,6 @@ layout: archive
 title: "TLE Density Inversion"
 permalink: /density-inversion/
 author_profile: true
-header:
-  overlay_image: NASAreentry.png
-  overlay_filter: 0.3
 ---
 
 <link rel="stylesheet" href="/assets/css/density-inversion.css">
