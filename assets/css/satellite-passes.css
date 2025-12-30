@@ -1,27 +1,36 @@
 /**
- * Satellite Passes Page Styles
+ * Satellite Passes Page Styles - Modern Space Theme
  * Styles for the Meteor-M weather satellite pass prediction feature
  */
 
 /* Location Picker */
 .location-picker {
-  margin: 20px 0;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
+  margin: 24px 0;
+  padding: 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 16px;
   text-align: center;
   color: white;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 }
 
 .location-picker select {
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 15px;
+  border-radius: 10px;
   border: none;
   margin: 10px 0;
   cursor: pointer;
   background: white;
-  color: #333;
+  color: #1e293b;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.location-picker select:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .location-coords {
@@ -133,12 +142,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  padding: 16px 20px;
+  padding: 18px 24px;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  margin: 20px 0;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  margin: 24px 0;
   align-items: center;
+  border: 1px solid #e2e8f0;
 }
 
 .filter-group {

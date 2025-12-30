@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BUTTONS
+   BUTTONS - Modern Style
    ========================================================================== */
 
 /*
@@ -10,20 +10,28 @@
   /* default button */
   display: inline-block;
   margin-bottom: 0.25em;
-  padding: 0.5em 1em;
+  padding: 0.75em 1.5em;
   color: #fff !important;
   font-family: $sans-serif;
   font-size: $type-size-6;
-  font-weight: bold;
+  font-weight: 600;
   text-align: center;
   text-decoration: none;
-  background-color: $primary-color;
+  background: linear-gradient(135deg, $cosmic-blue 0%, $cosmic-purple 100%);
   border: 0 !important;
   border-radius: $border-radius;
   cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
 
   &:hover {
-    background-color: mix(white, #000, 20%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
   }
 
   .icon {
@@ -48,60 +56,74 @@
   /* for dark backgrounds */
 
   &--inverse {
-    color: $gray !important;
-    border: 1px solid $light-gray !important; /* override*/
-    background-color: #fff;
+    color: $space-dark !important;
+    border: 2px solid $border-color !important;
+    background: #fff;
+    box-shadow: none;
 
     &:hover {
-      color: #fff !important;
-      border-color: $gray;
+      color: $cosmic-blue !important;
+      border-color: $cosmic-blue !important;
+      background: rgba(59, 130, 246, 0.05);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
     }
   }
 
   /* light outline */
 
   &--light-outline {
-    border: 1px solid #fff !important; /* override*/
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
     background-color: transparent;
+    box-shadow: none;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #fff !important;
+    }
   }
 
   /* information */
 
   &--info {
-    background-color: $info-color;
+    background: linear-gradient(135deg, $cosmic-cyan 0%, $aurora-green 100%);
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.25);
 
     &:hover {
-      background-color: mix(#000, $info-color, 20%);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
     }
   }
 
   /* warning */
 
   &--warning {
-    background-color: $warning-color;
+    background: linear-gradient(135deg, $solar-amber 0%, #f97316 100%);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
 
     &:hover {
-      background-color: mix(#000, $warning-color, 20%);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
     }
   }
 
   /* success */
 
   &--success {
-    background-color: $success-color;
+    background: linear-gradient(135deg, $aurora-green 0%, #059669 100%);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
 
     &:hover {
-      background-color: mix(#000, $success-color, 20%);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
     }
   }
 
   /* danger */
 
   &--danger {
-    background-color: $danger-color;
+    background: linear-gradient(135deg, $danger-color 0%, #dc2626 100%);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
 
     &:hover {
-      background-color: mix(#000, $danger-color, 20%);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
     }
   }
 
@@ -110,9 +132,9 @@
   &--disabled {
     pointer-events: none;
     cursor: not-allowed;
-    filter: alpha(opacity=65);
     box-shadow: none;
-    opacity: 0.65;
+    opacity: 0.5;
+    filter: grayscale(0.3);
   }
 
   /* social buttons */
@@ -125,10 +147,11 @@
 
   @each $socialnetwork, $color in $social {
     &--#{$socialnetwork} {
-      background-color: $color;
+      background: $color;
+      box-shadow: 0 2px 8px rgba($color, 0.25);
 
       &:hover {
-        background-color: mix(#000, $color, 20%);
+        box-shadow: 0 6px 20px rgba($color, 0.4);
       }
     }
   }
@@ -137,17 +160,20 @@
 
   &--x-large {
     font-size: $type-size-4;
+    padding: 1em 2em;
   }
 
   /* large button */
 
   &--large {
     font-size: $type-size-5;
+    padding: 0.875em 1.75em;
   }
 
   /* small button */
 
   &--small {
     font-size: $type-size-7;
+    padding: 0.5em 1em;
   }
 }

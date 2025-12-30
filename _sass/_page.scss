@@ -1,26 +1,37 @@
 /* ==========================================================================
-   SINGLE PAGE/POST
+   SINGLE PAGE/POST - Modern Layout
    ========================================================================== */
 
 #main {
   @include container;
   @include clearfix;
-  margin-top: 2em;
-  padding-left: 1em;
-  padding-right: 1em;
-  animation: intro 0.3s both;
-  animation-delay: 0.35s;
+  margin-top: 2.5em;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation-delay: 0.1s;
 
   @include breakpoint($x-large) {
     max-width: $x-large;
   }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .page {
   @include breakpoint($large) {
-    @include span(10 of 12 last);
+    @include span(9 of 12 last);
     @include prefix(0.5 of 12);
-    @include suffix(2 of 12);
+    @include suffix(1 of 12);
   }
 
   .page__inner-wrap {
@@ -36,32 +47,49 @@
 
 .page__title {
   margin-top: 0;
-  line-height: 1;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: $space-dark;
 
   & + .page__meta {
-    margin-top: -0.5em;
+    margin-top: -0.25em;
   }
 }
 
 .page__lead {
   font-family: $global-font-family;
   font-size: $type-size-4;
+  color: $gray;
+  line-height: 1.6;
 }
 
 .page__content {
 
   h2 {
     padding-bottom: 0.5em;
-    border-bottom: 1px solid $border-color;
+    border-bottom: 2px solid $border-color;
+    margin-top: 2.5em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: $space-dark;
+  }
+
+  h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: $space-dark;
   }
 
   p, li, dl {
-    font-size: 1em;
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: $dark-gray;
   }
 
   /* paragraph indents */
   p {
-    margin: 0 0 $indent-var;
+    margin: 0 0 1.5em;
 
     /* sibling indentation*/
     @if $paragraph-indent == true {
@@ -73,13 +101,20 @@
   }
 
   a {
-    text-decoration: underline;
+    text-decoration: none;
+    color: $cosmic-blue;
+    background-image: linear-gradient(to right, $cosmic-blue, $cosmic-purple);
+    background-size: 0% 2px;
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    transition: background-size 0.3s ease, color 0.2s ease;
 
     &:hover {
-      text-decoration: underline;
+      background-size: 100% 2px;
+      color: $cosmic-purple;
 
       img {
-        box-shadow: 0 0 10px rgba(#000, 0.25);
+        box-shadow: $box-shadow-lg;
       }
     }
   }
@@ -87,7 +122,8 @@
   dt {
     margin-top: 1em;
     font-family: $sans-serif;
-    font-weight: bold;
+    font-weight: 600;
+    color: $space-dark;
   }
 
   dd {
@@ -105,10 +141,22 @@
     margin-top: -1.5em;
     padding-left: 1.25rem;
   }
+
+  /* Better image styling */
+  img {
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow-md;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+      box-shadow: $box-shadow-lg;
+      transform: translateY(-2px);
+    }
+  }
 }
 
 .page__hero, .page__hero--overlay {
-  height: 250px;
+  height: 280px;
   width: 100vw;
   position: relative;
   left: 50%;
@@ -116,11 +164,22 @@
   margin-left: -50vw;
   margin-right: -50vw;
   overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+  }
 }
 
 .page__hero-image {
   width: 100%;
-  height: 250px;
+  height: 280px;
   object-fit: cover;
   display: block;
 }
@@ -130,18 +189,19 @@
   bottom: 0;
   right: 0;
   margin: 0 auto;
-  padding: 2px 5px;
+  padding: 6px 12px;
   color: #fff;
   font-family: $caption-font-family;
   font-size: $type-size-7;
-  background: #000;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   text-align: right;
   z-index: 5;
-  opacity: 0.5;
-  border-radius: $border-radius 0 $border-radius 0;
+  border-radius: $border-radius 0 0 0;
 
   @include breakpoint($large) {
-    padding: 5px 10px;
+    padding: 8px 16px;
   }
 
   a {
