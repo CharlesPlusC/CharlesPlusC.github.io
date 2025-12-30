@@ -9,14 +9,16 @@ redirect_from:
 ---
 
 <style>
-/* Full-page background animation */
+/* Full-page background animation - edge to edge */
+html, body {
+  overflow-x: hidden;
+}
+
 #satellite-bg-container {
   position: fixed !important;
   top: 56px !important;
   left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: calc(100vh - 56px) !important;
   z-index: -1;
   overflow: hidden;
@@ -26,17 +28,18 @@ redirect_from:
 
 #satellite-bg-container canvas {
   display: block !important;
-  width: 100vw !important;
-  height: calc(100vh - 56px) !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 #satellite-bg-overlay {
   position: fixed !important;
   top: 56px !important;
   left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: calc(100vh - 56px) !important;
   background: rgba(255, 255, 255, 0.55);
   z-index: -1;

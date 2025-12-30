@@ -11,7 +11,9 @@
           transform: translate3d(0, 0 , 0);
 
   @include clearfix();
+  margin-top: 0;
   margin-bottom: 1.5em;
+  padding-top: 0;
 
   @include breakpoint($large) {
     @include span(2.5 of 12);
@@ -19,7 +21,7 @@
     -webkit-transition: all 0.3s ease;
             transition: all 0.3s ease;
     position: sticky;
-    top: 90px;
+    top: 70px;
     height: fit-content;
 
     &:hover {

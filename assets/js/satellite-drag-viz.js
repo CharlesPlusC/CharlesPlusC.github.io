@@ -75,8 +75,14 @@
     camera.position.set(0, 8, 22);
 
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(width, height);
+    renderer.setSize(width, height, false); // false = don't set CSS style
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // In background mode, ensure canvas fills container
+    if (isBackgroundMode) {
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+    }
 
     controls = new THREE.OrbitControls(camera, canvas);
     controls.enableDamping = true;
@@ -501,6 +507,8 @@
     if (isBackgroundMode) {
       width = window.innerWidth;
       height = window.innerHeight - 56;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
     } else {
       const container = canvas.parentElement;
       const rect = container.getBoundingClientRect();
@@ -510,7 +518,7 @@
 
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
+    renderer.setSize(width, height, false);
 
     [dragGraph, srpGraph].forEach(g => {
       if (g?.parentElement) {
