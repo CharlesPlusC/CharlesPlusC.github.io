@@ -31,9 +31,9 @@
   // SRP tables
   let srpTables = { X: null, Y: null, Z: null };
 
-  // Flow line settings - enhanced for background mode
-  const NUM_LINES = 250;
-  const TRAIL_LENGTH = 60;
+  // Flow line settings
+  const NUM_LINES = 120;
+  const TRAIL_LENGTH = 50;
 
   const canvas = document.getElementById('satellite-canvas');
   const dragGraph = document.getElementById('drag-graph');
@@ -72,7 +72,14 @@
     }
 
     camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    camera.position.set(0, 8, 22);
+    // Position camera behind the satellite (downstream of particle flow)
+    // Particles flow from +X toward -X, so "behind" = negative X side
+    if (isBackgroundMode) {
+      camera.position.set(-18, 4, 8); // Behind and slightly to the side
+      camera.lookAt(2, 0, 0);
+    } else {
+      camera.position.set(0, 8, 22);
+    }
 
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     renderer.setSize(width, height, false); // false = don't set CSS style
@@ -371,14 +378,10 @@
         else if (ay >= ax && ay >= az) normal.set(0, Math.sign(rel.y), 0);
         else normal.set(0, 0, Math.sign(rel.z));
 
+        // Specular reflection: v' = v - 2(v·n)n
         const v = line.velocity;
         const d = v.dot(normal);
         v.sub(normal.clone().multiplyScalar(2 * d));
-
-        // Scatter
-        v.x += (Math.random() - 0.5) * 0.5;
-        v.y += (Math.random() - 0.5) * 0.5;
-        v.z += (Math.random() - 0.5) * 0.5;
         v.normalize();
 
         // Change to vibrant warm color - orange/gold/red
