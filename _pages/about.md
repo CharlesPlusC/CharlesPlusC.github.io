@@ -9,6 +9,12 @@ redirect_from:
 ---
 
 <style>
+/* Make navigation transparent on landing page */
+.masthead {
+  background: transparent !important;
+  border-bottom: none !important;
+}
+
 /* Full-page background animation - edge to edge */
 #satellite-bg-container {
   position: fixed;
