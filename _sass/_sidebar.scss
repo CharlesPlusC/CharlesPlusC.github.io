@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SIDEBAR - Modern Card Design
+   SIDEBAR
    ========================================================================== */
 
 /*
@@ -11,10 +11,10 @@
           transform: translate3d(0, 0 , 0);
 
   @include clearfix();
-  margin-bottom: 1.5em;
+  margin-bottom: 1em;
 
   @include breakpoint($large) {
-    @include span(2.5 of 12);
+    @include span(2 of 12);
     opacity: 1;
     -webkit-transition: opacity 0.2s ease-in-out;
             transition: opacity 0.2s ease-in-out;
@@ -41,7 +41,7 @@
   p, li {
     font-family: $sans-serif;
     font-size: $type-size-6;
-    line-height: 1.6;
+    line-height: 1.5;
   }
 
   img {
@@ -66,39 +66,29 @@
 }
 
 /*
-   Author profile and links - Modern Card Style
+   Author profile and links
    ========================================================================== */
 
 .author__avatar {
   display: table-cell;
   vertical-align: top;
   width: 36px;
+  // set width only, for non-square avatars
+  // height: 36px;
 
   @include breakpoint($large) {
-    display: flex;
-    justify-content: center;
-    width: 100%;
+    display: block;
+    width: auto;
     height: auto;
-    text-align: center;
-    margin-bottom: 1rem;
   }
 
   img {
-    max-width: 150px;
+    max-width: 175px;
     border-radius: 50%;
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     @include breakpoint($large) {
-      padding: 4px;
-      border: 3px solid transparent;
-      background: linear-gradient(#fff, #fff) padding-box,
-                  linear-gradient(135deg, $cosmic-blue, $cosmic-purple) border-box;
-    }
-
-    &:hover {
-      transform: scale(1.03);
-      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.25);
+      padding: 5px;
+      border: 1px solid $border-color;
     }
   }
 }
@@ -115,35 +105,28 @@
     width: 100%;
     padding-left: 0;
     padding-right: 0;
-    text-align: center;
   }
 }
 
 .author__name {
   margin: 0;
-  font-weight: 600;
-  letter-spacing: -0.02em;
 
   @include breakpoint($large) {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 }
 .sidebar .author__name {
   font-family: $sans-serif;
-  font-size: 1.125rem;
-  color: $space-dark;
+  font-size: $type-size-5;
 }
 
 .author__bio {
   margin: 0;
-  color: $gray;
-  line-height: 1.5;
 
   @include breakpoint($large) {
-    margin-top: 0.5rem;
-    margin-bottom: 1.25rem;
-    font-size: 0.9rem;
+    margin-top: 10px;
+    margin-bottom: 20px;
   }
 }
 
@@ -168,19 +151,6 @@
 
   button {
     margin-bottom: 0;
-    background: linear-gradient(135deg, $cosmic-blue, $cosmic-purple);
-    border: none;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: $border-radius;
-    font-weight: 500;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-    }
 
     @include breakpoint($large) {
       display: none;
@@ -193,15 +163,13 @@
   position: absolute;
   right: 0;
   margin-top: 15px;
-  padding: 0.75rem;
+  padding: 10px;
   list-style-type: none;
   border: 1px solid $border-color;
-  border-radius: $border-radius-lg;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  border-radius: $border-radius;
+  background: #fff;
   z-index: -1;
-  box-shadow: $box-shadow-lg;
+  box-shadow: 0 0 10px rgba(#000, 0.25);
   cursor: default;
 
   @include breakpoint($large) {
@@ -211,9 +179,7 @@
     padding: 0;
     border: 0;
     background: transparent;
-    backdrop-filter: none;
     box-shadow: none;
-    text-align: left;
   }
 
   &:before {
@@ -252,34 +218,20 @@
 
   li {
     white-space: nowrap;
-
-    i, .fa, .fas, .fab, .far {
-      color: $gray;
-      width: 1.25rem;
-      text-align: center;
-      margin-right: 0.25rem;
-      transition: color 0.2s ease;
-    }
   }
 
   a {
     display: block;
-    margin-bottom: 0.375rem;
-    padding: 0.375rem 0.5rem;
-    color: $space-dark;
-    font-size: 0.875rem;
+    margin-bottom: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    color: inherit;
+    font-size: $type-size-5;
     text-decoration: none;
-    border-radius: $border-radius;
-    transition: all 0.2s ease;
 
     &:hover {
-      background: rgba(59, 130, 246, 0.08);
-      color: $cosmic-blue;
-      text-decoration: none;
-
-      i, .fa, .fas, .fab, .far {
-        color: $cosmic-blue;
-      }
+      text-decoration: underline;
     }
   }
 }

@@ -12,10 +12,10 @@ $doc-font-size              : 16;
 $paragraph-indent           : false; // true, false (default)
 $indent-var                 : 1.3em;
 
-/* system typefaces - Modern premium stack */
+/* system typefaces */
 $serif                      : Georgia, Times, serif;
-$sans-serif                 : "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-$monospace                  : "JetBrains Mono", "SF Mono", Monaco, Consolas, monospace;
+$sans-serif                 : -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif;
+$monospace                  : Monaco, Consolas, "Lucida Console", monospace;
 
 /* sans serif typefaces */
 $sans-serif-narrow          : $sans-serif;
@@ -30,65 +30,41 @@ $garamond                   : Garamond, serif;
 
 $global-font-family         : $sans-serif;
 $header-font-family         : $sans-serif;
-$caption-font-family        : $sans-serif;
+$caption-font-family        : $serif;
 
-/* type scale - Slightly larger for better readability */
-$type-size-1                : 2.75em;   // ~44px
-$type-size-2                : 2.125em;  // ~34px
-$type-size-3                : 1.75em;   // ~28px
-$type-size-4                : 1.375em;  // ~22px
+/* type scale */
+$type-size-1                : 2.441em;  // ~39.056px
+$type-size-2                : 1.953em;  // ~31.248px
+$type-size-3                : 1.563em;  // ~25.008px
+$type-size-4                : 1.25em;   // ~20px
 $type-size-5                : 1em;      // ~16px
-$type-size-6                : 0.875em;  // ~14px
-$type-size-7                : 0.75em;   // ~12px
+$type-size-6                : 0.75em;   // ~12px
+$type-size-7                : 0.6875em; // ~11px
 $type-size-8                : 0.625em;  // ~10px
 
 
 /*
-   Colors - Space-inspired palette
+   Colors
    ========================================================================== */
 
-/* Base colors */
-$space-black                : #0a0e17;
-$space-navy                 : #0f172a;
-$space-dark                 : #1e293b;
-$space-slate                : #334155;
+$gray                       : #7a8288;
+$dark-gray                  : mix(#000, $gray, 40%);
+$darker-gray                : mix(#000, $gray, 60%);
+$light-gray                 : mix(#fff, $gray, 50%);
+$lighter-gray               : mix(#fff, $gray, 90%);
 
-/* Accent colors - Cosmic palette */
-$cosmic-blue                : #3b82f6;
-$cosmic-purple              : #8b5cf6;
-$cosmic-cyan                : #06b6d4;
-$aurora-green               : #10b981;
-$solar-amber                : #f59e0b;
-$nebula-pink                : #ec4899;
-
-/* Grays - Refined scale */
-$gray                       : #64748b;
-$dark-gray                  : #475569;
-$darker-gray                : #334155;
-$light-gray                 : #94a3b8;
-$lighter-gray               : #e2e8f0;
-$lightest-gray              : #f8fafc;
-
-/* Theme colors */
 $body-color                 : #fff;
 $background-color           : #fff;
-$code-background-color      : #f1f5f9;
-$code-background-color-dark : $space-dark;
-$text-color                 : $space-dark;
-$text-muted                 : $gray;
-$border-color               : #e2e8f0;
+$code-background-color      : #fafafa;
+$code-background-color-dark : $light-gray;
+$text-color                 : $dark-gray;
+$border-color               : $lighter-gray;
 
-/* Primary and semantic colors */
-$primary-color              : $cosmic-blue;
-$success-color              : $aurora-green;
-$warning-color              : $solar-amber;
-$danger-color               : #ef4444;
-$info-color                 : $cosmic-cyan;
-
-/* Gradient definitions */
-$gradient-primary           : linear-gradient(135deg, $cosmic-blue 0%, $cosmic-purple 100%);
-$gradient-dark              : linear-gradient(135deg, $space-navy 0%, $space-dark 100%);
-$gradient-aurora            : linear-gradient(135deg, $cosmic-cyan 0%, $aurora-green 100%);
+$primary-color              : #7a8288;
+$success-color              : #62c462;
+$warning-color              : #f89406;
+$danger-color               : #ee5f5b;
+$info-color                 : #52adc8;
 
 /* brands */
 $behance-color              : #1769FF;
@@ -114,11 +90,11 @@ $xing-color                 : #006567;
 
 
 /* links */
-$link-color                 : $cosmic-blue;
-$link-color-hover           : $cosmic-purple;
-$link-color-visited         : mix($cosmic-blue, $cosmic-purple, 50%);
-$masthead-link-color        : $space-dark;
-$masthead-link-color-hover  : $cosmic-blue;
+$link-color                 : $info-color;
+$link-color-hover           : mix(#000, $link-color, 25%);
+$link-color-visited         : mix(#fff, $link-color, 25%);
+$masthead-link-color        : $primary-color;
+$masthead-link-color-hover  : mix(#000, $primary-color, 25%);
 
 
 /*
@@ -170,13 +146,8 @@ $susy: (
    Other
    ========================================================================== */
 
-$border-radius              : 8px;
-$border-radius-lg           : 16px;
-$border-radius-xl           : 24px;
-$box-shadow                 : 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-$box-shadow-md              : 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$box-shadow-lg              : 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-$box-shadow-xl              : 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+$border-radius              : 4px;
+$box-shadow                 : 0 1px 1px rgba(0, 0, 0, 0.125);
 $navicon-width              : 28px;
 $navicon-height             : 4px;
-$global-transition          : all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+$global-transition          : all 0.2s ease-in-out;

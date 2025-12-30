@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FOOTER - Modern Dark Theme
+   FOOTER
    ========================================================================== */
 
 .page__footer {
@@ -14,22 +14,22 @@
   bottom: 0em;
   height: auto;
   /* sticky footer fix end */
-  margin-top: 4em;
-  color: rgba(255, 255, 255, 0.7);
+  margin-top: 3em;
+  color: mix(#fff, $gray, 25%);
   -webkit-animation: intro 0.3s both;
           animation: intro 0.3s both;
   -webkit-animation-delay: 0.45s;
           animation-delay: 0.45s;
-  background: linear-gradient(135deg, $space-navy 0%, $space-dark 100%);
-  border-top: none;
+  background-color: $lighter-gray;
+  border-top: 1px solid $light-gray;
 
   footer {
     @include clearfix;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 0;
+    margin-top: 2em;
     max-width: 100%;
-    padding: 1.5em 1.5em;
+    padding: 0 1em 2em;
 
     @include breakpoint($x-large) {
       max-width: $x-large;
@@ -37,13 +37,11 @@
   }
 
   a {
-    color: rgba(255, 255, 255, 0.8);
+    color: inherit;
     text-decoration: none;
-    transition: color 0.2s ease;
 
     &:hover {
-      color: $cosmic-cyan;
-      text-decoration: none;
+      text-decoration: underline;
     }
   }
 
@@ -51,23 +49,44 @@
   .fab,
   .far,
   .fal {
-    color: rgba(255, 255, 255, 0.6);
-    transition: color 0.2s ease;
-  }
-
-  a:hover {
-    .fas,
-    .fab,
-    .far,
-    .fal {
-      color: $cosmic-cyan;
-    }
+    color: mix(#fff, $gray, 25%);
   }
 }
 
 .page__footer-copyright {
   font-family: $global-font-family;
   font-size: $type-size-7;
-  color: rgba(255, 255, 255, 0.6);
-  text-align: center;
+}
+
+.page__footer-follow {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  li {
+    display: inline-block;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-family: $sans-serif-narrow;
+    font-size: $type-size-6;
+    text-transform: uppercase;
+  }
+
+  li + li:before {
+    content: "";
+    padding-right: 5px;
+  }
+
+  a {
+    padding-right: 10px;
+    font-weight: bold;
+  }
+
+  .social-icons {
+    a {
+      white-space: nowrap;
+    }
+  }
 }
