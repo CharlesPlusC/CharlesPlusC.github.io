@@ -31,9 +31,9 @@
   // SRP tables
   let srpTables = { X: null, Y: null, Z: null };
 
-  // Flow line settings
-  const NUM_LINES = 120;
-  const TRAIL_LENGTH = 40;
+  // Flow line settings - enhanced for background mode
+  const NUM_LINES = 250;
+  const TRAIL_LENGTH = 60;
 
   const canvas = document.getElementById('satellite-canvas');
   const dragGraph = document.getElementById('drag-graph');
@@ -111,6 +111,11 @@
 
     loadSatellite();
     createFlowLines();
+
+    // Add stars in background mode for more visual appeal
+    if (isBackgroundMode) {
+      createStarField();
+    }
 
     sunRayGroup = new THREE.Group();
     if (!isBackgroundMode) {
@@ -213,6 +218,58 @@
     setTimeout(updateSunRays, 100);
   }
 
+  function createStarField() {
+    const starGeometry = new THREE.BufferGeometry();
+    const starCount = 500;
+    const positions = new Float32Array(starCount * 3);
+    const colors = new Float32Array(starCount * 3);
+    const sizes = new Float32Array(starCount);
+
+    for (let i = 0; i < starCount; i++) {
+      // Spread stars in a large sphere around the scene
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const radius = 80 + Math.random() * 120;
+
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = radius * Math.cos(phi);
+
+      // Subtle color variation - mostly white with hints of blue/gold
+      const colorChoice = Math.random();
+      if (colorChoice < 0.7) {
+        colors[i * 3] = 0.9 + Math.random() * 0.1;
+        colors[i * 3 + 1] = 0.9 + Math.random() * 0.1;
+        colors[i * 3 + 2] = 1.0;
+      } else if (colorChoice < 0.85) {
+        colors[i * 3] = 0.6 + Math.random() * 0.2;
+        colors[i * 3 + 1] = 0.7 + Math.random() * 0.2;
+        colors[i * 3 + 2] = 1.0;
+      } else {
+        colors[i * 3] = 1.0;
+        colors[i * 3 + 1] = 0.9 + Math.random() * 0.1;
+        colors[i * 3 + 2] = 0.7 + Math.random() * 0.2;
+      }
+
+      sizes[i] = 0.5 + Math.random() * 1.5;
+    }
+
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    starGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+    const starMaterial = new THREE.PointsMaterial({
+      size: 1.2,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8,
+      sizeAttenuation: true
+    });
+
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+  }
+
   function createFlowLines() {
     for (let i = 0; i < NUM_LINES; i++) {
       const line = createFlowLine(i / NUM_LINES);
@@ -249,20 +306,25 @@
       trail.push(new THREE.Vector3(startX + j * 0.3, y, z));
     }
 
+    // More vibrant color palette - cyan to blue range
+    const hue = 0.5 + Math.random() * 0.15; // Cyan to blue
+    const saturation = 0.7 + Math.random() * 0.3;
+    const lightness = 0.5 + Math.random() * 0.15;
+
     return {
       mesh,
       trail,
       velocity: new THREE.Vector3(-1, 0, 0),
       reflected: false,
       age: 0,
-      baseColor: new THREE.Color().setHSL(0.55 + Math.random() * 0.08, 0.6, 0.55)
+      baseColor: new THREE.Color().setHSL(hue, saturation, lightness)
     };
   }
 
   function resetFlowLine(line) {
     const startX = 20 + Math.random() * 5;
-    const y = (Math.random() - 0.5) * 14;
-    const z = (Math.random() - 0.5) * 14;
+    const y = (Math.random() - 0.5) * 16;
+    const z = (Math.random() - 0.5) * 16;
 
     for (let j = 0; j < TRAIL_LENGTH; j++) {
       line.trail[j].set(startX + j * 0.2, y, z);
@@ -271,7 +333,9 @@
     line.velocity.set(-1, 0, 0);
     line.reflected = false;
     line.age = 0;
-    line.baseColor.setHSL(0.55 + Math.random() * 0.08, 0.6, 0.55);
+    // Fresh cyan/blue color
+    const hue = 0.5 + Math.random() * 0.15;
+    line.baseColor.setHSL(hue, 0.7 + Math.random() * 0.3, 0.5 + Math.random() * 0.15);
   }
 
   function updateFlowLines(delta) {
@@ -317,8 +381,9 @@
         v.z += (Math.random() - 0.5) * 0.5;
         v.normalize();
 
-        // Change to warm color
-        line.baseColor.setHSL(0.08 + Math.random() * 0.05, 0.8, 0.55);
+        // Change to vibrant warm color - orange/gold/red
+        const warmHue = Math.random() < 0.5 ? 0.05 + Math.random() * 0.08 : 0.12 + Math.random() * 0.05;
+        line.baseColor.setHSL(warmHue, 0.9 + Math.random() * 0.1, 0.55 + Math.random() * 0.1);
       }
 
       // Cascade trail positions (each point follows the one ahead)
