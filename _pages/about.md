@@ -10,14 +10,17 @@ redirect_from:
 
 <style>
 /* Make navigation fully transparent on landing page */
-.masthead {
+.masthead,
+.masthead__inner-wrap,
+.masthead__menu,
+.greedy-nav,
+.greedy-nav__toggle,
+.visible-links,
+.hidden-links {
   background: transparent !important;
   background-color: transparent !important;
-  border-bottom: none !important;
+  border: none !important;
   box-shadow: none !important;
-}
-.masthead__inner-wrap {
-  background: transparent !important;
 }
 
 /* Full-page background animation - edge to edge */
