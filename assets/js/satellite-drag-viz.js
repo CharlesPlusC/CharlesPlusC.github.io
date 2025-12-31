@@ -1,14 +1,14 @@
 /**
  * Satellite Drag & SRP Visualization
- * Elegant flowing particle trails inspired by wind maps
+ * Double helix formation flying with elegant trails
  */
 
 (function() {
   'use strict';
 
   let scene, camera, renderer, controls;
-  let satellite = null;
-  let satelliteMeshes = [];
+  let satellites = [];
+  let satelliteTrails = [];
   let flowLines = [];
   let sunRayGroup = null;
 
@@ -31,9 +31,22 @@
   // SRP tables
   let srpTables = { X: null, Y: null, Z: null };
 
-  // Flow line settings
-  const NUM_LINES = 120;
-  const TRAIL_LENGTH = 50;
+  // Double helix parameters
+  const HELIX_RADIUS = 4;
+  const HELIX_SPEED = 0.3;
+  const HELIX_PITCH = 0.5;
+  let helixTime = 0;
+
+  // Trail settings
+  const TRAIL_LENGTH = 80;
+  const TRAIL_COLORS = [
+    new THREE.Color(0x3b82f6), // Blue
+    new THREE.Color(0x8b5cf6)  // Purple
+  ];
+
+  // Flow line settings (reduced for cleaner look)
+  const NUM_LINES = 60;
+  const FLOW_TRAIL_LENGTH = 40;
 
   const canvas = document.getElementById('satellite-canvas');
   const dragGraph = document.getElementById('drag-graph');
@@ -51,15 +64,13 @@
   const isBackgroundMode = !velocitySlider;
 
   init();
-  loadSRPTables();
+  if (!isBackgroundMode) loadSRPTables();
   animate();
 
   function init() {
     scene = new THREE.Scene();
-    // Use darker background for hero section, lighter for standalone viz
-    scene.background = isBackgroundMode ? new THREE.Color(0x0f172a) : new THREE.Color(0x0f172a);
+    scene.background = new THREE.Color(0x0f172a);
 
-    // In background mode, use full viewport dimensions
     let width, height;
     if (isBackgroundMode) {
       width = window.innerWidth;
@@ -72,20 +83,17 @@
     }
 
     camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    // Position camera behind the satellite (downstream of particle flow)
-    // Particles flow from +X toward -X, so "behind" = negative X side
     if (isBackgroundMode) {
-      camera.position.set(-18, 4, 8); // Behind and slightly to the side
-      camera.lookAt(2, 0, 0);
+      camera.position.set(0, 8, 20);
+      camera.lookAt(0, 0, 0);
     } else {
       camera.position.set(0, 8, 22);
     }
 
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(width, height, false); // false = don't set CSS style
+    renderer.setSize(width, height, false);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // In background mode, ensure canvas fills container
     if (isBackgroundMode) {
       canvas.style.width = '100%';
       canvas.style.height = '100%';
@@ -97,29 +105,33 @@
     controls.minDistance = 10;
     controls.maxDistance = 40;
 
-    // Auto-rotate in background mode
     if (isBackgroundMode) {
       controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.5; // Slow rotation
+      controls.autoRotateSpeed = 0.3;
       controls.enableZoom = false;
       controls.enablePan = false;
     }
 
-    // Soft, pleasant lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.6);
     keyLight.position.set(5, 10, 8);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xaaccff, 0.25);
+    const fillLight = new THREE.DirectionalLight(0xaaccff, 0.3);
     fillLight.position.set(-8, 5, -5);
     scene.add(fillLight);
 
-    loadSatellite();
-    createFlowLines();
+    // Create two satellites for double helix
+    if (isBackgroundMode) {
+      createHelixSatellites();
+      createSatelliteTrails();
+    } else {
+      loadSingleSatellite();
+      createFlowLines();
+    }
 
-    // Add stars in background mode for more visual appeal
     if (isBackgroundMode) {
       createStarField();
     }
@@ -129,7 +141,7 @@
       scene.add(sunRayGroup);
     }
 
-    // Events - only bind if controls exist
+    // Events
     if (velocitySlider) {
       velocitySlider.addEventListener('input', (e) => {
         velocity = parseInt(e.target.value);
@@ -157,11 +169,189 @@
     setTimeout(onResize, 50);
   }
 
-  function loadSatellite() {
+  function createHelixSatellites() {
+    const loader = new THREE.OBJLoader();
+
+    // Load two satellites
+    for (let i = 0; i < 2; i++) {
+      const phaseOffset = i * Math.PI; // 180 degrees apart
+
+      loader.load('/data/gps2f_boxwing.obj', (obj) => {
+        const sat = obj.clone();
+
+        const busMat = new THREE.MeshPhongMaterial({
+          color: i === 0 ? 0xd8dce3 : 0xe0e4eb,
+          specular: 0x888888,
+          shininess: 60,
+          emissive: TRAIL_COLORS[i],
+          emissiveIntensity: 0.1
+        });
+
+        const panelMat = new THREE.MeshPhongMaterial({
+          color: i === 0 ? 0x1e3a6e : 0x2d1b69,
+          specular: 0x445577,
+          shininess: 30
+        });
+
+        sat.traverse((child) => {
+          if (child.isMesh) {
+            child.material = child.name.includes('Arr') ? panelMat : busMat;
+          }
+        });
+
+        // Center and scale
+        const box = new THREE.Box3().setFromObject(sat);
+        const center = box.getCenter(new THREE.Vector3());
+        sat.position.sub(center);
+
+        const size = box.getSize(new THREE.Vector3());
+        const scale = 3 / Math.max(size.x, size.y, size.z);
+        sat.scale.setScalar(scale);
+
+        sat.userData.phaseOffset = phaseOffset;
+        sat.userData.index = i;
+
+        satellites.push(sat);
+        scene.add(sat);
+      }, undefined, () => createFallbackHelixSatellite(i, phaseOffset));
+    }
+  }
+
+  function createFallbackHelixSatellite(index, phaseOffset) {
+    const group = new THREE.Group();
+
+    const busMat = new THREE.MeshPhongMaterial({
+      color: index === 0 ? 0xd8dce3 : 0xe0e4eb,
+      specular: 0x888888,
+      shininess: 60,
+      emissive: TRAIL_COLORS[index],
+      emissiveIntensity: 0.1
+    });
+
+    const panelMat = new THREE.MeshPhongMaterial({
+      color: index === 0 ? 0x1e3a6e : 0x2d1b69,
+      specular: 0x445577,
+      shininess: 30
+    });
+
+    const bus = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.5), busMat);
+    group.add(bus);
+
+    const panelGeo = new THREE.BoxGeometry(0.08, 4, 1.5);
+    [-2.5, 2.5].forEach(x => {
+      const panel = new THREE.Mesh(panelGeo, panelMat);
+      panel.position.set(x, 0, 0);
+      group.add(panel);
+    });
+
+    group.userData.phaseOffset = phaseOffset;
+    group.userData.index = index;
+
+    satellites.push(group);
+    scene.add(group);
+  }
+
+  function createSatelliteTrails() {
+    for (let i = 0; i < 2; i++) {
+      const positions = new Float32Array(TRAIL_LENGTH * 3);
+      const colors = new Float32Array(TRAIL_LENGTH * 3);
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const material = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.9,
+        linewidth: 2
+      });
+
+      const mesh = new THREE.Line(geometry, material);
+
+      // Initialize trail positions
+      const trail = [];
+      for (let j = 0; j < TRAIL_LENGTH; j++) {
+        trail.push(new THREE.Vector3(0, 0, 0));
+      }
+
+      satelliteTrails.push({
+        mesh,
+        trail,
+        baseColor: TRAIL_COLORS[i]
+      });
+
+      scene.add(mesh);
+    }
+  }
+
+  function updateHelixPositions(delta) {
+    helixTime += delta * HELIX_SPEED;
+
+    satellites.forEach((sat, i) => {
+      if (!sat) return;
+
+      const phase = helixTime + sat.userData.phaseOffset;
+
+      // Double helix position
+      const x = Math.cos(phase) * HELIX_RADIUS;
+      const y = Math.sin(phase) * HELIX_RADIUS;
+      const z = Math.sin(phase * HELIX_PITCH) * 2; // Gentle Z oscillation
+
+      sat.position.set(x, y, z);
+
+      // Rotate satellite to face direction of travel
+      sat.rotation.z = phase + Math.PI / 2;
+      sat.rotation.x = Math.sin(helixTime * 0.5) * 0.1; // Gentle wobble
+    });
+  }
+
+  function updateSatelliteTrails() {
+    satellites.forEach((sat, i) => {
+      if (!sat || !satelliteTrails[i]) return;
+
+      const trail = satelliteTrails[i];
+
+      // Shift trail positions
+      for (let j = TRAIL_LENGTH - 1; j > 0; j--) {
+        trail.trail[j].copy(trail.trail[j - 1]);
+      }
+
+      // Add current position to head
+      trail.trail[0].copy(sat.position);
+
+      // Update geometry
+      const positions = trail.mesh.geometry.attributes.position.array;
+      const colors = trail.mesh.geometry.attributes.color.array;
+
+      for (let j = 0; j < TRAIL_LENGTH; j++) {
+        const idx = j * 3;
+        positions[idx] = trail.trail[j].x;
+        positions[idx + 1] = trail.trail[j].y;
+        positions[idx + 2] = trail.trail[j].z;
+
+        // Gradient fade along trail
+        const t = j / (TRAIL_LENGTH - 1);
+        const fade = Math.pow(1 - t, 2);
+
+        // Glow effect - brighter at head
+        const glow = j < 5 ? 1.2 - j * 0.04 : 1;
+
+        colors[idx] = trail.baseColor.r * fade * glow;
+        colors[idx + 1] = trail.baseColor.g * fade * glow;
+        colors[idx + 2] = trail.baseColor.b * fade * glow;
+      }
+
+      trail.mesh.geometry.attributes.position.needsUpdate = true;
+      trail.mesh.geometry.attributes.color.needsUpdate = true;
+    });
+  }
+
+  // Keep original single satellite for non-background mode
+  function loadSingleSatellite() {
     const loader = new THREE.OBJLoader();
     loader.load('/data/gps2f_boxwing.obj', (obj) => {
-      satellite = obj;
-      satelliteMeshes = [];
+      const sat = obj;
 
       const busMat = new THREE.MeshPhongMaterial({
         color: 0xd8dce3,
@@ -175,74 +365,64 @@
         shininess: 30
       });
 
-      satellite.traverse((child) => {
+      sat.traverse((child) => {
         if (child.isMesh) {
-          satelliteMeshes.push(child);
           child.material = child.name.includes('Arr') ? panelMat : busMat;
         }
       });
 
-      // Center and scale
-      const box = new THREE.Box3().setFromObject(satellite);
+      const box = new THREE.Box3().setFromObject(sat);
       const center = box.getCenter(new THREE.Vector3());
-      satellite.position.sub(center);
+      sat.position.sub(center);
 
       const size = box.getSize(new THREE.Vector3());
       const scale = 5 / Math.max(size.x, size.y, size.z);
-      satellite.scale.setScalar(scale);
+      sat.scale.setScalar(scale);
+      sat.rotation.y = Math.PI / 2;
 
-      // Rotate 90° around Y so panel flat faces are perpendicular to flow (X axis)
-      satellite.rotation.y = Math.PI / 2;
-
-      scene.add(satellite);
+      satellites.push(sat);
+      scene.add(sat);
       setTimeout(updateSunRays, 100);
-    }, undefined, createFallbackSatellite);
+    }, undefined, createFallbackSingleSatellite);
   }
 
-  function createFallbackSatellite() {
+  function createFallbackSingleSatellite() {
     const group = new THREE.Group();
-    satelliteMeshes = [];
 
     const busMat = new THREE.MeshPhongMaterial({ color: 0xd8dce3, specular: 0x888888, shininess: 60 });
     const panelMat = new THREE.MeshPhongMaterial({ color: 0x1e3a6e, specular: 0x445577, shininess: 30 });
 
     const bus = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2.5), busMat);
-    satelliteMeshes.push(bus);
     group.add(bus);
 
-    // Panels that will face flow after rotation
     const panelGeo = new THREE.BoxGeometry(0.1, 7, 2.5);
     [-4, 4].forEach(x => {
       const panel = new THREE.Mesh(panelGeo, panelMat);
       panel.position.set(x, 0, 0);
-      satelliteMeshes.push(panel);
       group.add(panel);
     });
 
     group.rotation.y = Math.PI / 2;
-    satellite = group;
-    scene.add(satellite);
+    satellites.push(group);
+    scene.add(group);
     setTimeout(updateSunRays, 100);
   }
 
   function createStarField() {
     const starGeometry = new THREE.BufferGeometry();
-    const starCount = 500;
+    const starCount = 600;
     const positions = new Float32Array(starCount * 3);
     const colors = new Float32Array(starCount * 3);
-    const sizes = new Float32Array(starCount);
 
     for (let i = 0; i < starCount; i++) {
-      // Spread stars in a large sphere around the scene
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const radius = 80 + Math.random() * 120;
+      const radius = 60 + Math.random() * 140;
 
       positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       positions[i * 3 + 2] = radius * Math.cos(phi);
 
-      // Subtle color variation - mostly white with hints of blue/gold
       const colorChoice = Math.random();
       if (colorChoice < 0.7) {
         colors[i * 3] = 0.9 + Math.random() * 0.1;
@@ -257,16 +437,13 @@
         colors[i * 3 + 1] = 0.9 + Math.random() * 0.1;
         colors[i * 3 + 2] = 0.7 + Math.random() * 0.2;
       }
-
-      sizes[i] = 0.5 + Math.random() * 1.5;
     }
 
     starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    starGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     const starMaterial = new THREE.PointsMaterial({
-      size: 1.2,
+      size: 1.0,
       vertexColors: true,
       transparent: true,
       opacity: 0.8,
@@ -286,9 +463,8 @@
   }
 
   function createFlowLine(offset) {
-    // Trail positions
-    const positions = new Float32Array(TRAIL_LENGTH * 3);
-    const colors = new Float32Array(TRAIL_LENGTH * 3);
+    const positions = new Float32Array(FLOW_TRAIL_LENGTH * 3);
+    const colors = new Float32Array(FLOW_TRAIL_LENGTH * 3);
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -297,24 +473,21 @@
     const material = new THREE.LineBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.85,
-      linewidth: 1
+      opacity: 0.85
     });
 
     const mesh = new THREE.Line(geometry, material);
 
-    // Initialize trail
     const startX = 18 - offset * 35;
     const y = (Math.random() - 0.5) * 14;
     const z = (Math.random() - 0.5) * 14;
 
     const trail = [];
-    for (let j = 0; j < TRAIL_LENGTH; j++) {
+    for (let j = 0; j < FLOW_TRAIL_LENGTH; j++) {
       trail.push(new THREE.Vector3(startX + j * 0.3, y, z));
     }
 
-    // More vibrant color palette - cyan to blue range
-    const hue = 0.5 + Math.random() * 0.15; // Cyan to blue
+    const hue = 0.5 + Math.random() * 0.15;
     const saturation = 0.7 + Math.random() * 0.3;
     const lightness = 0.5 + Math.random() * 0.15;
 
@@ -333,24 +506,25 @@
     const y = (Math.random() - 0.5) * 16;
     const z = (Math.random() - 0.5) * 16;
 
-    for (let j = 0; j < TRAIL_LENGTH; j++) {
+    for (let j = 0; j < FLOW_TRAIL_LENGTH; j++) {
       line.trail[j].set(startX + j * 0.2, y, z);
     }
 
     line.velocity.set(-1, 0, 0);
     line.reflected = false;
     line.age = 0;
-    // Fresh cyan/blue color
     const hue = 0.5 + Math.random() * 0.15;
     line.baseColor.setHSL(hue, 0.7 + Math.random() * 0.3, 0.5 + Math.random() * 0.15);
   }
 
   function updateFlowLines(delta) {
-    if (!satellite) return;
+    if (!satellites.length) return;
 
     const speed = (velocity / 7000) * 22 * delta;
+    const sat = satellites[0];
+    if (!sat) return;
 
-    const satBox = new THREE.Box3().setFromObject(satellite);
+    const satBox = new THREE.Box3().setFromObject(sat);
     const satCenter = satBox.getCenter(new THREE.Vector3());
     const satSize = satBox.getSize(new THREE.Vector3());
     satBox.expandByScalar(0.2);
@@ -358,16 +532,13 @@
     flowLines.forEach(line => {
       line.age += delta;
 
-      // Move head of trail
       const head = line.trail[0];
       head.addScaledVector(line.velocity, speed);
 
-      // Collision detection
       if (!line.reflected && satBox.containsPoint(head)) {
         line.reflected = true;
         line.age = 0;
 
-        // Reflection
         const rel = head.clone().sub(satCenter);
         const ax = Math.abs(rel.x) / (satSize.x || 1);
         const ay = Math.abs(rel.y) / (satSize.y || 1);
@@ -378,37 +549,30 @@
         else if (ay >= ax && ay >= az) normal.set(0, Math.sign(rel.y), 0);
         else normal.set(0, 0, Math.sign(rel.z));
 
-        // Specular reflection: v' = v - 2(v·n)n
         const v = line.velocity;
         const d = v.dot(normal);
         v.sub(normal.clone().multiplyScalar(2 * d));
         v.normalize();
 
-        // Change to vibrant warm color - orange/gold/red
         const warmHue = Math.random() < 0.5 ? 0.05 + Math.random() * 0.08 : 0.12 + Math.random() * 0.05;
         line.baseColor.setHSL(warmHue, 0.9 + Math.random() * 0.1, 0.55 + Math.random() * 0.1);
       }
 
-      // Cascade trail positions (each point follows the one ahead)
-      for (let j = TRAIL_LENGTH - 1; j > 0; j--) {
+      for (let j = FLOW_TRAIL_LENGTH - 1; j > 0; j--) {
         line.trail[j].copy(line.trail[j - 1]);
       }
 
-      // Update geometry
       const positions = line.mesh.geometry.attributes.position.array;
       const colors = line.mesh.geometry.attributes.color.array;
 
-      for (let j = 0; j < TRAIL_LENGTH; j++) {
+      for (let j = 0; j < FLOW_TRAIL_LENGTH; j++) {
         const idx = j * 3;
         positions[idx] = line.trail[j].x;
         positions[idx + 1] = line.trail[j].y;
         positions[idx + 2] = line.trail[j].z;
 
-        // Gradient: bright at head, fading toward tail
-        const t = j / (TRAIL_LENGTH - 1);
+        const t = j / (FLOW_TRAIL_LENGTH - 1);
         const fade = Math.pow(1 - t, 1.5);
-
-        // Fade out after reflection
         const reflectFade = line.reflected ? Math.max(0, 1 - line.age * 0.4) : 1;
         const alpha = fade * reflectFade;
 
@@ -420,7 +584,6 @@
       line.mesh.geometry.attributes.position.needsUpdate = true;
       line.mesh.geometry.attributes.color.needsUpdate = true;
 
-      // Reset if out of bounds
       if (head.x < -20 || head.x > 30 || Math.abs(head.y) > 18 || Math.abs(head.z) > 18) {
         resetFlowLine(line);
       }
@@ -428,7 +591,9 @@
   }
 
   function updateSunRays() {
-    if (!satellite) return;
+    if (!satellites.length) return;
+    const sat = satellites[0];
+    if (!sat) return;
 
     while (sunRayGroup.children.length) sunRayGroup.remove(sunRayGroup.children[0]);
 
@@ -440,7 +605,7 @@
       Math.cos(latRad) * Math.sin(lonRad)
     ).normalize();
 
-    const box = new THREE.Box3().setFromObject(satellite);
+    const box = new THREE.Box3().setFromObject(sat);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
 
@@ -536,7 +701,6 @@
     const max = Math.max(...vals) * 1.05;
     const range = max - min || 1;
 
-    // Grid
     ctx.strokeStyle = '#e2e8f0';
     for (let i = 0; i <= 3; i++) {
       ctx.beginPath();
@@ -545,7 +709,6 @@
       ctx.stroke();
     }
 
-    // Line with gradient
     const grad = ctx.createLinearGradient(0, 0, w, 0);
     grad.addColorStop(0, color + '40');
     grad.addColorStop(1, color);
@@ -560,7 +723,6 @@
     });
     ctx.stroke();
 
-    // Value label
     ctx.fillStyle = '#374151';
     ctx.font = '10px SF Mono, Monaco, monospace';
     ctx.textAlign = 'right';
@@ -604,22 +766,24 @@
 
     controls.update();
 
-    // Slowly rotate satellite about itself
-    if (satellite) {
-      satellite.rotation.y += delta * 0.15; // Slow rotation
-    }
+    if (isBackgroundMode) {
+      // Double helix animation
+      updateHelixPositions(delta);
+      updateSatelliteTrails();
+    } else {
+      // Original flow lines for interactive mode
+      updateFlowLines(delta);
 
-    updateFlowLines(delta);
+      if (!dragHistory.length || now - dragHistory[dragHistory.length-1].time > 100) {
+        dragHistory.push({ time: now, value: calculateDrag() });
+        if (dragHistory.length > MAX_HISTORY) dragHistory.shift();
 
-    if (!dragHistory.length || now - dragHistory[dragHistory.length-1].time > 100) {
-      dragHistory.push({ time: now, value: calculateDrag() });
-      if (dragHistory.length > MAX_HISTORY) dragHistory.shift();
+        srpHistory.push({ time: now, value: calculateSRP() });
+        if (srpHistory.length > MAX_HISTORY) srpHistory.shift();
 
-      srpHistory.push({ time: now, value: calculateSRP() });
-      if (srpHistory.length > MAX_HISTORY) srpHistory.shift();
-
-      updateGraph(dragGraph, dragHistory, '#3b82f6');
-      updateGraph(srpGraph, srpHistory, '#f59e0b');
+        updateGraph(dragGraph, dragHistory, '#3b82f6');
+        updateGraph(srpGraph, srpHistory, '#f59e0b');
+      }
     }
 
     renderer.render(scene, camera);
