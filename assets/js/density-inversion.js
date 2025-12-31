@@ -1,6 +1,6 @@
 /**
- * TLE Density Inversion - Simple Dashboard
- * Single page: Stats, Activity Grid, All Satellites Chart
+ * TLE Density Inversion - Minimal Dashboard
+ * Activity Grid + All Satellites Chart
  */
 
 const SATELLITES = {
@@ -13,14 +13,13 @@ const SATELLITES = {
 
 let allData = {};
 let kpData = null;
-let heatmapPeriod = 'month';
+let heatmapPeriod = 'year';
 
 document.addEventListener('DOMContentLoaded', loadAllData);
 
 async function loadAllData() {
   const status = document.getElementById('status');
 
-  // Load satellite data
   for (const noradId of Object.keys(SATELLITES)) {
     try {
       const response = await fetch(`/data/density-${noradId}.json`);
@@ -32,7 +31,6 @@ async function loadAllData() {
     }
   }
 
-  // Load Kp data
   try {
     const kpResponse = await fetch('/data/kp-index.json');
     if (kpResponse.ok) {
@@ -46,7 +44,6 @@ async function loadAllData() {
 
   if (loadedCount > 0) {
     status.classList.add('hidden');
-    updateStats();
     renderActivityGrid();
     renderComparisonChart();
   } else {
@@ -55,28 +52,10 @@ async function loadAllData() {
   }
 }
 
-function updateStats() {
-  if (kpData && kpData.values && kpData.values.length > 0) {
-    const latestKp = kpData.values[kpData.values.length - 1];
-    document.getElementById('stat-kp').textContent = latestKp.toFixed(1);
-
-    let activity = 'Quiet';
-    if (latestKp >= 7) activity = 'Severe';
-    else if (latestKp >= 5) activity = 'Storm';
-    else if (latestKp >= 4) activity = 'Active';
-    document.getElementById('stat-activity').textContent = activity;
-  }
-}
-
 function setHeatmapPeriod(period) {
   heatmapPeriod = period;
-
-  // Update button states
-  document.querySelectorAll('.period-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
+  document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
   event.currentTarget.classList.add('active');
-
   renderActivityGrid();
 }
 
@@ -88,25 +67,17 @@ function renderActivityGrid() {
 
   container.innerHTML = '';
 
-  // Calculate date range based on period
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
   let numDays;
   switch (heatmapPeriod) {
-    case 'week':
-      numDays = 7;
-      break;
-    case 'year':
-      numDays = 365;
-      break;
-    case 'month':
-    default:
-      numDays = 30;
-      break;
+    case 'week': numDays = 7; break;
+    case 'month': numDays = 30; break;
+    case 'year': default: numDays = 365; break;
   }
 
-  // Generate date array (from oldest to newest)
+  // Generate dates from oldest to newest
   const dates = [];
   for (let i = numDays - 1; i >= 0; i--) {
     const d = new Date(now);
@@ -114,7 +85,7 @@ function renderActivityGrid() {
     dates.push(d.toISOString().split('T')[0]);
   }
 
-  // Process each satellite
+  // Render satellite rows
   Object.entries(SATELLITES)
     .sort((a, b) => a[1].order - b[1].order)
     .forEach(([noradId, sat]) => {
@@ -129,7 +100,7 @@ function renderActivityGrid() {
         dayBins[dayKey].push(data.densities[i]);
       });
 
-      // Get min/max for normalization (use all data for consistent scale)
+      // Log scale normalization per satellite
       const allDensities = data.densities.filter(d => d > 0);
       if (allDensities.length === 0) return;
 
@@ -137,7 +108,6 @@ function renderActivityGrid() {
       const logMax = Math.log10(Math.max(...allDensities));
       const logRange = logMax - logMin;
 
-      // Create row
       const row = document.createElement('div');
       row.className = 'activity-row';
 
@@ -163,11 +133,9 @@ function renderActivityGrid() {
           else if (normalized > 0.6) level = 3;
           else if (normalized > 0.4) level = 2;
           else if (normalized > 0.2) level = 1;
-          else level = 1; // Show at least level 1 if we have data
+          else level = 1;
 
-          cell.title = `${date}\nDensity: ${avgDensity.toExponential(2)} kg/m³`;
-        } else {
-          cell.title = `${date}\nNo data`;
+          cell.title = `${date}: ${avgDensity.toExponential(2)} kg/m³`;
         }
 
         cell.setAttribute('data-level', level);
@@ -177,24 +145,66 @@ function renderActivityGrid() {
       row.appendChild(cells);
       container.appendChild(row);
     });
+
+  // Add Kp index row
+  if (kpData && kpData.times && kpData.values) {
+    const kpByDay = {};
+    kpData.times.forEach((t, i) => {
+      const dayKey = t.split(' ')[0];
+      if (!kpByDay[dayKey]) kpByDay[dayKey] = [];
+      kpByDay[dayKey].push(kpData.values[i]);
+    });
+
+    const kpRow = document.createElement('div');
+    kpRow.className = 'activity-row kp-row';
+
+    const kpLabel = document.createElement('div');
+    kpLabel.className = 'activity-label';
+    kpLabel.textContent = 'Kp Index';
+    kpRow.appendChild(kpLabel);
+
+    const kpCells = document.createElement('div');
+    kpCells.className = 'activity-cells';
+
+    dates.forEach(date => {
+      const cell = document.createElement('div');
+      cell.className = 'activity-cell kp-cell';
+
+      let level = 0;
+      if (kpByDay[date] && kpByDay[date].length > 0) {
+        const maxKp = Math.max(...kpByDay[date]);
+        if (maxKp >= 7) level = 4;
+        else if (maxKp >= 5) level = 3;
+        else if (maxKp >= 4) level = 2;
+        else if (maxKp >= 1) level = 1;
+
+        cell.title = `${date}: Kp ${maxKp.toFixed(1)}`;
+      }
+
+      cell.setAttribute('data-level', level);
+      kpCells.appendChild(cell);
+    });
+
+    kpRow.appendChild(kpCells);
+    container.appendChild(kpRow);
+  }
 }
 
 function renderComparisonChart() {
   const container = document.getElementById('compare-chart');
   if (!container) return;
 
-  // Get last 6 months
   const now = new Date();
   const sixMonthsAgo = new Date(now);
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
   const traces = [];
 
-  // Kp bars first (background)
+  // Kp bars
   if (kpData && kpData.times) {
     const kpTimes = kpData.times.map(t => new Date(t.replace(' ', 'T') + 'Z'));
     const kpColors = kpData.values.map(kp => {
-      if (kp >= 7) return 'rgba(220, 38, 38, 0.3)';
+      if (kp >= 7) return 'rgba(239, 68, 68, 0.3)';
       if (kp >= 5) return 'rgba(249, 115, 22, 0.3)';
       if (kp >= 4) return 'rgba(234, 179, 8, 0.25)';
       return 'rgba(34, 197, 94, 0.2)';
@@ -212,7 +222,7 @@ function renderComparisonChart() {
     });
   }
 
-  // Add all satellites
+  // All satellites
   Object.entries(SATELLITES)
     .sort((a, b) => a[1].order - b[1].order)
     .forEach(([noradId, sat]) => {
@@ -226,7 +236,7 @@ function renderComparisonChart() {
         mode: 'lines',
         name: sat.name,
         line: { color: sat.color, width: 2 },
-        hovertemplate: `${sat.name}<br>%{x|%d %b %Y}<br>Density: %{y:.2e}<extra></extra>`
+        hovertemplate: `${sat.name}<br>%{x|%d %b %Y}<br>%{y:.2e} kg/m³<extra></extra>`
       });
     });
 
@@ -257,8 +267,7 @@ function renderComparisonChart() {
       x: 0.5,
       xanchor: 'center',
       y: 1.1,
-      orientation: 'h',
-      bgcolor: 'rgba(255,255,255,0.9)'
+      orientation: 'h'
     },
     hovermode: 'x unified'
   };
