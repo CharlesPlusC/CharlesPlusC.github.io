@@ -1,6 +1,6 @@
 /**
  * Satellite Drag & SRP Visualization
- * Double helix formation flying with elegant trails
+ * Double helix formation flying through particle flow with reflections
  */
 
 (function() {
@@ -32,21 +32,22 @@
   let srpTables = { X: null, Y: null, Z: null };
 
   // Double helix parameters
-  const HELIX_RADIUS = 4;
-  const HELIX_SPEED = 0.3;
-  const HELIX_PITCH = 0.5;
+  const HELIX_RADIUS = 3;
+  const HELIX_SPEED = 0.4;
+  const HELIX_FORWARD_SPEED = 0.8; // Speed moving through particles
   let helixTime = 0;
+  let helixOffset = 0; // Forward position
 
-  // Trail settings
-  const TRAIL_LENGTH = 80;
+  // Satellite trail settings
+  const SAT_TRAIL_LENGTH = 60;
   const TRAIL_COLORS = [
     new THREE.Color(0x3b82f6), // Blue
     new THREE.Color(0x8b5cf6)  // Purple
   ];
 
-  // Flow line settings (reduced for cleaner look)
-  const NUM_LINES = 60;
-  const FLOW_TRAIL_LENGTH = 40;
+  // Flow line settings
+  const NUM_LINES = 120;
+  const TRAIL_LENGTH = 50;
 
   const canvas = document.getElementById('satellite-canvas');
   const dragGraph = document.getElementById('drag-graph');
@@ -84,8 +85,8 @@
 
     camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
     if (isBackgroundMode) {
-      camera.position.set(0, 8, 20);
-      camera.lookAt(0, 0, 0);
+      camera.position.set(-15, 6, 12);
+      camera.lookAt(5, 0, 0);
     } else {
       camera.position.set(0, 8, 22);
     }
@@ -107,33 +108,31 @@
 
     if (isBackgroundMode) {
       controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.3;
+      controls.autoRotateSpeed = 0.4;
       controls.enableZoom = false;
       controls.enablePan = false;
     }
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.65));
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.5);
     keyLight.position.set(5, 10, 8);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xaaccff, 0.3);
+    const fillLight = new THREE.DirectionalLight(0xaaccff, 0.25);
     fillLight.position.set(-8, 5, -5);
     scene.add(fillLight);
 
-    // Create two satellites for double helix
+    // Create satellites and flow lines
     if (isBackgroundMode) {
       createHelixSatellites();
       createSatelliteTrails();
+      createFlowLines();
+      createStarField();
     } else {
       loadSingleSatellite();
       createFlowLines();
-    }
-
-    if (isBackgroundMode) {
-      createStarField();
     }
 
     sunRayGroup = new THREE.Group();
@@ -172,9 +171,8 @@
   function createHelixSatellites() {
     const loader = new THREE.OBJLoader();
 
-    // Load two satellites
     for (let i = 0; i < 2; i++) {
-      const phaseOffset = i * Math.PI; // 180 degrees apart
+      const phaseOffset = i * Math.PI;
 
       loader.load('/data/gps2f_boxwing.obj', (obj) => {
         const sat = obj.clone();
@@ -184,7 +182,7 @@
           specular: 0x888888,
           shininess: 60,
           emissive: TRAIL_COLORS[i],
-          emissiveIntensity: 0.1
+          emissiveIntensity: 0.15
         });
 
         const panelMat = new THREE.MeshPhongMaterial({
@@ -199,19 +197,18 @@
           }
         });
 
-        // Center and scale
         const box = new THREE.Box3().setFromObject(sat);
         const center = box.getCenter(new THREE.Vector3());
         sat.position.sub(center);
 
         const size = box.getSize(new THREE.Vector3());
-        const scale = 3 / Math.max(size.x, size.y, size.z);
+        const scale = 2.5 / Math.max(size.x, size.y, size.z);
         sat.scale.setScalar(scale);
 
         sat.userData.phaseOffset = phaseOffset;
         sat.userData.index = i;
 
-        satellites.push(sat);
+        satellites[i] = sat;
         scene.add(sat);
       }, undefined, () => createFallbackHelixSatellite(i, phaseOffset));
     }
@@ -225,7 +222,7 @@
       specular: 0x888888,
       shininess: 60,
       emissive: TRAIL_COLORS[index],
-      emissiveIntensity: 0.1
+      emissiveIntensity: 0.15
     });
 
     const panelMat = new THREE.MeshPhongMaterial({
@@ -234,11 +231,11 @@
       shininess: 30
     });
 
-    const bus = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.5), busMat);
+    const bus = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1.2), busMat);
     group.add(bus);
 
-    const panelGeo = new THREE.BoxGeometry(0.08, 4, 1.5);
-    [-2.5, 2.5].forEach(x => {
+    const panelGeo = new THREE.BoxGeometry(0.06, 3.5, 1.2);
+    [-2, 2].forEach(x => {
       const panel = new THREE.Mesh(panelGeo, panelMat);
       panel.position.set(x, 0, 0);
       group.add(panel);
@@ -247,14 +244,14 @@
     group.userData.phaseOffset = phaseOffset;
     group.userData.index = index;
 
-    satellites.push(group);
+    satellites[index] = group;
     scene.add(group);
   }
 
   function createSatelliteTrails() {
     for (let i = 0; i < 2; i++) {
-      const positions = new Float32Array(TRAIL_LENGTH * 3);
-      const colors = new Float32Array(TRAIL_LENGTH * 3);
+      const positions = new Float32Array(SAT_TRAIL_LENGTH * 3);
+      const colors = new Float32Array(SAT_TRAIL_LENGTH * 3);
 
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -269,9 +266,8 @@
 
       const mesh = new THREE.Line(geometry, material);
 
-      // Initialize trail positions
       const trail = [];
-      for (let j = 0; j < TRAIL_LENGTH; j++) {
+      for (let j = 0; j < SAT_TRAIL_LENGTH; j++) {
         trail.push(new THREE.Vector3(0, 0, 0));
       }
 
@@ -287,22 +283,34 @@
 
   function updateHelixPositions(delta) {
     helixTime += delta * HELIX_SPEED;
+    helixOffset -= delta * HELIX_FORWARD_SPEED; // Move backward through scene (satellites go forward)
+
+    // Reset position when too far back
+    if (helixOffset < -25) {
+      helixOffset = 15;
+      // Reset trails
+      satelliteTrails.forEach(trail => {
+        for (let j = 0; j < SAT_TRAIL_LENGTH; j++) {
+          trail.trail[j].set(0, 0, 0);
+        }
+      });
+    }
 
     satellites.forEach((sat, i) => {
       if (!sat) return;
 
       const phase = helixTime + sat.userData.phaseOffset;
 
-      // Double helix position
-      const x = Math.cos(phase) * HELIX_RADIUS;
+      // Double helix position - satellites move forward (negative X direction relative to particles)
+      const x = helixOffset;
       const y = Math.sin(phase) * HELIX_RADIUS;
-      const z = Math.sin(phase * HELIX_PITCH) * 2; // Gentle Z oscillation
+      const z = Math.cos(phase) * HELIX_RADIUS;
 
       sat.position.set(x, y, z);
 
-      // Rotate satellite to face direction of travel
-      sat.rotation.z = phase + Math.PI / 2;
-      sat.rotation.x = Math.sin(helixTime * 0.5) * 0.1; // Gentle wobble
+      // Rotate to face forward with helix rotation
+      sat.rotation.x = phase;
+      sat.rotation.y = Math.PI / 2;
     });
   }
 
@@ -312,30 +320,24 @@
 
       const trail = satelliteTrails[i];
 
-      // Shift trail positions
-      for (let j = TRAIL_LENGTH - 1; j > 0; j--) {
+      for (let j = SAT_TRAIL_LENGTH - 1; j > 0; j--) {
         trail.trail[j].copy(trail.trail[j - 1]);
       }
 
-      // Add current position to head
       trail.trail[0].copy(sat.position);
 
-      // Update geometry
       const positions = trail.mesh.geometry.attributes.position.array;
       const colors = trail.mesh.geometry.attributes.color.array;
 
-      for (let j = 0; j < TRAIL_LENGTH; j++) {
+      for (let j = 0; j < SAT_TRAIL_LENGTH; j++) {
         const idx = j * 3;
         positions[idx] = trail.trail[j].x;
         positions[idx + 1] = trail.trail[j].y;
         positions[idx + 2] = trail.trail[j].z;
 
-        // Gradient fade along trail
-        const t = j / (TRAIL_LENGTH - 1);
-        const fade = Math.pow(1 - t, 2);
-
-        // Glow effect - brighter at head
-        const glow = j < 5 ? 1.2 - j * 0.04 : 1;
+        const t = j / (SAT_TRAIL_LENGTH - 1);
+        const fade = Math.pow(1 - t, 1.8);
+        const glow = j < 3 ? 1.3 - j * 0.1 : 1;
 
         colors[idx] = trail.baseColor.r * fade * glow;
         colors[idx + 1] = trail.baseColor.g * fade * glow;
@@ -347,7 +349,6 @@
     });
   }
 
-  // Keep original single satellite for non-background mode
   function loadSingleSatellite() {
     const loader = new THREE.OBJLoader();
     loader.load('/data/gps2f_boxwing.obj', (obj) => {
@@ -410,14 +411,14 @@
 
   function createStarField() {
     const starGeometry = new THREE.BufferGeometry();
-    const starCount = 600;
+    const starCount = 500;
     const positions = new Float32Array(starCount * 3);
     const colors = new Float32Array(starCount * 3);
 
     for (let i = 0; i < starCount; i++) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const radius = 60 + Math.random() * 140;
+      const radius = 80 + Math.random() * 120;
 
       positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
@@ -443,7 +444,7 @@
     starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const starMaterial = new THREE.PointsMaterial({
-      size: 1.0,
+      size: 1.2,
       vertexColors: true,
       transparent: true,
       opacity: 0.8,
@@ -463,8 +464,8 @@
   }
 
   function createFlowLine(offset) {
-    const positions = new Float32Array(FLOW_TRAIL_LENGTH * 3);
-    const colors = new Float32Array(FLOW_TRAIL_LENGTH * 3);
+    const positions = new Float32Array(TRAIL_LENGTH * 3);
+    const colors = new Float32Array(TRAIL_LENGTH * 3);
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -473,17 +474,18 @@
     const material = new THREE.LineBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.85,
+      linewidth: 1
     });
 
     const mesh = new THREE.Line(geometry, material);
 
-    const startX = 18 - offset * 35;
+    const startX = 20 - offset * 40;
     const y = (Math.random() - 0.5) * 14;
     const z = (Math.random() - 0.5) * 14;
 
     const trail = [];
-    for (let j = 0; j < FLOW_TRAIL_LENGTH; j++) {
+    for (let j = 0; j < TRAIL_LENGTH; j++) {
       trail.push(new THREE.Vector3(startX + j * 0.3, y, z));
     }
 
@@ -496,38 +498,45 @@
       trail,
       velocity: new THREE.Vector3(-1, 0, 0),
       reflected: false,
+      reflectedBy: -1,
       age: 0,
       baseColor: new THREE.Color().setHSL(hue, saturation, lightness)
     };
   }
 
   function resetFlowLine(line) {
-    const startX = 20 + Math.random() * 5;
+    const startX = 22 + Math.random() * 5;
     const y = (Math.random() - 0.5) * 16;
     const z = (Math.random() - 0.5) * 16;
 
-    for (let j = 0; j < FLOW_TRAIL_LENGTH; j++) {
+    for (let j = 0; j < TRAIL_LENGTH; j++) {
       line.trail[j].set(startX + j * 0.2, y, z);
     }
 
     line.velocity.set(-1, 0, 0);
     line.reflected = false;
+    line.reflectedBy = -1;
     line.age = 0;
     const hue = 0.5 + Math.random() * 0.15;
     line.baseColor.setHSL(hue, 0.7 + Math.random() * 0.3, 0.5 + Math.random() * 0.15);
   }
 
   function updateFlowLines(delta) {
-    if (!satellites.length) return;
-
     const speed = (velocity / 7000) * 22 * delta;
-    const sat = satellites[0];
-    if (!sat) return;
 
-    const satBox = new THREE.Box3().setFromObject(sat);
-    const satCenter = satBox.getCenter(new THREE.Vector3());
-    const satSize = satBox.getSize(new THREE.Vector3());
-    satBox.expandByScalar(0.2);
+    // Build bounding boxes for all satellites
+    const satBoxes = [];
+    const satCenters = [];
+    const satSizes = [];
+
+    satellites.forEach((sat, i) => {
+      if (!sat) return;
+      const box = new THREE.Box3().setFromObject(sat);
+      box.expandByScalar(0.3);
+      satBoxes[i] = box;
+      satCenters[i] = box.getCenter(new THREE.Vector3());
+      satSizes[i] = box.getSize(new THREE.Vector3());
+    });
 
     flowLines.forEach(line => {
       line.age += delta;
@@ -535,56 +544,73 @@
       const head = line.trail[0];
       head.addScaledVector(line.velocity, speed);
 
-      if (!line.reflected && satBox.containsPoint(head)) {
-        line.reflected = true;
-        line.age = 0;
+      // Check collision with all satellites
+      if (!line.reflected) {
+        for (let i = 0; i < satBoxes.length; i++) {
+          if (!satBoxes[i]) continue;
 
-        const rel = head.clone().sub(satCenter);
-        const ax = Math.abs(rel.x) / (satSize.x || 1);
-        const ay = Math.abs(rel.y) / (satSize.y || 1);
-        const az = Math.abs(rel.z) / (satSize.z || 1);
+          if (satBoxes[i].containsPoint(head)) {
+            line.reflected = true;
+            line.reflectedBy = i;
+            line.age = 0;
 
-        const normal = new THREE.Vector3();
-        if (ax >= ay && ax >= az) normal.set(Math.sign(rel.x), 0, 0);
-        else if (ay >= ax && ay >= az) normal.set(0, Math.sign(rel.y), 0);
-        else normal.set(0, 0, Math.sign(rel.z));
+            const rel = head.clone().sub(satCenters[i]);
+            const size = satSizes[i];
+            const ax = Math.abs(rel.x) / (size.x || 1);
+            const ay = Math.abs(rel.y) / (size.y || 1);
+            const az = Math.abs(rel.z) / (size.z || 1);
 
-        const v = line.velocity;
-        const d = v.dot(normal);
-        v.sub(normal.clone().multiplyScalar(2 * d));
-        v.normalize();
+            const normal = new THREE.Vector3();
+            if (ax >= ay && ax >= az) normal.set(Math.sign(rel.x), 0, 0);
+            else if (ay >= ax && ay >= az) normal.set(0, Math.sign(rel.y), 0);
+            else normal.set(0, 0, Math.sign(rel.z));
 
-        const warmHue = Math.random() < 0.5 ? 0.05 + Math.random() * 0.08 : 0.12 + Math.random() * 0.05;
-        line.baseColor.setHSL(warmHue, 0.9 + Math.random() * 0.1, 0.55 + Math.random() * 0.1);
+            const v = line.velocity;
+            const d = v.dot(normal);
+            v.sub(normal.clone().multiplyScalar(2 * d));
+            v.normalize();
+
+            // Color based on which satellite was hit
+            if (i === 0) {
+              line.baseColor.setHSL(0.08 + Math.random() * 0.04, 0.95, 0.55); // Orange/gold
+            } else {
+              line.baseColor.setHSL(0.85 + Math.random() * 0.1, 0.9, 0.6); // Pink/magenta
+            }
+            break;
+          }
+        }
       }
 
-      for (let j = FLOW_TRAIL_LENGTH - 1; j > 0; j--) {
+      // Cascade trail positions
+      for (let j = TRAIL_LENGTH - 1; j > 0; j--) {
         line.trail[j].copy(line.trail[j - 1]);
       }
 
+      // Update geometry
       const positions = line.mesh.geometry.attributes.position.array;
       const colors = line.mesh.geometry.attributes.color.array;
 
-      for (let j = 0; j < FLOW_TRAIL_LENGTH; j++) {
+      for (let j = 0; j < TRAIL_LENGTH; j++) {
         const idx = j * 3;
         positions[idx] = line.trail[j].x;
         positions[idx + 1] = line.trail[j].y;
         positions[idx + 2] = line.trail[j].z;
 
-        const t = j / (FLOW_TRAIL_LENGTH - 1);
+        const t = j / (TRAIL_LENGTH - 1);
         const fade = Math.pow(1 - t, 1.5);
-        const reflectFade = line.reflected ? Math.max(0, 1 - line.age * 0.4) : 1;
+        const reflectFade = line.reflected ? Math.max(0, 1 - line.age * 0.35) : 1;
         const alpha = fade * reflectFade;
 
-        colors[idx] = line.baseColor.r * alpha + (1 - alpha) * 0.95;
-        colors[idx + 1] = line.baseColor.g * alpha + (1 - alpha) * 0.97;
-        colors[idx + 2] = line.baseColor.b * alpha + (1 - alpha) * 0.98;
+        colors[idx] = line.baseColor.r * alpha + (1 - alpha) * 0.06;
+        colors[idx + 1] = line.baseColor.g * alpha + (1 - alpha) * 0.09;
+        colors[idx + 2] = line.baseColor.b * alpha + (1 - alpha) * 0.16;
       }
 
       line.mesh.geometry.attributes.position.needsUpdate = true;
       line.mesh.geometry.attributes.color.needsUpdate = true;
 
-      if (head.x < -20 || head.x > 30 || Math.abs(head.y) > 18 || Math.abs(head.z) > 18) {
+      // Reset if out of bounds
+      if (head.x < -30 || head.x > 35 || Math.abs(head.y) > 20 || Math.abs(head.z) > 20) {
         resetFlowLine(line);
       }
     });
@@ -767,13 +793,15 @@
     controls.update();
 
     if (isBackgroundMode) {
-      // Double helix animation
+      // Double helix moving through particles
       updateHelixPositions(delta);
       updateSatelliteTrails();
-    } else {
-      // Original flow lines for interactive mode
-      updateFlowLines(delta);
+    }
 
+    // Always update flow lines (particles)
+    updateFlowLines(delta);
+
+    if (!isBackgroundMode) {
       if (!dragHistory.length || now - dragHistory[dragHistory.length-1].time > 100) {
         dragHistory.push({ time: now, value: calculateDrag() });
         if (dragHistory.length > MAX_HISTORY) dragHistory.shift();
