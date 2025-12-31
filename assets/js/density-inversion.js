@@ -45,7 +45,7 @@ async function loadAllData() {
   if (loadedCount > 0) {
     status.classList.add('hidden');
     renderActivityGrid();
-    renderComparisonChart();
+    renderSatelliteCards();
   } else {
     status.textContent = 'No data available';
     status.classList.add('error');
@@ -200,13 +200,64 @@ function renderActivityGrid() {
   }
 }
 
-function renderComparisonChart() {
-  const container = document.getElementById('compare-chart');
+function renderSatelliteCards() {
+  const container = document.getElementById('satellite-cards');
   if (!container) return;
+
+  container.innerHTML = '';
 
   const now = new Date();
   const sixMonthsAgo = new Date(now);
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+  Object.entries(SATELLITES)
+    .sort((a, b) => a[1].order - b[1].order)
+    .forEach(([noradId, sat]) => {
+      const data = allData[noradId];
+      if (!data || !data.times || data.times.length === 0) return;
+
+      const lastIdx = data.times.length - 1;
+      const lastAltitude = data.perigees ? data.perigees[lastIdx] : null;
+      const lastUpdate = new Date(data.times[lastIdx]);
+      const updateStr = lastUpdate.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      const card = document.createElement('div');
+      card.className = 'satellite-card';
+
+      card.innerHTML = `
+        <div class="card-header">
+          <span class="card-dot" style="background: ${sat.color}"></span>
+          <span class="card-name">${sat.name}</span>
+          <div class="card-stats">
+            ${lastAltitude ? `
+            <div class="card-stat">
+              <div class="card-stat-label">Altitude</div>
+              <div class="card-stat-value">${lastAltitude.toFixed(0)} km</div>
+            </div>
+            ` : ''}
+            <div class="card-stat">
+              <div class="card-stat-label">Last Updated</div>
+              <div class="card-stat-value">${updateStr}</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-chart" id="chart-${noradId}"></div>
+      `;
+
+      container.appendChild(card);
+
+      // Render chart after card is in DOM
+      setTimeout(() => renderCardChart(noradId, sat.color, data, sixMonthsAgo, now), 10);
+    });
+}
+
+function renderCardChart(noradId, color, data, startDate, endDate) {
+  const container = document.getElementById(`chart-${noradId}`);
+  if (!container) return;
 
   const traces = [];
 
@@ -224,68 +275,50 @@ function renderComparisonChart() {
       x: kpTimes,
       y: kpData.values,
       type: 'bar',
-      name: 'Kp Index',
       yaxis: 'y2',
       marker: { color: kpColors },
-      hovertemplate: 'Kp: %{y:.1f}<extra></extra>',
+      hoverinfo: 'skip',
       width: 3 * 3600 * 1000
     });
   }
 
-  // All satellites
-  Object.entries(SATELLITES)
-    .sort((a, b) => a[1].order - b[1].order)
-    .forEach(([noradId, sat]) => {
-      const data = allData[noradId];
-      if (!data || !data.times) return;
-
-      traces.push({
-        x: data.times.map(t => new Date(t)),
-        y: data.densities,
-        type: 'scattergl',
-        mode: 'lines',
-        name: sat.name,
-        line: { color: sat.color, width: 2 },
-        hovertemplate: `${sat.name}<br>%{x|%d %b %Y}<br>%{y:.2e} kg/m³<extra></extra>`
-      });
-    });
+  // Density line
+  traces.push({
+    x: data.times.map(t => new Date(t)),
+    y: data.densities,
+    type: 'scattergl',
+    mode: 'lines',
+    line: { color: color, width: 2 },
+    hovertemplate: '%{x|%d %b %Y}<br>%{y:.2e} kg/m³<extra></extra>'
+  });
 
   const layout = {
-    font: { family: 'system-ui, -apple-system, sans-serif', size: 12 },
-    margin: { t: 20, r: 50, b: 40, l: 70 },
+    font: { family: 'system-ui, -apple-system, sans-serif', size: 10 },
+    margin: { t: 5, r: 40, b: 25, l: 50 },
     paper_bgcolor: 'white',
     plot_bgcolor: 'white',
     xaxis: {
       gridcolor: 'rgba(0,0,0,0.05)',
-      range: [sixMonthsAgo, now]
+      range: [startDate, endDate]
     },
     yaxis: {
-      title: 'Density (kg/m³)',
       type: 'log',
       gridcolor: 'rgba(0,0,0,0.05)',
       exponentformat: 'e'
     },
     yaxis2: {
-      title: 'Kp',
       overlaying: 'y',
       side: 'right',
       range: [0, 9],
-      dtick: 3,
+      showticklabels: false,
       gridcolor: 'transparent'
     },
-    legend: {
-      x: 0.5,
-      xanchor: 'center',
-      y: 1.1,
-      orientation: 'h'
-    },
-    hovermode: 'x unified'
+    showlegend: false,
+    hovermode: 'x'
   };
 
   Plotly.newPlot(container, traces, layout, {
     responsive: true,
-    displayModeBar: true,
-    displaylogo: false,
-    modeBarButtonsToRemove: ['lasso2d', 'select2d']
+    displayModeBar: false
   });
 }

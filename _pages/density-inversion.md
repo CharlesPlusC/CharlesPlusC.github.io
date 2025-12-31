@@ -56,8 +56,8 @@ author_profile: true
 </div>
 
 <div class="section">
-  <div class="section-title">All Satellites Comparison</div>
-  <div id="compare-chart" class="chart-container"></div>
+  <div class="section-title">Satellite Details</div>
+  <div id="satellite-cards" class="satellite-cards"></div>
 </div>
 
 <script src="/assets/js/density-inversion.js"></script>
