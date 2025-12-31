@@ -43,7 +43,26 @@ async function loadAllData() {
   const loadedCount = Object.keys(allData).filter(id => allData[id]?.times?.length).length;
 
   if (loadedCount > 0) {
-    status.classList.add('hidden');
+    // Find most recent timestamp
+    let latestTime = null;
+    Object.values(allData).forEach(data => {
+      if (data.times && data.times.length > 0) {
+        const dataLatest = new Date(data.times[data.times.length - 1]);
+        if (!latestTime || dataLatest > latestTime) {
+          latestTime = dataLatest;
+        }
+      }
+    });
+
+    if (latestTime) {
+      status.textContent = 'Updated ' + latestTime.toLocaleString('en-US', {
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      }) + ' \u2022 Refreshes every 6 hours';
+      status.classList.remove('hidden');
+    } else {
+      status.classList.add('hidden');
+    }
+
     renderActivityGrid();
     renderSatelliteCards();
   } else {
