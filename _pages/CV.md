@@ -21,12 +21,6 @@ author_profile: true
 }
 </style>
 
-<div style="text-align: center; margin-bottom: 30px;">
-  <a href="/assets/cv_latest.pdf" download style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
-    <i class="fas fa-download"></i> Download PDF
-  </a>
-</div>
-
 ## Education
 
 <img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">**University College London** <span style="float: right;">Sep. 2022 - Ongoing</span>
