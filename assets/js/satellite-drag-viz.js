@@ -33,7 +33,7 @@
 
   // Double helix parameters
   const HELIX_RADIUS = 3;
-  const HELIX_SPEED = 0.4;
+  const HELIX_SPEED = 0.15; // Slower rotation around helix
   const HELIX_FORWARD_SPEED = 0.8; // Speed moving through particles
   let helixTime = 0;
   let helixOffset = 0; // Forward position
@@ -796,6 +796,11 @@
       // Double helix moving through particles
       updateHelixPositions(delta);
       updateSatelliteTrails();
+
+      // Keep camera centered on satellite formation
+      controls.target.x = helixOffset;
+      controls.target.y = 0;
+      controls.target.z = 0;
     }
 
     // Always update flow lines (particles)
