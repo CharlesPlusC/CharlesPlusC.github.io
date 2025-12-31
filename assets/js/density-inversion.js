@@ -261,19 +261,19 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
 
   const traces = [];
 
-  // Kp bars
+  // Kp background bands (full height, color indicates intensity)
   if (kpData && kpData.times) {
     const kpTimes = kpData.times.map(t => new Date(t.replace(' ', 'T') + 'Z'));
     const kpColors = kpData.values.map(kp => {
-      if (kp >= 7) return 'rgba(239, 68, 68, 0.3)';
-      if (kp >= 5) return 'rgba(249, 115, 22, 0.3)';
-      if (kp >= 4) return 'rgba(234, 179, 8, 0.25)';
-      return 'rgba(34, 197, 94, 0.2)';
+      if (kp >= 7) return 'rgba(239, 68, 68, 0.25)';
+      if (kp >= 5) return 'rgba(249, 115, 22, 0.25)';
+      if (kp >= 4) return 'rgba(234, 179, 8, 0.2)';
+      return 'rgba(34, 197, 94, 0.15)';
     });
 
     traces.push({
       x: kpTimes,
-      y: kpData.values,
+      y: kpData.values.map(() => 1),  // All bars same height
       type: 'bar',
       yaxis: 'y2',
       marker: { color: kpColors },
@@ -309,9 +309,10 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
     yaxis2: {
       overlaying: 'y',
       side: 'right',
-      range: [0, 9],
+      range: [0, 1],
       showticklabels: false,
-      gridcolor: 'transparent'
+      showgrid: false,
+      zeroline: false
     },
     showlegend: false,
     hovermode: 'x'
