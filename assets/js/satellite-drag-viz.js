@@ -603,6 +603,12 @@
     lastTime = now;
 
     controls.update();
+
+    // Slowly rotate satellite about itself
+    if (satellite) {
+      satellite.rotation.y += delta * 0.15; // Slow rotation
+    }
+
     updateFlowLines(delta);
 
     if (!dragHistory.length || now - dragHistory[dragHistory.length-1].time > 100) {
