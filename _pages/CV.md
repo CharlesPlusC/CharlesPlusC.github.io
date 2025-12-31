@@ -32,8 +32,8 @@ author_profile: true
 <img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">**University College London** <span style="float: right;">Sep. 2022 - Ongoing</span>
 *PhD Space Flight Dynamics and Geodesy*
 
-* <img src="/assets/logos/uksa.png" class="inline-logo" alt="UKSA"><img src="/assets/logos/nasa.png" class="inline-logo" alt="NASA"><img src="/assets/logos/jpl.png" class="inline-logo" alt="JPL"> Contributed to the UK Space Agency funded UCL-NASA JPL collaboration on spacecraft force modelling
-* <img src="/assets/logos/impulsespace.png" class="inline-logo" alt="Impulse Space"> Collaborating with Lodestar and Impulse Space on autonomous formation flying algorithm development
+* <img src="/assets/logos/uksa.png" class="inline-logo" alt="UKSA"><img src="/assets/logos/nasa.png" class="inline-logo" alt="NASA"><img src="/assets/logos/jpl.png" class="inline-logo" alt="JPL"> Software integration for the UK Space Agency funded UCL-NASA JPL collaboration on spacecraft force modelling
+* <img src="/assets/logos/impulsespace.png" class="inline-logo" alt="Impulse Space"> RPO algorithm development with Lodestar and Impulse Space on autonomous formation flying
 * Aided in the supervision of Masters and undergraduate research projects
 * Peer reviewer for GPS Solutions journal
 
@@ -41,27 +41,23 @@ author_profile: true
 *MSc Environmental Data Science and Machine Learning, Grade: Merit*
 
 * Thesis: Aerodynamic Drag Force Modelling for LEO Mega-Constellations
-* Relevant Courses: Computational Mathematics, Machine Learning, Advanced Programming
 
 <img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">**University College London** <span style="float: right;">Sep. 2018 - Jun. 2021</span>
 *BEng Engineering, Grade: First-Class*
 
 * Thesis: Emotion Detection using Convolutional Neural Networks
-* Relevant Courses: Modelling and Analysis, Materials and Fluid Mechanics, Structural Mechanics
 
 **University of Reading** <span style="float: right;">Sep. 2015 - Jun. 2018</span>
 *BSc Physical Geography, Grade: 2:1*
 
 * Thesis: Linking Green Spaces to Stress Reduction via Remote Sensing
-* Relevant Courses: Remote Sensing, Climatology, Advanced Research Skills
 
 ## Work & Research Experience
 
 **Visiting Researcher** <span style="float: right;">Sep. 2023 – Jan. 2024</span>
 *Space Environment Technologies, Boulder, Colorado, United States*
 
-* Developed and implemented a method to assimilate LEO POD data into the company's data-assimilative thermospheric density model
-* Created high-fidelity drag and solar-radiation-pressure models for LEO mega-constellation satellites
+* Thermospheric data assimilation from commercial LEO POD data from satellite constellations
 
 **Consulting** <span style="float: right;">Sep. 2023 – Jan. 2024</span>
 *University College London Consultants Ltd, London, United Kingdom*
