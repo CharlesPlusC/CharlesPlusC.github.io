@@ -32,8 +32,6 @@ author_profile: true
 <img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">**University College London** <span style="float: right;">Sep. 2022 - Ongoing</span>
 *PhD Space Flight Dynamics and Geodesy*
 
-* Development of an operational near-real-time pipeline for atmospheric density inversion using POD data, currently running on the UCL Supercomputer cluster. [Link](https://charlesplusc.github.io/density-inversion/)
-* Development of a novel GPU framework for high-fidelity physics-based differentiable spacecraft radiation force modelling
 * <img src="/assets/logos/uksa.png" class="inline-logo" alt="UKSA"><img src="/assets/logos/nasa.png" class="inline-logo" alt="NASA"><img src="/assets/logos/jpl.png" class="inline-logo" alt="JPL"> Contributed to the UK Space Agency funded UCL-NASA JPL collaboration on spacecraft force modelling
 * <img src="/assets/logos/impulsespace.png" class="inline-logo" alt="Impulse Space"> Collaborating with Lodestar and Impulse Space on autonomous formation flying algorithm development
 * Aided in the supervision of Masters and undergraduate research projects
