@@ -286,16 +286,38 @@
     var now = new Date();
     var nextPass = null;
     var nextSatName = '';
+    var isPassOngoing = false;
 
     var entries = Object.entries(allData.satellites);
+
+    // First, check for any currently ongoing passes
     for (var i = 0; i < entries.length; i++) {
       var noradId = entries[i][0], satData = entries[i][1];
       var passes = satData.passes || [];
       for (var j = 0; j < passes.length; j++) {
-        var passTime = new Date(passes[j].start);
-        if (passTime > now && (!nextPass || passTime < new Date(nextPass.start))) {
+        var passStart = new Date(passes[j].start);
+        var passEnd = new Date(passes[j].end);
+        if (passStart <= now && now < passEnd) {
           nextPass = passes[j];
           nextSatName = satData.name;
+          isPassOngoing = true;
+          break;
+        }
+      }
+      if (isPassOngoing) break;
+    }
+
+    // If no ongoing pass, find the next future pass
+    if (!nextPass) {
+      for (var i = 0; i < entries.length; i++) {
+        var noradId = entries[i][0], satData = entries[i][1];
+        var passes = satData.passes || [];
+        for (var j = 0; j < passes.length; j++) {
+          var passTime = new Date(passes[j].start);
+          if (passTime > now && (!nextPass || passTime < new Date(nextPass.start))) {
+            nextPass = passes[j];
+            nextSatName = satData.name;
+          }
         }
       }
     }
@@ -307,12 +329,21 @@
     }
 
     banner.style.display = 'flex';
-    var passTime = new Date(nextPass.start);
-    var timeUntil = passTime - now;
+    var passStart = new Date(nextPass.start);
+    var passEnd = new Date(nextPass.end);
+    var timeUntil = isPassOngoing ? passEnd - now : passStart - now;
+    var labelText = isPassOngoing ? 'Ongoing Pass' : 'Next Pass';
     var quality = nextPass.max_elevation >= 45 ? 'Excellent' : (nextPass.max_elevation >= 25 ? 'Good' : 'Fair');
 
+    // Update class based on whether pass is ongoing
+    if (isPassOngoing) {
+      banner.className = 'next-pass-banner pass-ongoing';
+    } else {
+      banner.className = 'next-pass-banner';
+    }
+
     banner.innerHTML =
-      '<div><div class="next-pass-label">Next Pass</div><div class="next-pass-sat">' + nextSatName + '</div></div>' +
+      '<div><div class="next-pass-label">' + labelText + '</div><div class="next-pass-sat">' + nextSatName + '</div></div>' +
       '<div class="next-pass-info">' +
         '<div class="next-pass-countdown">' + formatCountdown(timeUntil) + '</div>' +
         '<div class="next-pass-time">' + formatTime(nextPass.start) + ' \u2022 ' + formatDate(nextPass.start) + '</div>' +

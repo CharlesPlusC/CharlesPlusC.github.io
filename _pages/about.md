@@ -23,6 +23,16 @@ redirect_from:
   box-shadow: none !important;
 }
 
+/* Navigation text black */
+.greedy-nav a {
+  color: #000 !important;
+}
+
+.masthead__menu-item a,
+.masthead__menu-item--lg a {
+  color: #000 !important;
+}
+
 /* Full-page background animation - edge to edge */
 #satellite-bg-container {
   position: fixed;
