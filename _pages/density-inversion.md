@@ -16,11 +16,6 @@ author_profile: true
     <div class="hero-stat-label">Satellites Tracked</div>
   </div>
   <div class="hero-stat">
-    <div class="hero-stat-icon">📊</div>
-    <div class="hero-stat-value" id="stat-datapoints">--</div>
-    <div class="hero-stat-label">Data Points</div>
-  </div>
-  <div class="hero-stat">
     <div class="hero-stat-icon">🌡️</div>
     <div class="hero-stat-value" id="stat-kp">--</div>
     <div class="hero-stat-label">Current Kp Index</div>
@@ -40,15 +35,11 @@ author_profile: true
   </button>
   <button class="viz-tab" onclick="switchTab('heatmap')">
     <span class="tab-icon">🗺️</span>
-    <span class="tab-text">Density Heatmap</span>
-  </button>
-  <button class="viz-tab" onclick="switchTab('correlation')">
-    <span class="tab-icon">🔗</span>
-    <span class="tab-text">Kp Correlation</span>
+    <span class="tab-text">Activity Grid</span>
   </button>
   <button class="viz-tab" onclick="switchTab('compare')">
     <span class="tab-icon">⚖️</span>
-    <span class="tab-text">Compare</span>
+    <span class="tab-text">Compare All</span>
   </button>
 </div>
 
@@ -74,59 +65,36 @@ author_profile: true
 
 <div id="tab-heatmap" class="tab-content">
   <div class="section-header">
-    <h2>Density Heatmap</h2>
-    <p>Visualizing atmospheric density variations across all satellites over time</p>
+    <h2>Density Activity Grid</h2>
+    <p>GitHub-style visualization of atmospheric density variations</p>
   </div>
-  <div class="chart-container">
-    <div id="heatmap-chart" class="full-chart"></div>
-  </div>
-  <div class="chart-annotation">
-    <div class="annotation-item">
-      <span class="annotation-icon">💡</span>
-      <span>Brighter colors indicate higher atmospheric density. Notice how density spikes correlate with geomagnetic storms.</span>
-    </div>
-  </div>
-</div>
 
-<div id="tab-correlation" class="tab-content">
-  <div class="section-header">
-    <h2>Kp Index vs Density Response</h2>
-    <p>How thermospheric density responds to geomagnetic activity</p>
+  <div class="time-period-selector">
+    <span class="period-label">Time Period:</span>
+    <button class="period-btn" onclick="setHeatmapPeriod('week')">1 Week</button>
+    <button class="period-btn active" onclick="setHeatmapPeriod('month')">1 Month</button>
+    <button class="period-btn" onclick="setHeatmapPeriod('year')">1 Year</button>
   </div>
-  <div class="chart-container">
-    <div id="correlation-chart" class="full-chart"></div>
-  </div>
-  <div class="insight-cards">
-    <div class="insight-card">
-      <div class="insight-value" id="insight-correlation">--</div>
-      <div class="insight-label">Correlation Coefficient</div>
+
+  <div id="activity-grid" class="activity-grid"></div>
+
+  <div class="grid-legend">
+    <span class="legend-label">Less</span>
+    <div class="legend-boxes">
+      <div class="legend-box" style="background: #161b22;"></div>
+      <div class="legend-box" style="background: #0e4429;"></div>
+      <div class="legend-box" style="background: #006d32;"></div>
+      <div class="legend-box" style="background: #26a641;"></div>
+      <div class="legend-box" style="background: #39d353;"></div>
     </div>
-    <div class="insight-card">
-      <div class="insight-value" id="insight-response">--</div>
-      <div class="insight-label">Avg. Response Time</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-value" id="insight-peak">--</div>
-      <div class="insight-label">Peak Density Increase</div>
-    </div>
+    <span class="legend-label">More</span>
   </div>
 </div>
 
 <div id="tab-compare" class="tab-content">
   <div class="section-header">
-    <h2>Satellite Comparison</h2>
-    <p>Compare density measurements across different orbital altitudes</p>
-  </div>
-  <div class="compare-selectors">
-    <div class="compare-select">
-      <label>Primary Satellite</label>
-      <select id="compare-sat1" onchange="updateComparison()"></select>
-    </div>
-    <div class="compare-vs">VS</div>
-    <div class="compare-select">
-      <label>Secondary Satellite</label>
-      <select id="compare-sat2" onchange="updateComparison()"></select>
-    </div>
+    <h2>All Satellites Comparison</h2>
+    <p>Compare density measurements across all tracked satellites</p>
   </div>
   <div class="chart-container">
     <div id="compare-chart" class="full-chart"></div>

@@ -6,7 +6,7 @@
 /* ===== Hero Stats Section ===== */
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin: 24px 0;
 }
@@ -313,111 +313,144 @@
   height: 450px;
 }
 
-/* ===== Chart Annotations ===== */
-.chart-annotation {
-  margin-top: 16px;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  border-radius: 12px;
-  border-left: 4px solid #f59e0b;
-}
-
-.annotation-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  font-size: 14px;
-  color: #92400e;
-}
-
-.annotation-icon {
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-/* ===== Insight Cards ===== */
-.insight-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.insight-card {
-  background: linear-gradient(135deg, #1e293b, #334155);
-  border-radius: 16px;
-  padding: 24px;
-  text-align: center;
-  color: white;
-}
-
-.insight-value {
-  font-size: 32px;
-  font-weight: 800;
-  background: linear-gradient(135deg, #60a5fa, #34d399);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 4px;
-}
-
-.insight-label {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.8;
-}
-
-/* ===== Compare Section ===== */
-.compare-selectors {
+/* ===== GitHub-style Activity Grid ===== */
+.time-period-selector {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 8px;
   margin-bottom: 24px;
 }
 
-.compare-select {
-  text-align: center;
-}
-
-.compare-select label {
-  display: block;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.period-label {
+  font-size: 14px;
+  font-weight: 600;
   color: #64748b;
-  margin-bottom: 8px;
-  font-weight: 600;
+  margin-right: 8px;
 }
 
-.compare-select select {
-  padding: 12px 24px;
-  font-size: 15px;
-  font-weight: 600;
+.period-btn {
+  padding: 8px 16px;
   border: 2px solid #e2e8f0;
-  border-radius: 12px;
   background: white;
-  color: #1e293b;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
   cursor: pointer;
-  min-width: 180px;
   transition: all 0.2s;
 }
 
-.compare-select select:hover {
+.period-btn:hover {
   border-color: #3b82f6;
+  color: #3b82f6;
 }
 
-.compare-select select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+.period-btn.active {
+  background: #1e293b;
+  border-color: #1e293b;
+  color: white;
 }
 
-.compare-vs {
-  font-size: 24px;
-  font-weight: 800;
-  color: #cbd5e1;
+.activity-grid {
+  background: #0d1117;
+  border-radius: 16px;
+  padding: 24px;
+  overflow-x: auto;
+}
+
+.activity-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.activity-row:last-child {
+  margin-bottom: 0;
+}
+
+.activity-label {
+  width: 120px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b949e;
+  padding-right: 16px;
+  text-align: right;
+}
+
+.activity-cells {
+  display: flex;
+  gap: 3px;
+  flex-wrap: nowrap;
+}
+
+.activity-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #161b22;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.activity-cell:hover {
+  transform: scale(1.3);
+}
+
+.activity-cell[data-level="0"] { background: #161b22; }
+.activity-cell[data-level="1"] { background: #0e4429; }
+.activity-cell[data-level="2"] { background: #006d32; }
+.activity-cell[data-level="3"] { background: #26a641; }
+.activity-cell[data-level="4"] { background: #39d353; }
+
+.grid-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding-right: 8px;
+}
+
+.legend-label {
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.legend-boxes {
+  display: flex;
+  gap: 3px;
+}
+
+.legend-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.activity-tooltip {
+  position: absolute;
+  background: #1e293b;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 100;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.activity-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1e293b;
 }
 
 /* ===== Status ===== */

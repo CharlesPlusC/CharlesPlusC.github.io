@@ -1,6 +1,6 @@
 /**
  * TLE Density Inversion - Infographic Style Dashboard
- * Features: Overview cards, Heatmap, Kp Correlation, Satellite Comparison
+ * Features: Overview cards, GitHub-style Activity Grid, All Satellites Comparison
  */
 
 const SATELLITES = {
@@ -14,6 +14,7 @@ const SATELLITES = {
 let allData = {};
 let kpData = null;
 let currentTab = 'overview';
+let heatmapPeriod = 'month';
 
 document.addEventListener('DOMContentLoaded', loadAllData);
 
@@ -45,7 +46,6 @@ async function loadAllData() {
     status.classList.add('hidden');
     updateHeroStats();
     renderCards();
-    populateCompareSelectors();
   } else {
     status.textContent = 'No data available';
     status.classList.add('error');
@@ -54,13 +54,6 @@ async function loadAllData() {
 
 // ===== Hero Stats =====
 function updateHeroStats() {
-  // Total data points
-  let totalPoints = 0;
-  Object.values(allData).forEach(data => {
-    if (data?.times) totalPoints += data.times.length;
-  });
-  document.getElementById('stat-datapoints').textContent = totalPoints.toLocaleString();
-
   // Current Kp
   if (kpData && kpData.values && kpData.values.length > 0) {
     const latestKp = kpData.values[kpData.values.length - 1];
@@ -93,14 +86,27 @@ function switchTab(tabName) {
 
   // Render chart for new tab
   setTimeout(() => {
-    if (tabName === 'heatmap') renderHeatmap();
-    else if (tabName === 'correlation') renderCorrelation();
-    else if (tabName === 'compare') updateComparison();
+    if (tabName === 'heatmap') renderActivityGrid();
+    else if (tabName === 'compare') renderAllSatellitesComparison();
   }, 50);
 }
 
-// Make switchTab globally accessible
 window.switchTab = switchTab;
+
+// ===== Heatmap Period Selector =====
+function setHeatmapPeriod(period) {
+  heatmapPeriod = period;
+
+  // Update button states
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.currentTarget.classList.add('active');
+
+  renderActivityGrid();
+}
+
+window.setHeatmapPeriod = setHeatmapPeriod;
 
 // ===== Card Rendering =====
 function renderCards() {
@@ -184,10 +190,10 @@ function renderSparkline(noradId, color) {
       const fKpTimes = filteredKpIndices.map(i => kpTimes[i]);
       const fKpValues = filteredKpIndices.map(i => kpData.values[i]);
       const kpColors = fKpValues.map(kp => {
-        if (kp >= 7) return 'rgba(220, 38, 38, 0.4)';
-        if (kp >= 5) return 'rgba(249, 115, 22, 0.4)';
-        if (kp >= 4) return 'rgba(234, 179, 8, 0.35)';
-        return 'rgba(34, 197, 94, 0.25)';
+        if (kp >= 7) return 'rgba(220, 38, 38, 0.5)';
+        if (kp >= 5) return 'rgba(249, 115, 22, 0.5)';
+        if (kp >= 4) return 'rgba(234, 179, 8, 0.45)';
+        return 'rgba(34, 197, 94, 0.35)';
       });
 
       traces.push({
@@ -202,15 +208,13 @@ function renderSparkline(noradId, color) {
     }
   }
 
-  // Density line with gradient effect
+  // Density line (no fill for better Kp visibility)
   traces.push({
     x: filteredTimes,
     y: filteredDensities,
     type: 'scattergl',
     mode: 'lines',
-    line: { color: color, width: 2.5 },
-    fill: 'tozeroy',
-    fillcolor: color.replace(')', ', 0.1)').replace('rgb', 'rgba'),
+    line: { color: color, width: 2 },
     hoverinfo: 'skip'
   });
 
@@ -250,274 +254,127 @@ function renderSparkline(noradId, color) {
   });
 }
 
-// ===== Heatmap Visualization =====
-function renderHeatmap() {
-  const container = document.getElementById('heatmap-chart');
+// ===== GitHub-style Activity Grid =====
+function renderActivityGrid() {
+  const container = document.getElementById('activity-grid');
   if (!container) return;
 
-  // Get last 3 months of data for cleaner heatmap
+  container.innerHTML = '';
+
+  // Calculate date range based on period
   const now = new Date();
-  const threeMonthsAgo = new Date(now);
-  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  let startDate = new Date(now);
+  let cellWidth, cellGap, numDays;
 
-  // Collect all satellite data into a matrix
-  const satNames = [];
-  const satColors = [];
-  const allZ = [];
+  switch (heatmapPeriod) {
+    case 'week':
+      startDate.setDate(startDate.getDate() - 7);
+      numDays = 7;
+      cellWidth = 40;
+      cellGap = 4;
+      break;
+    case 'year':
+      startDate.setFullYear(startDate.getFullYear() - 1);
+      numDays = 365;
+      cellWidth = 11;
+      cellGap = 2;
+      break;
+    case 'month':
+    default:
+      startDate.setMonth(startDate.getMonth() - 1);
+      numDays = 30;
+      cellWidth = 18;
+      cellGap = 3;
+      break;
+  }
 
+  // Generate date array
+  const dates = [];
+  for (let i = 0; i < numDays; i++) {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    dates.push(d.toISOString().split('T')[0]);
+  }
+
+  // Process each satellite
   Object.entries(SATELLITES)
     .sort((a, b) => a[1].order - b[1].order)
     .forEach(([noradId, sat]) => {
       const data = allData[noradId];
       if (!data || !data.times) return;
 
-      satNames.push(sat.name);
-      satColors.push(sat.color);
-
-      // Normalize density to 0-1 range for this satellite
-      const densities = data.densities;
-      const times = data.times.map(t => new Date(t));
-
-      // Filter to last 3 months and bin by day
+      // Bin densities by day
       const dayBins = {};
-      times.forEach((t, i) => {
-        if (t >= threeMonthsAgo) {
-          const dayKey = t.toISOString().split('T')[0];
-          if (!dayBins[dayKey]) dayBins[dayKey] = [];
-          dayBins[dayKey].push(densities[i]);
+      data.times.forEach((t, i) => {
+        const dayKey = new Date(t).toISOString().split('T')[0];
+        if (!dayBins[dayKey]) dayBins[dayKey] = [];
+        dayBins[dayKey].push(data.densities[i]);
+      });
+
+      // Get min/max for normalization
+      const allDensities = data.densities.filter(d => d > 0);
+      const logMin = Math.log10(Math.min(...allDensities));
+      const logMax = Math.log10(Math.max(...allDensities));
+
+      // Create row
+      const row = document.createElement('div');
+      row.className = 'activity-row';
+
+      const label = document.createElement('div');
+      label.className = 'activity-label';
+      label.textContent = sat.name;
+      row.appendChild(label);
+
+      const cells = document.createElement('div');
+      cells.className = 'activity-cells';
+      cells.style.gap = `${cellGap}px`;
+
+      dates.forEach(date => {
+        const cell = document.createElement('div');
+        cell.className = 'activity-cell';
+        cell.style.width = `${cellWidth}px`;
+        cell.style.height = `${cellWidth}px`;
+
+        let level = 0;
+        if (dayBins[date] && dayBins[date].length > 0) {
+          const avgDensity = dayBins[date].reduce((a, b) => a + b, 0) / dayBins[date].length;
+          const logVal = Math.log10(avgDensity);
+          const normalized = (logVal - logMin) / (logMax - logMin);
+
+          if (normalized > 0.8) level = 4;
+          else if (normalized > 0.6) level = 3;
+          else if (normalized > 0.4) level = 2;
+          else if (normalized > 0.2) level = 1;
+          else level = 0;
+
+          cell.title = `${date}\nDensity: ${avgDensity.toExponential(2)} kg/m³`;
+        } else {
+          cell.title = `${date}\nNo data`;
         }
+
+        cell.setAttribute('data-level', level);
+        cells.appendChild(cell);
       });
 
-      // Average density per day and normalize
-      const minD = Math.min(...densities.filter(d => d > 0));
-      const maxD = Math.max(...densities);
-      const logMin = Math.log10(minD);
-      const logMax = Math.log10(maxD);
-
-      const normalizedRow = [];
-      const sortedDays = Object.keys(dayBins).sort();
-      sortedDays.forEach(day => {
-        const avgDensity = dayBins[day].reduce((a, b) => a + b, 0) / dayBins[day].length;
-        const logVal = Math.log10(avgDensity);
-        const normalized = (logVal - logMin) / (logMax - logMin);
-        normalizedRow.push(normalized);
-      });
-
-      allZ.push(normalizedRow);
+      row.appendChild(cells);
+      container.appendChild(row);
     });
 
-  // Create x-axis dates
-  const firstSatData = allData[Object.keys(allData)[0]];
-  const times = firstSatData.times.map(t => new Date(t)).filter(t => t >= threeMonthsAgo);
-  const dayBins = {};
-  times.forEach(t => {
-    const dayKey = t.toISOString().split('T')[0];
-    dayBins[dayKey] = true;
-  });
-  const xDates = Object.keys(dayBins).sort();
-
-  const trace = {
-    z: allZ,
-    x: xDates,
-    y: satNames,
-    type: 'heatmap',
-    colorscale: [
-      [0, '#1e3a5f'],
-      [0.25, '#2563eb'],
-      [0.5, '#60a5fa'],
-      [0.75, '#fbbf24'],
-      [1, '#ef4444']
-    ],
-    showscale: true,
-    colorbar: {
-      title: 'Relative Density',
-      titleside: 'right',
-      tickvals: [0, 0.5, 1],
-      ticktext: ['Low', 'Medium', 'High']
-    },
-    hovertemplate: '%{y}<br>%{x}<br>Relative: %{z:.2f}<extra></extra>'
-  };
-
-  const layout = {
-    font: { family: 'system-ui, sans-serif', size: 12 },
-    margin: { t: 30, r: 120, b: 60, l: 120 },
-    paper_bgcolor: 'white',
-    plot_bgcolor: 'white',
-    xaxis: {
-      title: 'Date',
-      tickangle: -45,
-      nticks: 15
-    },
-    yaxis: {
-      title: '',
-      tickfont: { size: 13, weight: 600 }
+  // Update cell sizes in CSS dynamically
+  const style = document.createElement('style');
+  style.textContent = `
+    .activity-cell {
+      width: ${cellWidth}px !important;
+      height: ${cellWidth}px !important;
     }
-  };
-
-  Plotly.newPlot(container, [trace], layout, {
-    responsive: true,
-    displayModeBar: true,
-    displaylogo: false
-  });
+  `;
+  container.appendChild(style);
 }
 
-// ===== Kp Correlation Plot =====
-function renderCorrelation() {
-  const container = document.getElementById('correlation-chart');
-  if (!container || !kpData) return;
-
-  // Prepare Kp data lookup
-  const kpLookup = {};
-  kpData.times.forEach((t, i) => {
-    const date = new Date(t.replace(' ', 'T') + 'Z');
-    const dayKey = date.toISOString().split('T')[0];
-    if (!kpLookup[dayKey]) kpLookup[dayKey] = [];
-    kpLookup[dayKey].push(kpData.values[i]);
-  });
-
-  // Average Kp per day
-  Object.keys(kpLookup).forEach(day => {
-    kpLookup[day] = kpLookup[day].reduce((a, b) => a + b, 0) / kpLookup[day].length;
-  });
-
-  const traces = [];
-  let allKpVals = [];
-  let allDensityVals = [];
-
-  Object.entries(SATELLITES).forEach(([noradId, sat]) => {
-    const data = allData[noradId];
-    if (!data || !data.times) return;
-
-    const kpValues = [];
-    const densityValues = [];
-
-    data.times.forEach((t, i) => {
-      const date = new Date(t);
-      const dayKey = date.toISOString().split('T')[0];
-      if (kpLookup[dayKey] !== undefined) {
-        kpValues.push(kpLookup[dayKey]);
-        densityValues.push(data.densities[i]);
-        allKpVals.push(kpLookup[dayKey]);
-        allDensityVals.push(data.densities[i]);
-      }
-    });
-
-    traces.push({
-      x: kpValues,
-      y: densityValues,
-      mode: 'markers',
-      type: 'scattergl',
-      name: sat.name,
-      marker: {
-        color: sat.color,
-        size: 6,
-        opacity: 0.6
-      },
-      hovertemplate: `${sat.name}<br>Kp: %{x:.1f}<br>ρ: %{y:.2e} kg/m³<extra></extra>`
-    });
-  });
-
-  // Calculate correlation coefficient
-  if (allKpVals.length > 0) {
-    const logDensity = allDensityVals.map(d => Math.log10(d));
-    const n = allKpVals.length;
-    const sumX = allKpVals.reduce((a, b) => a + b, 0);
-    const sumY = logDensity.reduce((a, b) => a + b, 0);
-    const sumXY = allKpVals.reduce((acc, x, i) => acc + x * logDensity[i], 0);
-    const sumX2 = allKpVals.reduce((acc, x) => acc + x * x, 0);
-    const sumY2 = logDensity.reduce((acc, y) => acc + y * y, 0);
-
-    const r = (n * sumXY - sumX * sumY) /
-      Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
-
-    document.getElementById('insight-correlation').textContent = r.toFixed(3);
-    document.getElementById('insight-response').textContent = '~3-6 hrs';
-
-    // Peak increase estimate
-    const highKpDensities = allDensityVals.filter((_, i) => allKpVals[i] >= 5);
-    const lowKpDensities = allDensityVals.filter((_, i) => allKpVals[i] < 3);
-    if (highKpDensities.length > 0 && lowKpDensities.length > 0) {
-      const avgHigh = highKpDensities.reduce((a, b) => a + b, 0) / highKpDensities.length;
-      const avgLow = lowKpDensities.reduce((a, b) => a + b, 0) / lowKpDensities.length;
-      const increase = ((avgHigh / avgLow - 1) * 100).toFixed(0);
-      document.getElementById('insight-peak').textContent = `+${increase}%`;
-    }
-  }
-
-  const layout = {
-    font: { family: 'system-ui, sans-serif', size: 12 },
-    margin: { t: 30, r: 30, b: 60, l: 80 },
-    paper_bgcolor: 'white',
-    plot_bgcolor: 'white',
-    xaxis: {
-      title: 'Kp Index (Geomagnetic Activity)',
-      gridcolor: 'rgba(0,0,0,0.08)',
-      range: [0, 9]
-    },
-    yaxis: {
-      title: 'Thermospheric Density (kg/m³)',
-      type: 'log',
-      gridcolor: 'rgba(0,0,0,0.08)',
-      exponentformat: 'e'
-    },
-    legend: {
-      x: 1,
-      xanchor: 'right',
-      y: 1,
-      bgcolor: 'rgba(255,255,255,0.9)',
-      bordercolor: '#e2e8f0',
-      borderwidth: 1
-    },
-    hovermode: 'closest'
-  };
-
-  Plotly.newPlot(container, traces, layout, {
-    responsive: true,
-    displayModeBar: true,
-    displaylogo: false
-  });
-}
-
-// ===== Comparison View =====
-function populateCompareSelectors() {
-  const select1 = document.getElementById('compare-sat1');
-  const select2 = document.getElementById('compare-sat2');
-
-  const satList = Object.entries(SATELLITES)
-    .sort((a, b) => a[1].order - b[1].order);
-
-  satList.forEach(([noradId, sat], index) => {
-    const option1 = document.createElement('option');
-    option1.value = noradId;
-    option1.textContent = sat.name;
-    select1.appendChild(option1);
-
-    const option2 = document.createElement('option');
-    option2.value = noradId;
-    option2.textContent = sat.name;
-    select2.appendChild(option2);
-  });
-
-  // Default selections
-  if (satList.length >= 2) {
-    select1.value = satList[0][0];
-    select2.value = satList[1][0];
-  }
-}
-
-function updateComparison() {
+// ===== All Satellites Comparison =====
+function renderAllSatellitesComparison() {
   const container = document.getElementById('compare-chart');
   if (!container) return;
-
-  const sat1Id = document.getElementById('compare-sat1').value;
-  const sat2Id = document.getElementById('compare-sat2').value;
-
-  const sat1 = SATELLITES[sat1Id];
-  const sat2 = SATELLITES[sat2Id];
-  const data1 = allData[sat1Id];
-  const data2 = allData[sat2Id];
-
-  if (!data1 || !data2) return;
 
   // Get last 6 months
   const now = new Date();
@@ -526,7 +383,7 @@ function updateComparison() {
 
   const traces = [];
 
-  // Kp bars
+  // Kp bars first (background)
   if (kpData && kpData.times) {
     const kpTimes = kpData.times.map(t => new Date(t.replace(' ', 'T') + 'Z'));
     const kpColors = kpData.values.map(kp => {
@@ -548,27 +405,23 @@ function updateComparison() {
     });
   }
 
-  // Satellite 1
-  traces.push({
-    x: data1.times.map(t => new Date(t)),
-    y: data1.densities,
-    type: 'scattergl',
-    mode: 'lines',
-    name: sat1.name,
-    line: { color: sat1.color, width: 2 },
-    hovertemplate: `${sat1.name}<br>%{x|%d %b %Y}<br>ρ = %{y:.2e}<extra></extra>`
-  });
+  // Add all satellites
+  Object.entries(SATELLITES)
+    .sort((a, b) => a[1].order - b[1].order)
+    .forEach(([noradId, sat]) => {
+      const data = allData[noradId];
+      if (!data || !data.times) return;
 
-  // Satellite 2
-  traces.push({
-    x: data2.times.map(t => new Date(t)),
-    y: data2.densities,
-    type: 'scattergl',
-    mode: 'lines',
-    name: sat2.name,
-    line: { color: sat2.color, width: 2 },
-    hovertemplate: `${sat2.name}<br>%{x|%d %b %Y}<br>ρ = %{y:.2e}<extra></extra>`
-  });
+      traces.push({
+        x: data.times.map(t => new Date(t)),
+        y: data.densities,
+        type: 'scattergl',
+        mode: 'lines',
+        name: sat.name,
+        line: { color: sat.color, width: 2 },
+        hovertemplate: `${sat.name}<br>%{x|%d %b %Y}<br>ρ = %{y:.2e}<extra></extra>`
+      });
+    });
 
   const layout = {
     font: { family: 'system-ui, sans-serif', size: 12 },
@@ -596,7 +449,7 @@ function updateComparison() {
     legend: {
       x: 0.5,
       xanchor: 'center',
-      y: 1.1,
+      y: 1.12,
       orientation: 'h',
       bgcolor: 'rgba(255,255,255,0.9)'
     },
@@ -610,9 +463,6 @@ function updateComparison() {
     modeBarButtonsToRemove: ['lasso2d', 'select2d']
   });
 }
-
-// Make updateComparison globally accessible
-window.updateComparison = updateComparison;
 
 // ===== Detail Modal =====
 function openDetail(noradId) {
@@ -775,7 +625,6 @@ function renderAltitudeChart(noradId, data) {
       mode: 'lines',
       name: 'Perigee',
       line: { color: '#f97316', width: 2 },
-      fill: 'tonexty',
       hovertemplate: '%{x|%d %b}<br>Perigee: %{y:.0f} km<extra></extra>'
     },
     {
