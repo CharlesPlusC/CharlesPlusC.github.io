@@ -16,7 +16,7 @@
   // State variables
   var allData = null;
   var expandedSats = {};
-  var currentView = 'grouped';
+  var currentView = 'chrono';
   var countdownInterval = null;
   var customLocation = null;
 
@@ -333,7 +333,7 @@
     var passEnd = new Date(nextPass.end);
     var timeUntil = isPassOngoing ? passEnd - now : passStart - now;
     var labelText = isPassOngoing ? 'Ongoing Pass' : 'Next Pass';
-    var quality = nextPass.max_elevation >= 45 ? 'Excellent' : (nextPass.max_elevation >= 25 ? 'Good' : 'Fair');
+    var quality = nextPass.max_elevation >= 70 ? 'Excellent' : (nextPass.max_elevation >= 45 ? 'Good' : (nextPass.max_elevation >= 25 ? 'Fair' : 'Poor'));
 
     // Update class based on whether pass is ongoing
     if (isPassOngoing) {
@@ -450,7 +450,7 @@
         if (passEnd > now && passStart <= cutoffDate && pass.max_elevation >= elevFilter) {
           filteredPasses.push(pass);
           totalPasses++;
-          if (pass.max_elevation >= 45) excellentPasses++;
+          if (pass.max_elevation >= 70) excellentPasses++;
         }
       }
       filteredData[noradId] = { name: satData.name, frequency: satData.frequency, passes: filteredPasses };
@@ -515,10 +515,13 @@
   /**
    * Get quality classification based on max elevation
    * @param {number} el - Maximum elevation in degrees
-   * @returns {string} Quality class ('excellent', 'good', or 'fair')
+   * @returns {string} Quality class ('excellent', 'good', 'fair', or 'poor')
    */
   function getQuality(el) {
-    return el >= 45 ? 'excellent' : (el >= 25 ? 'good' : 'fair');
+    if (el >= 70) return 'excellent';
+    if (el >= 45) return 'good';
+    if (el >= 25) return 'fair';
+    return 'poor';
   }
 
   /**
@@ -609,7 +612,7 @@
 
       var row = document.createElement('div');
       row.className = 'pass-row';
-      var qualityLabel = quality === 'excellent' ? 'Excellent' : (quality === 'good' ? 'Good' : 'Fair');
+      var qualityLabel = quality === 'excellent' ? 'Excellent' : (quality === 'good' ? 'Good' : (quality === 'fair' ? 'Fair' : 'Poor'));
 
       row.innerHTML =
         '<div class="pass-datetime"><div class="pass-date">' + formatDate(pass.start) + '</div><div class="pass-time">' + formatTime(pass.start) + '<span class="daynight ' + dn.type + '" title="' + dn.type + '">' + dn.icon + '</span></div></div>' +
@@ -688,7 +691,7 @@
 
           var row = document.createElement('div');
           row.className = 'pass-row';
-          var qualityLabel = quality === 'excellent' ? 'Excellent' : (quality === 'good' ? 'Good' : 'Fair');
+          var qualityLabel = quality === 'excellent' ? 'Excellent' : (quality === 'good' ? 'Good' : (quality === 'fair' ? 'Fair' : 'Poor'));
 
           row.innerHTML =
             '<div class="pass-datetime"><div class="pass-date">' + formatDate(pass.start) + '</div><div class="pass-time">' + formatTime(pass.start) + '<span class="daynight ' + dn.type + '" title="' + dn.type + '">' + dn.icon + '</span></div></div>' +

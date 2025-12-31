@@ -36,8 +36,8 @@ author_profile: true
 <div class="filters">
   <div class="filter-group">
     <span class="filter-label">Days ahead:</span>
-    <input type="range" id="days-filter" min="1" max="7" value="3" oninput="updateFilters()">
-    <span id="days-value" class="filter-value">3</span>
+    <input type="range" id="days-filter" min="1" max="7" value="1" oninput="updateFilters()">
+    <span id="days-value" class="filter-value">1</span>
   </div>
   <div class="filter-group">
     <span class="filter-label">Min elevation:</span>
@@ -58,8 +58,8 @@ author_profile: true
     </select>
   </div>
   <div class="view-toggle">
-    <button class="view-btn active" id="view-grouped" onclick="setView('grouped')">By Satellite</button>
-    <button class="view-btn" id="view-chrono" onclick="setView('chrono')">Chronological</button>
+    <button class="view-btn" id="view-grouped" onclick="setView('grouped')">By Satellite</button>
+    <button class="view-btn active" id="view-chrono" onclick="setView('chrono')">Chronological</button>
   </div>
 </div>
 
