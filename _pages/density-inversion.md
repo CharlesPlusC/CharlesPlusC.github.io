@@ -20,16 +20,38 @@ author_profile: true
     </div>
   </div>
   <div id="activity-grid" class="activity-grid"></div>
-  <div class="grid-legend">
-    <span class="legend-label">Low</span>
-    <div class="legend-boxes">
-      <div class="legend-box" style="background: #161b22;"></div>
-      <div class="legend-box" style="background: #0e4429;"></div>
-      <div class="legend-box" style="background: #006d32;"></div>
-      <div class="legend-box" style="background: #26a641;"></div>
-      <div class="legend-box" style="background: #39d353;"></div>
+  <div class="legends-row">
+    <div class="grid-legend">
+      <span class="legend-title">Density:</span>
+      <span class="legend-label">Low</span>
+      <div class="legend-boxes">
+        <div class="legend-box" style="background: #161b22;"></div>
+        <div class="legend-box" style="background: #0e4429;"></div>
+        <div class="legend-box" style="background: #006d32;"></div>
+        <div class="legend-box" style="background: #26a641;"></div>
+        <div class="legend-box" style="background: #39d353;"></div>
+      </div>
+      <span class="legend-label">High</span>
     </div>
-    <span class="legend-label">High</span>
+    <div class="grid-legend">
+      <span class="legend-title">Kp Index:</span>
+      <div class="legend-boxes">
+        <div class="legend-box" style="background: #22c55e;"></div>
+        <span class="legend-label">Quiet</span>
+      </div>
+      <div class="legend-boxes">
+        <div class="legend-box" style="background: #eab308;"></div>
+        <span class="legend-label">Active</span>
+      </div>
+      <div class="legend-boxes">
+        <div class="legend-box" style="background: #f97316;"></div>
+        <span class="legend-label">Storm</span>
+      </div>
+      <div class="legend-boxes">
+        <div class="legend-box" style="background: #ef4444;"></div>
+        <span class="legend-label">Severe</span>
+      </div>
+    </div>
   </div>
 </div>
 

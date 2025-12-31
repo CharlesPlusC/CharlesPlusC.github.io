@@ -100,12 +100,22 @@ function renderActivityGrid() {
         dayBins[dayKey].push(data.densities[i]);
       });
 
-      // Log scale normalization per satellite
-      const allDensities = data.densities.filter(d => d > 0);
-      if (allDensities.length === 0) return;
+      // Get densities ONLY from the visible time period for normalization
+      const visibleDensities = [];
+      dates.forEach(date => {
+        if (dayBins[date]) {
+          visibleDensities.push(...dayBins[date]);
+        }
+      });
 
-      const logMin = Math.log10(Math.min(...allDensities));
-      const logMax = Math.log10(Math.max(...allDensities));
+      if (visibleDensities.length === 0) return;
+
+      // Log scale normalization per satellite, per time period
+      const positiveDensities = visibleDensities.filter(d => d > 0);
+      if (positiveDensities.length === 0) return;
+
+      const logMin = Math.log10(Math.min(...positiveDensities));
+      const logMax = Math.log10(Math.max(...positiveDensities));
       const logRange = logMax - logMin;
 
       const row = document.createElement('div');
