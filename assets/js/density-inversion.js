@@ -428,22 +428,38 @@ function renderJoyDivisionPlot() {
   }
 
   const dates = buildDateRange(startDate, now);
-  const spacing = 0.35;
+  const spacing = 0.25;
   const amplitude = 0.85;
   const traces = [];
   const total = entries.length;
 
-  entries.forEach(([noradId], index) => {
+  const ridges = entries.map(([noradId], index) => {
     const data = allData[noradId];
     const daily = buildDailySeries(data, dates, startDate, now);
     const filled = fillMissingValues(daily);
     const normalized = normalizeSeries(filled);
     const offset = (total - index - 1) * spacing;
     const y = normalized.map(value => (value === null ? null : offset + value * amplitude));
+    return { offset, y };
+  });
+
+  for (let i = ridges.length - 1; i >= 0; i--) {
+    const ridge = ridges[i];
+    const hasValues = ridge.y.some(value => value !== null && Number.isFinite(value));
+    if (!hasValues) continue;
 
     traces.push({
       x: dates,
-      y,
+      y: dates.map(() => ridge.offset),
+      mode: 'lines',
+      line: { color: 'rgba(0,0,0,0)' },
+      hoverinfo: 'skip',
+      showlegend: false
+    });
+
+    traces.push({
+      x: dates,
+      y: ridge.y,
       mode: 'lines',
       line: {
         color: '#e2e8f0',
@@ -451,10 +467,13 @@ function renderJoyDivisionPlot() {
         shape: 'spline',
         smoothing: 0.35
       },
+      fill: 'tonexty',
+      fillcolor: '#0b0f1a',
+      connectgaps: true,
       hoverinfo: 'skip',
       showlegend: false
     });
-  });
+  }
 
   const layout = {
     margin: { t: 10, r: 10, b: 10, l: 10 },
