@@ -63,6 +63,36 @@ jobs:
                   'cd': 2.2,
                   'area': 1.0,
                   'mass': 50.0
+              },
+              '22': {
+                  'name': 'Explorer 7',
+                  'cd': 2.2,
+                  'area': 0.5,
+                  'mass': 41.0
+              },
+              '54686': {
+                  'name': 'Dongpo 08',
+                  'cd': 2.2,
+                  'area': 0.6,
+                  'mass': 30.0
+              },
+              '54695': {
+                  'name': 'Jilin-1 Gaofen 03D48',
+                  'cd': 2.2,
+                  'area': 0.7,
+                  'mass': 40.0
+              },
+              '60012': {
+                  'name': 'Object A',
+                  'cd': 2.2,
+                  'area': 1.0,
+                  'mass': 60.0
+              },
+              '62407': {
+                  'name': 'Electron Kick Stage R/B',
+                  'cd': 2.2,
+                  'area': 3.0,
+                  'mass': 200.0
               }
           }
 
