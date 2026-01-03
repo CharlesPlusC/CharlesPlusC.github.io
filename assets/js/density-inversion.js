@@ -413,9 +413,11 @@ function renderJoyDivisionPlot() {
   const startDate = new Date(now);
   startDate.setDate(startDate.getDate() - (windowConfig.days - 1));
 
+  const hiddenJoyDivisionIds = new Set(['48714', '22']);
+
   const entries = Object.entries(SATELLITES)
     .sort((a, b) => a[1].order - b[1].order)
-    .filter(([noradId]) => allData[noradId]?.times?.length);
+    .filter(([noradId]) => allData[noradId]?.times?.length && !hiddenJoyDivisionIds.has(noradId));
 
   if (entries.length === 0) {
     container.textContent = 'Loading density data...';
