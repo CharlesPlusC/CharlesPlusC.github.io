@@ -70,6 +70,14 @@ author_profile: true
 </div>
 
 <div class="section">
+  <div class="section-title">Normalized Density Waves</div>
+  <div class="joy-division-card">
+    <div class="joy-division-meta">Normalized 0-1 per satellite. 6 month window.</div>
+    <div id="joy-division-plot" class="joy-division-plot"></div>
+  </div>
+</div>
+
+<div class="section">
   <div class="section-title">Satellite Details</div>
   <div id="satellite-cards" class="satellite-cards"></div>
 </div>

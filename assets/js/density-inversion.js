@@ -72,6 +72,7 @@ async function loadAllData() {
 
     renderActivityGrid();
     renderSatelliteCards();
+    renderJoyDivisionPlot();
   } else {
     status.textContent = 'No data available';
     status.classList.add('error');
@@ -265,6 +266,126 @@ function renderActivityGrid() {
     kpRow.appendChild(kpCells);
     container.appendChild(kpRow);
   }
+}
+
+function buildDateRange(startDate, endDate) {
+  const dates = [];
+  const cursor = new Date(startDate);
+  const end = new Date(endDate);
+  cursor.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+
+  while (cursor <= end) {
+    dates.push(new Date(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return dates;
+}
+
+function buildDailySeries(data, dates, startDate, endDate) {
+  const dayBins = {};
+
+  data.times.forEach((t, i) => {
+    const dt = new Date(t);
+    if (dt < startDate || dt > endDate) return;
+    const dayKey = dt.toISOString().split('T')[0];
+    if (!dayBins[dayKey]) dayBins[dayKey] = [];
+    dayBins[dayKey].push(data.densities[i]);
+  });
+
+  return dates.map(date => {
+    const key = date.toISOString().split('T')[0];
+    const vals = dayBins[key];
+    if (!vals || vals.length === 0) return null;
+    return vals.reduce((a, b) => a + b, 0) / vals.length;
+  });
+}
+
+function normalizeSeries(values) {
+  const valid = values.filter(v => v !== null && Number.isFinite(v) && v > 0);
+  if (valid.length === 0) {
+    return values.map(() => null);
+  }
+
+  const min = Math.min(...valid);
+  const max = Math.max(...valid);
+  const range = max - min;
+
+  return values.map(value => {
+    if (value === null || !Number.isFinite(value)) return null;
+    if (range === 0) return 0.5;
+    return (value - min) / range;
+  });
+}
+
+function renderJoyDivisionPlot() {
+  const container = document.getElementById('joy-division-plot');
+  if (!container) return;
+
+  const now = new Date();
+  const startDate = new Date(now);
+  startDate.setMonth(startDate.getMonth() - 6);
+
+  const entries = Object.entries(SATELLITES)
+    .sort((a, b) => a[1].order - b[1].order)
+    .filter(([noradId]) => allData[noradId]?.times?.length);
+
+  if (entries.length === 0) {
+    container.textContent = 'No data available';
+    return;
+  }
+
+  const dates = buildDateRange(startDate, now);
+  const spacing = 1.1;
+  const amplitude = 0.85;
+  const traces = [];
+  const total = entries.length;
+
+  entries.forEach(([noradId], index) => {
+    const data = allData[noradId];
+    const daily = buildDailySeries(data, dates, startDate, now);
+    const normalized = normalizeSeries(daily);
+    const offset = (total - index - 1) * spacing;
+    const y = normalized.map(value => (value === null ? null : offset + value * amplitude));
+
+    traces.push({
+      x: dates,
+      y,
+      mode: 'lines',
+      line: {
+        color: 'rgba(226, 232, 240, 0.9)',
+        width: 1.3,
+        shape: 'spline',
+        smoothing: 0.35
+      },
+      hoverinfo: 'skip',
+      showlegend: false
+    });
+  });
+
+  const layout = {
+    margin: { t: 10, r: 10, b: 10, l: 10 },
+    paper_bgcolor: '#0b0f1a',
+    plot_bgcolor: '#0b0f1a',
+    xaxis: {
+      showgrid: false,
+      zeroline: false,
+      showticklabels: false
+    },
+    yaxis: {
+      showgrid: false,
+      zeroline: false,
+      showticklabels: false,
+      range: [-0.2, (total - 1) * spacing + amplitude + 0.2]
+    },
+    showlegend: false
+  };
+
+  Plotly.newPlot(container, traces, layout, {
+    responsive: true,
+    displayModeBar: false
+  });
 }
 
 function renderSatelliteCards() {
