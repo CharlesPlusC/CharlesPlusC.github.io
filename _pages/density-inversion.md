@@ -10,6 +10,20 @@ author_profile: true
 
 <div id="status" class="status">Loading density data...</div>
 
+<div id="space-weather-banner" class="space-weather-banner" data-level="quiet">
+  <div class="space-weather-label">Current Space Weather</div>
+  <div class="space-weather-content">
+    <div class="space-weather-status">
+      <span class="space-weather-dot"></span>
+      <span class="space-weather-text">Loading...</span>
+    </div>
+    <div class="space-weather-meta">
+      <span class="space-weather-chip space-weather-kp">Kp --</span>
+      <span class="space-weather-time">Updated --</span>
+    </div>
+  </div>
+</div>
+
 <div class="section">
   <div class="section-header">
     <span class="section-title">Density Activity</span>

@@ -40,6 +40,8 @@ async function loadAllData() {
     console.log('Kp data not available');
   }
 
+  updateSpaceWeatherIndicator();
+
   const loadedCount = Object.keys(allData).filter(id => allData[id]?.times?.length).length;
 
   if (loadedCount > 0) {
@@ -69,6 +71,47 @@ async function loadAllData() {
     status.textContent = 'No data available';
     status.classList.add('error');
   }
+}
+
+function getKpDescriptor(kpValue) {
+  if (kpValue >= 7) return { level: 'severe', label: 'Severe Storm' };
+  if (kpValue >= 5) return { level: 'storm', label: 'Storm' };
+  if (kpValue >= 4) return { level: 'active', label: 'Active' };
+  return { level: 'quiet', label: 'Quiet' };
+}
+
+function updateSpaceWeatherIndicator() {
+  const banner = document.getElementById('space-weather-banner');
+  if (!banner) return;
+
+  const statusText = banner.querySelector('.space-weather-text');
+  const kpChip = banner.querySelector('.space-weather-kp');
+  const timeText = banner.querySelector('.space-weather-time');
+
+  if (!statusText || !kpChip || !timeText) return;
+
+  if (!kpData || !kpData.times || !kpData.values || kpData.times.length === 0) {
+    statusText.textContent = 'Awaiting Kp data';
+    kpChip.textContent = 'Kp --';
+    timeText.textContent = 'Updated --';
+    banner.setAttribute('data-level', 'quiet');
+    return;
+  }
+
+  const lastIndex = kpData.times.length - 1;
+  const kpValue = kpData.values[lastIndex];
+  const descriptor = getKpDescriptor(kpValue);
+  const kpTime = new Date(kpData.times[lastIndex].replace(' ', 'T') + 'Z');
+
+  banner.setAttribute('data-level', descriptor.level);
+  statusText.textContent = `${descriptor.label} Conditions`;
+  kpChip.textContent = `Kp ${kpValue.toFixed(1)}`;
+  timeText.textContent = 'Updated ' + kpTime.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 }
 
 function setHeatmapPeriod(period) {

@@ -12,7 +12,7 @@ main:
   - title: "Satellite Passes"
     url: /satellite-passes/
 
-  - title: "Density Inversion"
+  - title: "SpaceWeather"
     url: /density-inversion/
 
   # - title: "Constellation Bot"
