@@ -132,6 +132,15 @@
   }
 }
 
+@keyframes space-weather-glow-active {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(234, 179, 8, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(234, 179, 8, 0.45);
+  }
+}
+
 @keyframes space-weather-glow-severe {
   0%, 100% {
     box-shadow: 0 0 16px rgba(239, 68, 68, 0.25);
@@ -145,6 +154,30 @@
 .space-weather-banner[data-level="severe"] {
   border-width: 1px;
   border-style: solid;
+}
+
+.space-weather-banner[data-level="active"] {
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(234, 179, 8, 0.6);
+  animation: space-weather-glow-active 2.6s ease-in-out infinite;
+}
+
+.space-weather-banner[data-level="active"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(234, 179, 8, 0.12) 25%,
+    rgba(234, 179, 8, 0.3) 50%,
+    rgba(234, 179, 8, 0.12) 75%,
+    transparent 100%
+  );
+  border-radius: 12px;
+  animation: space-weather-shimmer 2.8s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .space-weather-banner[data-level="storm"] {
