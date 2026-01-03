@@ -131,6 +131,9 @@ function setHeatmapPeriod(period) {
   document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
   event.currentTarget.classList.add('active');
   renderActivityGrid();
+  if (densityView === 'waves') {
+    renderJoyDivisionPlot();
+  }
 }
 
 window.setHeatmapPeriod = setHeatmapPeriod;
@@ -146,9 +149,6 @@ function setDensityView(view) {
   const waves = document.getElementById('density-waves');
   if (activity) activity.classList.toggle('is-hidden', view !== 'activity');
   if (waves) waves.classList.toggle('is-hidden', view !== 'waves');
-
-  const timeSelector = document.querySelector('.time-period-selector');
-  if (timeSelector) timeSelector.classList.toggle('is-hidden', view !== 'activity');
 
   if (view === 'waves') {
     renderJoyDivisionPlot();
@@ -317,6 +317,18 @@ function buildDateRange(startDate, endDate) {
   return dates;
 }
 
+function getJoyDivisionWindow() {
+  switch (heatmapPeriod) {
+    case 'week':
+      return { days: 7, label: '1 week window.' };
+    case 'month':
+      return { days: 30, label: '1 month window.' };
+    case 'year':
+    default:
+      return { days: 365, label: '1 year window.' };
+  }
+}
+
 function buildDailySeries(data, dates, startDate, endDate) {
   const dayBins = {};
 
@@ -336,8 +348,47 @@ function buildDailySeries(data, dates, startDate, endDate) {
   });
 }
 
+function fillMissingValues(values) {
+  const filled = values.slice();
+  const isValid = value => value !== null && Number.isFinite(value);
+  const firstIndex = filled.findIndex(isValid);
+
+  if (firstIndex === -1) {
+    return filled;
+  }
+
+  for (let i = 0; i < firstIndex; i++) {
+    filled[i] = filled[firstIndex];
+  }
+
+  let lastIndex = firstIndex;
+  let lastValue = filled[firstIndex];
+
+  for (let i = firstIndex + 1; i < filled.length; i++) {
+    const value = filled[i];
+    if (!isValid(value)) continue;
+
+    const gap = i - lastIndex;
+    if (gap > 1) {
+      const step = (value - lastValue) / gap;
+      for (let j = 1; j < gap; j++) {
+        filled[lastIndex + j] = lastValue + step * j;
+      }
+    }
+
+    lastIndex = i;
+    lastValue = value;
+  }
+
+  for (let i = lastIndex + 1; i < filled.length; i++) {
+    filled[i] = lastValue;
+  }
+
+  return filled;
+}
+
 function normalizeSeries(values) {
-  const valid = values.filter(v => v !== null && Number.isFinite(v) && v > 0);
+  const valid = values.filter(v => v !== null && Number.isFinite(v));
   if (valid.length === 0) {
     return values.map(() => null);
   }
@@ -358,8 +409,9 @@ function renderJoyDivisionPlot() {
   if (!container) return;
 
   const now = new Date();
+  const windowConfig = getJoyDivisionWindow();
   const startDate = new Date(now);
-  startDate.setMonth(startDate.getMonth() - 6);
+  startDate.setDate(startDate.getDate() - (windowConfig.days - 1));
 
   const entries = Object.entries(SATELLITES)
     .sort((a, b) => a[1].order - b[1].order)
@@ -370,8 +422,13 @@ function renderJoyDivisionPlot() {
     return;
   }
 
+  const windowLabel = document.getElementById('joy-division-window');
+  if (windowLabel) {
+    windowLabel.textContent = windowConfig.label;
+  }
+
   const dates = buildDateRange(startDate, now);
-  const spacing = 0.55;
+  const spacing = 0.35;
   const amplitude = 0.85;
   const traces = [];
   const total = entries.length;
@@ -379,7 +436,8 @@ function renderJoyDivisionPlot() {
   entries.forEach(([noradId], index) => {
     const data = allData[noradId];
     const daily = buildDailySeries(data, dates, startDate, now);
-    const normalized = normalizeSeries(daily);
+    const filled = fillMissingValues(daily);
+    const normalized = normalizeSeries(filled);
     const offset = (total - index - 1) * spacing;
     const y = normalized.map(value => (value === null ? null : offset + value * amplitude));
 
@@ -388,8 +446,8 @@ function renderJoyDivisionPlot() {
       y,
       mode: 'lines',
       line: {
-        color: 'rgba(226, 232, 240, 0.9)',
-        width: 1.3,
+        color: '#e2e8f0',
+        width: 1.4,
         shape: 'spline',
         smoothing: 0.35
       },
