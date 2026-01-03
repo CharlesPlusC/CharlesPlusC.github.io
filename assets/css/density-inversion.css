@@ -477,6 +477,13 @@
   color: #1e293b;
 }
 
+.card-flag {
+  display: inline-block;
+  font-size: 13px;
+  margin-right: 6px;
+  vertical-align: text-top;
+}
+
 .card-stats {
   display: flex;
   gap: 20px;

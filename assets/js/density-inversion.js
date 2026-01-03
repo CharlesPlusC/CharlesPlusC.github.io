@@ -4,14 +4,16 @@
  */
 
 const SATELLITES = {
-  '43476': { name: 'GRACE-FO-A', color: '#2563eb', order: 1 },
-  '43877': { name: 'Kanopus-V 6', color: '#7c3aed', order: 2 },
-  '39212': { name: 'CZ-4C DEB', color: '#db2777', order: 3 },
-  '64631': { name: 'CZ-6A DEB', color: '#d97706', order: 4 },
-  '54686': { name: 'Dongpo 08', color: '#14b8a6', order: 5 },
-  '54695': { name: 'Jilin-1 Gaofen 03D48', color: '#f43f5e', order: 6 },
-  '60012': { name: 'Object A', color: '#6366f1', order: 7 },
-  '62407': { name: 'Electron Kick Stage R/B', color: '#64748b', order: 8 }
+  '43476': { name: 'GRACE-FO-A', color: '#2563eb', order: 1, flag: '🇺🇸🇩🇪' },
+  '43877': { name: 'Kanopus-V 6', color: '#7c3aed', order: 2, flag: '🇷🇺' },
+  '39212': { name: 'CZ-4C DEB', color: '#db2777', order: 3, flag: '🇨🇳' },
+  '48714': { name: 'NOAA 17 DEB', color: '#059669', order: 4, flag: '🇺🇸' },
+  '64631': { name: 'CZ-6A DEB', color: '#d97706', order: 5, flag: '🇨🇳' },
+  '22': { name: 'Explorer 7', color: '#0ea5e9', order: 6, flag: '🇺🇸' },
+  '54686': { name: 'Dongpo 08', color: '#14b8a6', order: 7, flag: '🇨🇳' },
+  '54695': { name: 'Jilin-1 Gaofen 03D48', color: '#f43f5e', order: 8, flag: '🇨🇳' },
+  '60012': { name: 'Object A', color: '#6366f1', order: 9, flag: '🇺🇳' },
+  '62407': { name: 'Electron Kick Stage R/B', color: '#64748b', order: 10, flag: '🇳🇿' }
 };
 
 let allData = {};
@@ -116,7 +118,7 @@ function updateSpaceWeatherIndicator() {
   banner.setAttribute('data-level', descriptor.level);
   statusText.textContent = `${descriptor.label} Conditions`;
   kpChip.textContent = `Kp ${kpValue.toFixed(1)}`;
-  timeText.textContent = 'Updated ' + kpTime.toLocaleString('en-US', {
+  timeText.textContent = 'Kp current as of ' + kpTime.toLocaleString('en-US', {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
@@ -441,7 +443,7 @@ function renderJoyDivisionPlot() {
     return { offset, y };
   });
 
-  for (let i = ridges.length - 1; i >= 0; i--) {
+  for (let i = 0; i < ridges.length; i++) {
     const ridge = ridges[i];
     const hasValues = ridge.y.some(value => value !== null && Number.isFinite(value));
     if (!hasValues) continue;
@@ -528,7 +530,10 @@ function renderSatelliteCards() {
       card.innerHTML = `
         <div class="card-header">
           <span class="card-dot" style="background: ${sat.color}"></span>
-          <span class="card-name">${sat.name}</span>
+          <span class="card-name">
+            ${sat.flag ? `<span class="card-flag">${sat.flag}</span>` : ''}
+            ${sat.name}
+          </span>
           <div class="card-stats">
             ${lastAltitude ? `
             <div class="card-stat">
