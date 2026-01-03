@@ -244,6 +244,41 @@
   color: #1e293b;
 }
 
+.density-view.is-hidden,
+.is-hidden {
+  display: none;
+}
+
+.view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.view-btn {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.view-btn:hover {
+  border-color: #1e293b;
+  color: #1e293b;
+}
+
+.view-btn.active {
+  background: #1e293b;
+  border-color: #1e293b;
+  color: white;
+}
+
 /* Joy Division Plot */
 .joy-division-card {
   background: linear-gradient(160deg, #0b0f1a, #0f172a);

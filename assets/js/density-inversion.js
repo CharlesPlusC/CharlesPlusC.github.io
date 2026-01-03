@@ -19,8 +19,12 @@ const SATELLITES = {
 let allData = {};
 let kpData = null;
 let heatmapPeriod = 'year';
+let densityView = 'activity';
 
-document.addEventListener('DOMContentLoaded', loadAllData);
+document.addEventListener('DOMContentLoaded', () => {
+  setDensityView('activity');
+  loadAllData();
+});
 
 async function loadAllData() {
   const status = document.getElementById('status');
@@ -72,7 +76,9 @@ async function loadAllData() {
 
     renderActivityGrid();
     renderSatelliteCards();
-    renderJoyDivisionPlot();
+    if (densityView === 'waves') {
+      renderJoyDivisionPlot();
+    }
   } else {
     status.textContent = 'No data available';
     status.classList.add('error');
@@ -128,6 +134,34 @@ function setHeatmapPeriod(period) {
 }
 
 window.setHeatmapPeriod = setHeatmapPeriod;
+
+function setDensityView(view) {
+  densityView = view;
+
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === view);
+  });
+
+  const activity = document.getElementById('density-activity');
+  const waves = document.getElementById('density-waves');
+  if (activity) activity.classList.toggle('is-hidden', view !== 'activity');
+  if (waves) waves.classList.toggle('is-hidden', view !== 'waves');
+
+  const timeSelector = document.querySelector('.time-period-selector');
+  if (timeSelector) timeSelector.classList.toggle('is-hidden', view !== 'activity');
+
+  if (view === 'waves') {
+    renderJoyDivisionPlot();
+    if (window.Plotly) {
+      const container = document.getElementById('joy-division-plot');
+      if (container) {
+        requestAnimationFrame(() => Plotly.Plots.resize(container));
+      }
+    }
+  }
+}
+
+window.setDensityView = setDensityView;
 
 function renderActivityGrid() {
   const container = document.getElementById('activity-grid');
@@ -332,12 +366,12 @@ function renderJoyDivisionPlot() {
     .filter(([noradId]) => allData[noradId]?.times?.length);
 
   if (entries.length === 0) {
-    container.textContent = 'No data available';
+    container.textContent = 'Loading density data...';
     return;
   }
 
   const dates = buildDateRange(startDate, now);
-  const spacing = 1.1;
+  const spacing = 0.55;
   const amplitude = 0.85;
   const traces = [];
   const total = entries.length;
