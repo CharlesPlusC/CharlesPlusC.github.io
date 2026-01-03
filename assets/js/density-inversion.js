@@ -7,13 +7,11 @@ const SATELLITES = {
   '43476': { name: 'GRACE-FO-A', color: '#2563eb', order: 1 },
   '43877': { name: 'Kanopus-V 6', color: '#7c3aed', order: 2 },
   '39212': { name: 'CZ-4C DEB', color: '#db2777', order: 3 },
-  '48714': { name: 'NOAA 17 DEB', color: '#059669', order: 4 },
-  '64631': { name: 'CZ-6A DEB', color: '#d97706', order: 5 },
-  '22': { name: 'Explorer 7', color: '#0ea5e9', order: 6 },
-  '54686': { name: 'Dongpo 08', color: '#14b8a6', order: 7 },
-  '54695': { name: 'Jilin-1 Gaofen 03D48', color: '#f43f5e', order: 8 },
-  '60012': { name: 'Object A', color: '#6366f1', order: 9 },
-  '62407': { name: 'Electron Kick Stage R/B', color: '#64748b', order: 10 }
+  '64631': { name: 'CZ-6A DEB', color: '#d97706', order: 4 },
+  '54686': { name: 'Dongpo 08', color: '#14b8a6', order: 5 },
+  '54695': { name: 'Jilin-1 Gaofen 03D48', color: '#f43f5e', order: 6 },
+  '60012': { name: 'Object A', color: '#6366f1', order: 7 },
+  '62407': { name: 'Electron Kick Stage R/B', color: '#64748b', order: 8 }
 };
 
 let allData = {};
@@ -413,11 +411,9 @@ function renderJoyDivisionPlot() {
   const startDate = new Date(now);
   startDate.setDate(startDate.getDate() - (windowConfig.days - 1));
 
-  const hiddenJoyDivisionIds = new Set(['48714', '22']);
-
   const entries = Object.entries(SATELLITES)
     .sort((a, b) => a[1].order - b[1].order)
-    .filter(([noradId]) => allData[noradId]?.times?.length && !hiddenJoyDivisionIds.has(noradId));
+    .filter(([noradId]) => allData[noradId]?.times?.length);
 
   if (entries.length === 0) {
     container.textContent = 'Loading density data...';
