@@ -449,10 +449,29 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
 
   const traces = [];
 
+  const densityTimes = [];
+  const densityValues = [];
+  for (let i = 0; i < data.times.length; i++) {
+    const dt = new Date(data.times[i]);
+    if (Number.isNaN(dt.getTime())) continue;
+    if (dt < startDate || dt > endDate) continue;
+    densityTimes.push(dt);
+    densityValues.push(data.densities[i]);
+  }
+
   // Kp background bands (full height, color indicates intensity)
   if (kpData && kpData.times) {
-    const kpTimes = kpData.times.map(t => new Date(t.replace(' ', 'T') + 'Z'));
-    const kpColors = kpData.values.map(kp => {
+    const kpTimes = [];
+    const kpValues = [];
+    kpData.times.forEach((t, i) => {
+      const dt = new Date(t.replace(' ', 'T') + 'Z');
+      if (Number.isNaN(dt.getTime())) return;
+      if (dt < startDate || dt > endDate) return;
+      kpTimes.push(dt);
+      kpValues.push(kpData.values[i]);
+    });
+
+    const kpColors = kpValues.map(kp => {
       if (kp >= 7) return 'rgba(239, 68, 68, 0.25)';
       if (kp >= 5) return 'rgba(249, 115, 22, 0.25)';
       if (kp >= 4) return 'rgba(234, 179, 8, 0.2)';
@@ -461,7 +480,7 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
 
     traces.push({
       x: kpTimes,
-      y: kpData.values.map(() => 1),  // All bars same height
+      y: kpValues.map(() => 1),  // All bars same height
       type: 'bar',
       yaxis: 'y2',
       marker: { color: kpColors },
@@ -472,9 +491,9 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
 
   // Density line
   traces.push({
-    x: data.times.map(t => new Date(t)),
-    y: data.densities,
-    type: 'scattergl',
+    x: densityTimes,
+    y: densityValues,
+    type: 'scatter',
     mode: 'lines',
     line: { color: color, width: 2 },
     hovertemplate: '%{x|%d %b %Y}<br>%{y:.2e} kg/m³<extra></extra>'
