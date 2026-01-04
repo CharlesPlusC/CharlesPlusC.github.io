@@ -66,5 +66,8 @@ author_profile: true
 <div id="stats-bar" class="stats-bar"></div>
 <div id="status" class="status">Loading satellite pass predictions...</div>
 <div id="passes-container"></div>
+<div class="page-blurb">
+  <p>These are predicted passes for Meteor-M N2-3 and N2-4 at the selected location, with start/end times, max elevation, and a simple sky track. Use this to plan when to listen for LRPT transmissions and where to point an antenna. Passes are precomputed from Celestrak TLEs using Skyfield, and when you choose Use my location they are computed in your browser with satellite.js.</p>
+</div>
 
 <script src="/assets/js/satellite-passes.js"></script>

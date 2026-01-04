@@ -85,4 +85,8 @@ author_profile: true
   <div id="satellite-cards" class="satellite-cards"></div>
 </div>
 
+<div class="page-blurb">
+  <p>These panels show TLE-derived thermospheric density estimates for each satellite along with the current Kp geomagnetic index. The grid and plots highlight day-to-day variability and recent trends so you can connect space weather activity to drag-driven density changes. Density is computed from Celestrak TLEs, and Kp is sourced from GFZ Potsdam.</p>
+</div>
+
 <script src="/assets/js/density-inversion.js"></script>

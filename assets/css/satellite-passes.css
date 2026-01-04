@@ -320,6 +320,22 @@
   color: #dc2626;
 }
 
+/* Page Blurb */
+.page-blurb {
+  margin: 26px 0 0;
+  padding: 14px 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.page-blurb p {
+  margin: 0;
+}
+
 /* Satellite Groups */
 .satellite-group {
   margin: 20px 0;
