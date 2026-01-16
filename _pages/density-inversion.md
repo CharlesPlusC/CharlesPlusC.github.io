@@ -24,6 +24,41 @@ author_profile: true
   </div>
 </div>
 
+<div id="aurora-activity-bar" class="aurora-activity-bar">
+  <div class="aurora-bar-header">
+    <span class="aurora-bar-title">Real-Time Solar Wind</span>
+    <span class="aurora-bar-update" id="aurora-update-time">Loading...</span>
+  </div>
+  <div class="aurora-bar-content">
+    <div class="aurora-metrics">
+      <div class="aurora-metric">
+        <div class="aurora-metric-label">Bt</div>
+        <div class="aurora-metric-value" id="aurora-bt">--</div>
+        <div class="aurora-metric-unit">nT</div>
+      </div>
+      <div class="aurora-metric bz-metric" id="bz-container">
+        <div class="aurora-metric-label">Bz</div>
+        <div class="aurora-metric-value" id="aurora-bz">--</div>
+        <div class="aurora-metric-unit">nT</div>
+      </div>
+      <div class="aurora-metric">
+        <div class="aurora-metric-label">Speed</div>
+        <div class="aurora-metric-value" id="aurora-speed">--</div>
+        <div class="aurora-metric-unit">km/s</div>
+      </div>
+      <div class="aurora-metric">
+        <div class="aurora-metric-label">Density</div>
+        <div class="aurora-metric-value" id="aurora-density">--</div>
+        <div class="aurora-metric-unit">p/cm³</div>
+      </div>
+    </div>
+    <div class="aurora-chart-container">
+      <div class="aurora-chart-label">Bz (24h)</div>
+      <div id="bz-chart" class="bz-chart"></div>
+    </div>
+  </div>
+</div>
+
 <div class="section">
   <div class="section-header">
     <div class="view-toggle">

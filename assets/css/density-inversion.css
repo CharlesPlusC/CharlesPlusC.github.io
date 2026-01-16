@@ -240,6 +240,148 @@
   pointer-events: none;
 }
 
+/* Aurora Activity Bar */
+.aurora-activity-bar {
+  background: linear-gradient(135deg, #0c1222 0%, #162033 100%);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 0 0 24px;
+}
+
+.aurora-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.aurora-bar-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(226, 232, 240, 0.7);
+  font-weight: 500;
+}
+
+.aurora-bar-update {
+  font-size: 10px;
+  color: rgba(148, 163, 184, 0.7);
+}
+
+.aurora-bar-content {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.aurora-metrics {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.aurora-metric {
+  text-align: center;
+  padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 8px;
+  min-width: 70px;
+}
+
+.aurora-metric-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(148, 163, 184, 0.8);
+  margin-bottom: 4px;
+}
+
+.aurora-metric-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.aurora-metric-unit {
+  font-size: 10px;
+  color: rgba(148, 163, 184, 0.6);
+  margin-top: 2px;
+}
+
+/* Bz color coding */
+.bz-metric.bz-positive .aurora-metric-value {
+  color: #22c55e;
+}
+
+.bz-metric.bz-negative .aurora-metric-value {
+  color: #ef4444;
+}
+
+.bz-metric.bz-strong-negative .aurora-metric-value {
+  color: #f97316;
+  text-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
+}
+
+/* Aurora Chart Container */
+.aurora-chart-container {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.aurora-chart-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(148, 163, 184, 0.8);
+  margin-bottom: 4px;
+}
+
+.bz-chart {
+  flex: 1;
+  min-height: 60px;
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 6px;
+}
+
+/* Speed color coding based on typical thresholds */
+.aurora-metric.speed-elevated .aurora-metric-value {
+  color: #eab308;
+}
+
+.aurora-metric.speed-high .aurora-metric-value {
+  color: #f97316;
+}
+
+@media (max-width: 720px) {
+  .aurora-bar-content {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .aurora-metrics {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .aurora-metric {
+    min-width: 65px;
+    padding: 6px 10px;
+  }
+
+  .aurora-metric-value {
+    font-size: 18px;
+  }
+
+  .bz-chart {
+    min-height: 70px;
+  }
+}
+
 /* Sections */
 .section {
   margin: 24px 0;

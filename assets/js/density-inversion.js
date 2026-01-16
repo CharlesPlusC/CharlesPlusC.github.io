@@ -644,3 +644,210 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
     displayModeBar: false
   });
 }
+
+/**
+ * Real-Time Solar Wind Data from NOAA SWPC
+ * Updates every 10 minutes
+ */
+
+const NOAA_MAG_URL = 'https://services.swpc.noaa.gov/products/solar-wind/mag-7-day.json';
+const NOAA_PLASMA_URL = 'https://services.swpc.noaa.gov/products/solar-wind/plasma-7-day.json';
+const AURORA_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
+
+let auroraRefreshTimer = null;
+
+async function loadAuroraData() {
+  try {
+    const [magResponse, plasmaResponse] = await Promise.all([
+      fetch(NOAA_MAG_URL),
+      fetch(NOAA_PLASMA_URL)
+    ]);
+
+    if (!magResponse.ok || !plasmaResponse.ok) {
+      throw new Error('Failed to fetch NOAA data');
+    }
+
+    const magData = await magResponse.json();
+    const plasmaData = await plasmaResponse.json();
+
+    // Parse magnetic field data (skip header row)
+    // Format: [time_tag, bx_gsm, by_gsm, bz_gsm, lon_gsm, lat_gsm, bt]
+    const magRecords = magData.slice(1).map(row => ({
+      time: new Date(row[0]),
+      bx: parseFloat(row[1]),
+      by: parseFloat(row[2]),
+      bz: parseFloat(row[3]),
+      bt: parseFloat(row[6])
+    })).filter(r => !isNaN(r.bz) && !isNaN(r.bt));
+
+    // Parse plasma data (skip header row)
+    // Format: [time_tag, density, speed, temperature]
+    const plasmaRecords = plasmaData.slice(1).map(row => ({
+      time: new Date(row[0]),
+      density: parseFloat(row[1]),
+      speed: parseFloat(row[2]),
+      temperature: parseFloat(row[3])
+    })).filter(r => !isNaN(r.speed));
+
+    updateAuroraDisplay(magRecords, plasmaRecords);
+    renderBzChart(magRecords);
+
+  } catch (err) {
+    console.error('Failed to load aurora data:', err);
+    document.getElementById('aurora-update-time').textContent = 'Data unavailable';
+  }
+}
+
+function updateAuroraDisplay(magRecords, plasmaRecords) {
+  // Get most recent valid values
+  const latestMag = magRecords[magRecords.length - 1];
+  const latestPlasma = plasmaRecords[plasmaRecords.length - 1];
+
+  // Update Bt
+  const btEl = document.getElementById('aurora-bt');
+  if (btEl && latestMag) {
+    btEl.textContent = latestMag.bt.toFixed(1);
+  }
+
+  // Update Bz with color coding
+  const bzEl = document.getElementById('aurora-bz');
+  const bzContainer = document.getElementById('bz-container');
+  if (bzEl && bzContainer && latestMag) {
+    const bz = latestMag.bz;
+    bzEl.textContent = bz.toFixed(1);
+
+    // Remove existing classes
+    bzContainer.classList.remove('bz-positive', 'bz-negative', 'bz-strong-negative');
+
+    // Color code based on Bz value
+    // Negative Bz (southward) is favorable for aurora
+    if (bz <= -10) {
+      bzContainer.classList.add('bz-strong-negative');
+    } else if (bz < 0) {
+      bzContainer.classList.add('bz-negative');
+    } else {
+      bzContainer.classList.add('bz-positive');
+    }
+  }
+
+  // Update Speed with color coding
+  const speedEl = document.getElementById('aurora-speed');
+  const speedContainer = speedEl?.closest('.aurora-metric');
+  if (speedEl && latestPlasma) {
+    const speed = latestPlasma.speed;
+    speedEl.textContent = Math.round(speed);
+
+    if (speedContainer) {
+      speedContainer.classList.remove('speed-elevated', 'speed-high');
+      if (speed >= 600) {
+        speedContainer.classList.add('speed-high');
+      } else if (speed >= 450) {
+        speedContainer.classList.add('speed-elevated');
+      }
+    }
+  }
+
+  // Update Density
+  const densityEl = document.getElementById('aurora-density');
+  if (densityEl && latestPlasma) {
+    densityEl.textContent = latestPlasma.density.toFixed(1);
+  }
+
+  // Update timestamp
+  const updateEl = document.getElementById('aurora-update-time');
+  if (updateEl && latestMag) {
+    const updateTime = latestMag.time;
+    updateEl.textContent = 'Updated ' + updateTime.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }) + ' • Refreshes every 10 min';
+  }
+}
+
+function renderBzChart(magRecords) {
+  const container = document.getElementById('bz-chart');
+  if (!container || !window.Plotly) return;
+
+  // Filter to last 24 hours
+  const now = new Date();
+  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+  const recent = magRecords.filter(r => r.time >= twentyFourHoursAgo);
+
+  if (recent.length === 0) return;
+
+  const times = recent.map(r => r.time);
+  const bzValues = recent.map(r => r.bz);
+
+  const trace = {
+    x: times,
+    y: bzValues,
+    type: 'scatter',
+    mode: 'lines',
+    fill: 'tozeroy',
+    line: {
+      color: 'rgba(148, 163, 184, 0.8)',
+      width: 1.5
+    },
+    fillcolor: 'rgba(99, 102, 241, 0.15)',
+    hovertemplate: '%{x|%H:%M}<br>Bz: %{y:.1f} nT<extra></extra>'
+  };
+
+  // Add a zero reference line
+  const zeroLine = {
+    x: [times[0], times[times.length - 1]],
+    y: [0, 0],
+    type: 'scatter',
+    mode: 'lines',
+    line: {
+      color: 'rgba(148, 163, 184, 0.3)',
+      width: 1,
+      dash: 'dot'
+    },
+    hoverinfo: 'skip',
+    showlegend: false
+  };
+
+  const layout = {
+    margin: { t: 5, r: 10, b: 20, l: 35 },
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    xaxis: {
+      showgrid: false,
+      tickformat: '%H:%M',
+      tickfont: { size: 9, color: 'rgba(148, 163, 184, 0.7)' },
+      nticks: 6
+    },
+    yaxis: {
+      showgrid: true,
+      gridcolor: 'rgba(148, 163, 184, 0.1)',
+      tickfont: { size: 9, color: 'rgba(148, 163, 184, 0.7)' },
+      zeroline: false
+    },
+    showlegend: false,
+    hovermode: 'x unified'
+  };
+
+  Plotly.newPlot(container, [zeroLine, trace], layout, {
+    responsive: true,
+    displayModeBar: false
+  });
+}
+
+function startAuroraRefresh() {
+  // Load immediately
+  loadAuroraData();
+
+  // Set up interval refresh
+  if (auroraRefreshTimer) {
+    clearInterval(auroraRefreshTimer);
+  }
+  auroraRefreshTimer = setInterval(loadAuroraData, AURORA_REFRESH_INTERVAL);
+}
+
+// Start aurora data loading when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  startAuroraRefresh();
+});
