@@ -426,6 +426,91 @@ function normalizeSeries(values) {
   });
 }
 
+function renderJoyDivisionKpBar(startDate, endDate, numDays) {
+  const container = document.getElementById('joy-division-kp');
+  if (!container || !kpData || !kpData.times || !kpData.values) {
+    if (container) container.innerHTML = '';
+    return;
+  }
+
+  // Use 3-hourly for week/month, daily for year
+  const useThreeHourly = numDays <= 30;
+
+  let cells = [];
+
+  if (useThreeHourly) {
+    // 3-hourly resolution - use native Kp data
+    kpData.times.forEach((t, i) => {
+      const dt = new Date(t.replace(' ', 'T') + 'Z');
+      if (dt < startDate || dt > endDate) return;
+      if (kpData.values[i] === null) return;
+
+      const kp = kpData.values[i];
+      let level = 0;
+      if (kp >= 7) level = 4;
+      else if (kp >= 5) level = 3;
+      else if (kp >= 4) level = 2;
+      else if (kp >= 1) level = 1;
+
+      cells.push({
+        date: dt,
+        kp: kp,
+        level: level
+      });
+    });
+  } else {
+    // Daily resolution - bin by day and take max
+    const kpByDay = {};
+    kpData.times.forEach((t, i) => {
+      const dt = new Date(t.replace(' ', 'T') + 'Z');
+      if (dt < startDate || dt > endDate) return;
+      const dayKey = dt.toISOString().split('T')[0];
+      if (!kpByDay[dayKey]) kpByDay[dayKey] = [];
+      if (kpData.values[i] !== null) {
+        kpByDay[dayKey].push(kpData.values[i]);
+      }
+    });
+
+    // Generate cells for each day
+    const cursor = new Date(startDate);
+    while (cursor <= endDate) {
+      const dayKey = cursor.toISOString().split('T')[0];
+      const dayKp = kpByDay[dayKey];
+      let level = 0;
+      let maxKp = 0;
+
+      if (dayKp && dayKp.length > 0) {
+        maxKp = Math.max(...dayKp);
+        if (maxKp >= 7) level = 4;
+        else if (maxKp >= 5) level = 3;
+        else if (maxKp >= 4) level = 2;
+        else if (maxKp >= 1) level = 1;
+      }
+
+      cells.push({
+        date: new Date(cursor),
+        kp: maxKp,
+        level: level
+      });
+
+      cursor.setDate(cursor.getDate() + 1);
+    }
+  }
+
+  const cellsHtml = cells.map(cell => {
+    const dateStr = cell.date.toISOString().split('T')[0];
+    const title = useThreeHourly
+      ? `${cell.date.toISOString().slice(0, 16).replace('T', ' ')} UTC: Kp ${cell.kp.toFixed(1)}`
+      : `${dateStr}: Kp ${cell.kp.toFixed(1)}`;
+    return `<div class="joy-division-kp-cell" data-level="${cell.level}" title="${title}"></div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <span class="joy-division-kp-label">Kp Index</span>
+    <div class="joy-division-kp-cells">${cellsHtml}</div>
+  `;
+}
+
 function renderJoyDivisionPlot() {
   const container = document.getElementById('joy-division-plot');
   if (!container) return;
@@ -454,37 +539,9 @@ function renderJoyDivisionPlot() {
   const amplitude = 0.85;
   const traces = [];
   const total = entries.length;
-  const yMax = (total - 1) * spacing + amplitude;
 
-  // Add Kp background bars at native 3-hour resolution (behind the ridges)
-  if (kpData && kpData.times && kpData.values) {
-    const kpTimes = [];
-    const kpColors = [];
-
-    kpData.times.forEach((t, i) => {
-      const dt = new Date(t.replace(' ', 'T') + 'Z');
-      if (dt < startDate || dt > now) return;
-      if (kpData.values[i] === null) return;
-
-      kpTimes.push(dt);
-      const kp = kpData.values[i];
-      const normalizedKp = Math.min(Math.max(kp, 0), 9) / 9;
-      const alpha = 0.08 + 0.4 * normalizedKp;
-      kpColors.push(`rgba(150, 150, 150, ${alpha.toFixed(3)})`);
-    });
-
-    if (kpTimes.length > 0) {
-      traces.push({
-        x: kpTimes,
-        y: kpTimes.map(() => yMax + 0.1),
-        type: 'bar',
-        marker: { color: kpColors },
-        width: 3 * 3600 * 1000,  // 3-hour width (native Kp resolution)
-        hoverinfo: 'skip',
-        showlegend: false
-      });
-    }
-  }
+  // Render Kp bar at the bottom (3-hourly for week/month, daily for year)
+  renderJoyDivisionKpBar(startDate, now, windowConfig.days);
 
   const ridges = entries.map(([noradId], index) => {
     const data = allData[noradId];
@@ -1124,11 +1181,17 @@ function renderSatelliteGlobe() {
       });
     });
 
+  // Preserve current rotation if globe already exists, otherwise use default
+  let rotation = { lon: -30, lat: 20 };
+  if (globeContainer.layout && globeContainer.layout.geo && globeContainer.layout.geo.projection) {
+    rotation = globeContainer.layout.geo.projection.rotation || rotation;
+  }
+
   const layout = {
     geo: {
       projection: {
         type: 'orthographic',
-        rotation: { lon: -30, lat: 20 }
+        rotation: rotation
       },
       showland: true,
       landcolor: '#1e293b',
@@ -1150,8 +1213,7 @@ function renderSatelliteGlobe() {
     showlegend: false
   };
 
-  // Use Plotly.react() to update without resetting user's view/rotation
-  // Only use newPlot on first render (when container has no data)
+  // Use Plotly.react() to update data only, preserving user interactions
   if (globeContainer.data) {
     Plotly.react(globeContainer, traces, layout);
   } else {

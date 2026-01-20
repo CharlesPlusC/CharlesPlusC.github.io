@@ -497,6 +497,40 @@
   height: 360px;
 }
 
+.joy-division-kp-row {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 0 10px;
+}
+
+.joy-division-kp-label {
+  font-size: 10px;
+  color: rgba(226, 232, 240, 0.7);
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.joy-division-kp-cells {
+  display: flex;
+  flex: 1;
+  gap: 1px;
+}
+
+.joy-division-kp-cell {
+  flex: 1;
+  min-width: 0;
+  height: 12px;
+  border-radius: 1px;
+}
+
+/* Kp color scale for Joy Division */
+.joy-division-kp-cell[data-level="0"] { background: #1e293b; }
+.joy-division-kp-cell[data-level="1"] { background: #22c55e; }
+.joy-division-kp-cell[data-level="2"] { background: #eab308; }
+.joy-division-kp-cell[data-level="3"] { background: #f97316; }
+.joy-division-kp-cell[data-level="4"] { background: #ef4444; }
+
 @media (max-width: 720px) {
   .joy-division-plot {
     height: 300px;

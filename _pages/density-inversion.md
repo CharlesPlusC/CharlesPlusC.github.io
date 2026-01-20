@@ -112,6 +112,7 @@ author_profile: true
     <div class="joy-division-card">
       <div class="joy-division-meta">Normalized 0-1 per satellite. <span id="joy-division-window">1 year window.</span></div>
       <div id="joy-division-plot" class="joy-division-plot"></div>
+      <div id="joy-division-kp" class="joy-division-kp-row"></div>
     </div>
   </div>
 </div>
