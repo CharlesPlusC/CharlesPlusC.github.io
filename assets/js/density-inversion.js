@@ -851,29 +851,37 @@ function renderCardChart(noradId, color, data, startDate, endDate, yAxisRange = 
 }
 
 /**
- * Real-Time Solar Wind Data from NOAA SWPC
+ * Real-Time Solar Wind & Kp Data from NOAA SWPC
  * Updates every 10 minutes
  */
 
 const NOAA_MAG_URL = 'https://services.swpc.noaa.gov/products/solar-wind/mag-7-day.json';
 const NOAA_PLASMA_URL = 'https://services.swpc.noaa.gov/products/solar-wind/plasma-7-day.json';
-const AURORA_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
+const NOAA_KP_URL = 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json';
+const REALTIME_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
-let auroraRefreshTimer = null;
+let realtimeRefreshTimer = null;
 
-async function loadAuroraData() {
+async function loadRealtimeData() {
   try {
-    const [magResponse, plasmaResponse] = await Promise.all([
+    const [magResponse, plasmaResponse, kpResponse] = await Promise.all([
       fetch(NOAA_MAG_URL),
-      fetch(NOAA_PLASMA_URL)
+      fetch(NOAA_PLASMA_URL),
+      fetch(NOAA_KP_URL)
     ]);
 
     if (!magResponse.ok || !plasmaResponse.ok) {
-      throw new Error('Failed to fetch NOAA data');
+      throw new Error('Failed to fetch NOAA solar wind data');
     }
 
     const magData = await magResponse.json();
     const plasmaData = await plasmaResponse.json();
+
+    // Process real-time Kp data if available
+    if (kpResponse.ok) {
+      const kpJson = await kpResponse.json();
+      updateRealtimeKp(kpJson);
+    }
 
     // Parse magnetic field data (skip header row)
     // Format: [time_tag, bx_gsm, by_gsm, bz_gsm, lon_gsm, lat_gsm, bt]
@@ -898,8 +906,53 @@ async function loadAuroraData() {
     renderBzChart(magRecords);
 
   } catch (err) {
-    console.error('Failed to load aurora data:', err);
+    console.error('Failed to load realtime data:', err);
     document.getElementById('aurora-update-time').textContent = 'Data unavailable';
+  }
+}
+
+function updateRealtimeKp(kpJson) {
+  // NOAA Kp format: [["time_tag", "Kp", "a_running", "station_count"], [...], ...]
+  // Skip header row
+  const kpRecords = kpJson.slice(1).map(row => ({
+    time: row[0],  // "YYYY-MM-DD HH:MM:SS.000"
+    kp: parseFloat(row[1])
+  })).filter(r => !isNaN(r.kp));
+
+  if (kpRecords.length === 0) return;
+
+  // Merge with existing kpData or create new
+  if (!kpData) {
+    kpData = { times: [], values: [], source: 'NOAA SWPC' };
+  }
+
+  // Convert existing times to Set for deduplication
+  const existingTimes = new Set(kpData.times);
+
+  // Add new Kp records
+  let addedCount = 0;
+  kpRecords.forEach(record => {
+    // Normalize time format to match GFZ format
+    const timeStr = record.time.replace('T', ' ').slice(0, 23);
+    if (!existingTimes.has(timeStr)) {
+      kpData.times.push(timeStr);
+      kpData.values.push(record.kp);
+      existingTimes.add(timeStr);
+      addedCount++;
+    }
+  });
+
+  // Sort by time
+  if (addedCount > 0) {
+    const combined = kpData.times.map((t, i) => ({ t, v: kpData.values[i] }));
+    combined.sort((a, b) => a.t.localeCompare(b.t));
+    kpData.times = combined.map(x => x.t);
+    kpData.values = combined.map(x => x.v);
+
+    // Update space weather banner with latest Kp
+    updateSpaceWeatherIndicator();
+
+    console.log(`Added ${addedCount} new Kp values from NOAA (total: ${kpData.times.length})`);
   }
 }
 
@@ -1041,20 +1094,20 @@ function renderBzChart(magRecords) {
   });
 }
 
-function startAuroraRefresh() {
-  // Load immediately
-  loadAuroraData();
+function startRealtimeRefresh() {
+  // Load immediately (solar wind + Kp)
+  loadRealtimeData();
 
   // Set up interval refresh
-  if (auroraRefreshTimer) {
-    clearInterval(auroraRefreshTimer);
+  if (realtimeRefreshTimer) {
+    clearInterval(realtimeRefreshTimer);
   }
-  auroraRefreshTimer = setInterval(loadAuroraData, AURORA_REFRESH_INTERVAL);
+  realtimeRefreshTimer = setInterval(loadRealtimeData, REALTIME_REFRESH_INTERVAL);
 }
 
-// Start aurora data loading when DOM is ready
+// Start realtime data loading (solar wind + Kp) when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  startAuroraRefresh();
+  startRealtimeRefresh();
 });
 
 /**
@@ -1181,46 +1234,49 @@ function renderSatelliteGlobe() {
       });
     });
 
-  // Preserve current rotation if globe already exists, otherwise use default
-  let rotation = { lon: -30, lat: 20 };
-  if (globeContainer.layout && globeContainer.layout.geo && globeContainer.layout.geo.projection) {
-    rotation = globeContainer.layout.geo.projection.rotation || rotation;
-  }
+  // Check if globe already exists - if so, just update the data traces
+  const isInitialRender = !globeContainer.data;
 
-  const layout = {
-    geo: {
-      projection: {
-        type: 'orthographic',
-        rotation: rotation
+  if (isInitialRender) {
+    // First render - create the full plot with default rotation
+    const layout = {
+      geo: {
+        projection: {
+          type: 'orthographic',
+          rotation: { lon: -30, lat: 20 }
+        },
+        showland: true,
+        landcolor: '#1e293b',
+        showocean: true,
+        oceancolor: '#0f172a',
+        showcoastlines: true,
+        coastlinecolor: '#334155',
+        coastlinewidth: 0.5,
+        showlakes: false,
+        showcountries: true,
+        countrycolor: '#334155',
+        countrywidth: 0.3,
+        bgcolor: '#0a0e17',
+        lataxis: { showgrid: true, gridcolor: '#1e293b', gridwidth: 0.5 },
+        lonaxis: { showgrid: true, gridcolor: '#1e293b', gridwidth: 0.5 }
       },
-      showland: true,
-      landcolor: '#1e293b',
-      showocean: true,
-      oceancolor: '#0f172a',
-      showcoastlines: true,
-      coastlinecolor: '#334155',
-      coastlinewidth: 0.5,
-      showlakes: false,
-      showcountries: true,
-      countrycolor: '#334155',
-      countrywidth: 0.3,
-      bgcolor: '#0a0e17',
-      lataxis: { showgrid: true, gridcolor: '#1e293b', gridwidth: 0.5 },
-      lonaxis: { showgrid: true, gridcolor: '#1e293b', gridwidth: 0.5 }
-    },
-    paper_bgcolor: '#0a0e17',
-    margin: { t: 0, r: 0, b: 0, l: 0 },
-    showlegend: false
-  };
+      paper_bgcolor: '#0a0e17',
+      margin: { t: 0, r: 0, b: 0, l: 0 },
+      showlegend: false
+    };
 
-  // Use Plotly.react() to update data only, preserving user interactions
-  if (globeContainer.data) {
-    Plotly.react(globeContainer, traces, layout);
-  } else {
     Plotly.newPlot(globeContainer, traces, layout, {
       responsive: true,
       displayModeBar: false
     });
+  } else {
+    // Subsequent updates - only update trace data, preserving user's rotation
+    // Use deleteTraces + addTraces to update data without touching layout
+    const numExistingTraces = globeContainer.data.length;
+    const traceIndices = Array.from({ length: numExistingTraces }, (_, i) => i);
+
+    Plotly.deleteTraces(globeContainer, traceIndices);
+    Plotly.addTraces(globeContainer, traces);
   }
 
   // Update position list
