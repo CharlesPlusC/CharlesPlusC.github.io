@@ -454,6 +454,37 @@ function renderJoyDivisionPlot() {
   const amplitude = 0.85;
   const traces = [];
   const total = entries.length;
+  const yMax = (total - 1) * spacing + amplitude;
+
+  // Add Kp background bars at native 3-hour resolution (behind the ridges)
+  if (kpData && kpData.times && kpData.values) {
+    const kpTimes = [];
+    const kpColors = [];
+
+    kpData.times.forEach((t, i) => {
+      const dt = new Date(t.replace(' ', 'T') + 'Z');
+      if (dt < startDate || dt > now) return;
+      if (kpData.values[i] === null) return;
+
+      kpTimes.push(dt);
+      const kp = kpData.values[i];
+      const normalizedKp = Math.min(Math.max(kp, 0), 9) / 9;
+      const alpha = 0.08 + 0.4 * normalizedKp;
+      kpColors.push(`rgba(150, 150, 150, ${alpha.toFixed(3)})`);
+    });
+
+    if (kpTimes.length > 0) {
+      traces.push({
+        x: kpTimes,
+        y: kpTimes.map(() => yMax + 0.1),
+        type: 'bar',
+        marker: { color: kpColors },
+        width: 3 * 3600 * 1000,  // 3-hour width (native Kp resolution)
+        hoverinfo: 'skip',
+        showlegend: false
+      });
+    }
+  }
 
   const ridges = entries.map(([noradId], index) => {
     const data = allData[noradId];
