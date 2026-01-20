@@ -1147,16 +1147,24 @@ function startGlobeRefresh() {
   globeUpdateTimer = setInterval(renderSatelliteGlobe, GLOBE_REFRESH_INTERVAL);
 }
 
-// Start globe after data loads
+// Start globe after ALL data loads
 document.addEventListener('DOMContentLoaded', () => {
-  // Wait for data to load, then start globe
+  const expectedSatellites = Object.keys(SATELLITES).length;
+
+  // Wait for all satellites to load, then start globe
   const checkDataAndStart = setInterval(() => {
-    if (Object.keys(allData).length > 0) {
+    const loadedCount = Object.keys(allData).filter(id => allData[id]?.tle_line1).length;
+    if (loadedCount >= expectedSatellites) {
       clearInterval(checkDataAndStart);
       startGlobeRefresh();
     }
   }, 500);
 
-  // Timeout after 10 seconds
-  setTimeout(() => clearInterval(checkDataAndStart), 10000);
+  // Timeout after 15 seconds - start with whatever we have
+  setTimeout(() => {
+    clearInterval(checkDataAndStart);
+    if (Object.keys(allData).length > 0) {
+      startGlobeRefresh();
+    }
+  }, 15000);
 });
