@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadAllData() {
   const status = document.getElementById('status');
 
-  for (const noradId of Object.keys(SATELLITES)) {
+  // Load all satellite data in PARALLEL for speed
+  const satellitePromises = Object.keys(SATELLITES).map(async (noradId) => {
     try {
       const response = await fetch(`/data/density-${noradId}.json`);
       if (response.ok) {
@@ -41,16 +42,16 @@ async function loadAllData() {
     } catch (err) {
       console.error(`Failed to load ${noradId}:`, err);
     }
-  }
+  });
 
-  try {
-    const kpResponse = await fetch('/data/kp-index.json');
-    if (kpResponse.ok) {
-      kpData = await kpResponse.json();
-    }
-  } catch (err) {
-    console.log('Kp data not available');
-  }
+  // Load Kp data in parallel with satellite data
+  const kpPromise = fetch('/data/kp-index.json')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => { kpData = data; })
+    .catch(() => console.log('Kp data not available'));
+
+  // Wait for all to complete
+  await Promise.all([...satellitePromises, kpPromise]);
 
   updateSpaceWeatherIndicator();
 
@@ -79,6 +80,8 @@ async function loadAllData() {
 
     renderActivityGrid();
     renderSatelliteCards();
+    renderSatelliteGlobe();  // Render globe immediately - data is ready
+    startGlobeRefresh();     // Start periodic updates
     if (densityView === 'waves') {
       renderJoyDivisionPlot();
     }
@@ -1137,34 +1140,9 @@ function renderSatelliteGlobe() {
 }
 
 function startGlobeRefresh() {
-  // Initial render after data is loaded
-  setTimeout(renderSatelliteGlobe, 500);
-
-  // Set up periodic refresh
+  // Set up periodic refresh (initial render is called separately)
   if (globeUpdateTimer) {
     clearInterval(globeUpdateTimer);
   }
   globeUpdateTimer = setInterval(renderSatelliteGlobe, GLOBE_REFRESH_INTERVAL);
 }
-
-// Start globe after ALL data loads
-document.addEventListener('DOMContentLoaded', () => {
-  const expectedSatellites = Object.keys(SATELLITES).length;
-
-  // Wait for all satellites to load, then start globe
-  const checkDataAndStart = setInterval(() => {
-    const loadedCount = Object.keys(allData).filter(id => allData[id]?.tle_line1).length;
-    if (loadedCount >= expectedSatellites) {
-      clearInterval(checkDataAndStart);
-      startGlobeRefresh();
-    }
-  }, 500);
-
-  // Timeout after 15 seconds - start with whatever we have
-  setTimeout(() => {
-    clearInterval(checkDataAndStart);
-    if (Object.keys(allData).length > 0) {
-      startGlobeRefresh();
-    }
-  }, 15000);
-});
