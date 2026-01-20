@@ -116,7 +116,13 @@ author_profile: true
 </div>
 
 <div class="section">
-  <div class="section-title">Satellite Details</div>
+  <div class="section-header">
+    <div class="section-title">Satellite Details</div>
+    <div class="chart-controls">
+      <button id="unified-scale-btn" class="control-btn" onclick="toggleUnifiedYScale()">Unified Y-Scale: Off</button>
+    </div>
+  </div>
+  <p class="section-note">Satellites ordered by perigee altitude (lowest to highest). Use the range slider below each chart to zoom in on specific time periods. Hover for crosshair cursor with values.</p>
   <div id="satellite-cards" class="satellite-cards"></div>
 </div>
 

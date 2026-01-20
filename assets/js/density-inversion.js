@@ -3,23 +3,25 @@
  * Activity Grid + All Satellites Chart
  */
 
+// Satellites ordered by perigee altitude (lowest to highest) - fixed ordering
 const SATELLITES = {
-  '43476': { name: 'GRACE-FO-A', color: '#2563eb', order: 1, flag: '🇺🇸🇩🇪' },
-  '43877': { name: 'Kanopus-V 6', color: '#7c3aed', order: 2, flag: '🇷🇺' },
-  '39212': { name: 'CZ-4C DEB', color: '#db2777', order: 3, flag: '🇨🇳' },
-  '48714': { name: 'NOAA 17 DEB', color: '#059669', order: 4, flag: '🇺🇸' },
-  '64631': { name: 'CZ-6A DEB', color: '#d97706', order: 5, flag: '🇨🇳' },
-  '22': { name: 'Explorer 7', color: '#0ea5e9', order: 6, flag: '🇺🇸' },
-  '54686': { name: 'Dongpo 08', color: '#14b8a6', order: 7, flag: '🇨🇳' },
-  '54695': { name: 'Jilin-1 Gaofen 03D48', color: '#f43f5e', order: 8, flag: '🇨🇳' },
-  '60012': { name: 'Object A', color: '#6366f1', order: 9, flag: '🇺🇳' },
-  '62407': { name: 'Electron Kick Stage R/B', color: '#64748b', order: 10, flag: '🇳🇿' }
+  '64631': { name: 'CZ-6A DEB', color: '#d97706', order: 1, flag: '🇨🇳', altitude: 367 },
+  '48714': { name: 'NOAA 17 DEB', color: '#059669', order: 2, flag: '🇺🇸', altitude: 420 },
+  '22': { name: 'Explorer 7', color: '#0ea5e9', order: 3, flag: '🇺🇸', altitude: 433 },
+  '43476': { name: 'GRACE-FO-A', color: '#2563eb', order: 4, flag: '🇺🇸🇩🇪', altitude: 448 },
+  '43877': { name: 'Kanopus-V 6', color: '#7c3aed', order: 5, flag: '🇷🇺', altitude: 456 },
+  '62407': { name: 'Electron Kick Stage R/B', color: '#64748b', order: 6, flag: '🇳🇿', altitude: 462 },
+  '54695': { name: 'Jilin-1 Gaofen 03D48', color: '#f43f5e', order: 7, flag: '🇨🇳', altitude: 468 },
+  '54686': { name: 'Dongpo 08', color: '#14b8a6', order: 8, flag: '🇨🇳', altitude: 470 },
+  '60012': { name: 'Object A', color: '#6366f1', order: 9, flag: '🇺🇳', altitude: 526 },
+  '39212': { name: 'CZ-4C DEB', color: '#db2777', order: 10, flag: '🇨🇳', altitude: 596 }
 };
 
 let allData = {};
 let kpData = null;
 let heatmapPeriod = 'year';
 let densityView = 'activity';
+let unifiedYScale = false;  // Toggle for unified y-axis across all charts
 
 document.addEventListener('DOMContentLoaded', () => {
   setDensityView('activity');
@@ -162,6 +164,22 @@ function setDensityView(view) {
 }
 
 window.setDensityView = setDensityView;
+
+function toggleUnifiedYScale() {
+  unifiedYScale = !unifiedYScale;
+
+  // Update button state
+  const btn = document.getElementById('unified-scale-btn');
+  if (btn) {
+    btn.classList.toggle('active', unifiedYScale);
+    btn.textContent = unifiedYScale ? 'Unified Y-Scale: On' : 'Unified Y-Scale: Off';
+  }
+
+  // Re-render satellite cards with new scale setting
+  renderSatelliteCards();
+}
+
+window.toggleUnifiedYScale = toggleUnifiedYScale;
 
 function renderActivityGrid() {
   const container = document.getElementById('activity-grid');
@@ -509,6 +527,31 @@ function renderSatelliteCards() {
   const sixMonthsAgo = new Date(now);
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
+  // Compute global min/max for unified y-scale
+  let globalMinDensity = Infinity;
+  let globalMaxDensity = -Infinity;
+
+  if (unifiedYScale) {
+    Object.entries(SATELLITES).forEach(([noradId]) => {
+      const data = allData[noradId];
+      if (!data || !data.times || data.times.length === 0) return;
+
+      for (let i = 0; i < data.times.length; i++) {
+        const dt = new Date(data.times[i]);
+        if (dt < sixMonthsAgo || dt > now) continue;
+        const d = data.densities[i];
+        if (d > 0) {
+          globalMinDensity = Math.min(globalMinDensity, d);
+          globalMaxDensity = Math.max(globalMaxDensity, d);
+        }
+      }
+    });
+  }
+
+  const yAxisRange = unifiedYScale && globalMinDensity < Infinity
+    ? [Math.log10(globalMinDensity * 0.8), Math.log10(globalMaxDensity * 1.2)]
+    : null;
+
   Object.entries(SATELLITES)
     .sort((a, b) => a[1].order - b[1].order)
     .forEach(([noradId, sat]) => {
@@ -553,24 +596,24 @@ function renderSatelliteCards() {
       container.appendChild(card);
 
       // Render chart after card is in DOM
-      setTimeout(() => renderCardChart(noradId, sat.color, data, sixMonthsAgo, now), 10);
+      setTimeout(() => renderCardChart(noradId, sat.color, data, sixMonthsAgo, now, yAxisRange), 10);
     });
 }
 
-function renderCardChart(noradId, color, data, startDate, endDate) {
+function renderCardChart(noradId, color, data, startDate, endDate, yAxisRange = null) {
   const container = document.getElementById(`chart-${noradId}`);
   if (!container) return;
 
   const traces = [];
 
-  const densityTimes = [];
-  const densityValues = [];
+  // Get ALL density data (not filtered) for rangeslider to work properly
+  const allDensityTimes = [];
+  const allDensityValues = [];
   for (let i = 0; i < data.times.length; i++) {
     const dt = new Date(data.times[i]);
     if (Number.isNaN(dt.getTime())) continue;
-    if (dt < startDate || dt > endDate) continue;
-    densityTimes.push(dt);
-    densityValues.push(data.densities[i]);
+    allDensityTimes.push(dt);
+    allDensityValues.push(data.densities[i]);
   }
 
   // Kp background bands (full height, color indicates intensity)
@@ -580,7 +623,6 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
     kpData.times.forEach((t, i) => {
       const dt = new Date(t.replace(' ', 'T') + 'Z');
       if (Number.isNaN(dt.getTime())) return;
-      if (dt < startDate || dt > endDate) return;
       kpTimes.push(dt);
       kpValues.push(kpData.values[i]);
     });
@@ -604,29 +646,51 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
     });
   }
 
-  // Density line
+  // Density line - use all data for rangeslider functionality
   traces.push({
-    x: densityTimes,
-    y: densityValues,
+    x: allDensityTimes,
+    y: allDensityValues,
     type: 'scatter',
     mode: 'lines',
     line: { color: color, width: 2 },
-    hovertemplate: '%{x|%d %b %Y}<br>%{y:.2e} kg/m³<extra></extra>'
+    hovertemplate: '%{x|%d %b %Y %H:%M}<br><b>%{y:.2e}</b> kg/m³<extra></extra>'
   });
 
   const layout = {
     font: { family: 'system-ui, -apple-system, sans-serif', size: 10 },
-    margin: { t: 5, r: 40, b: 25, l: 50 },
+    margin: { t: 5, r: 40, b: 45, l: 50 },
     paper_bgcolor: 'white',
     plot_bgcolor: 'white',
     xaxis: {
       gridcolor: 'rgba(0,0,0,0.05)',
-      range: [startDate, endDate]
+      range: [startDate, endDate],
+      rangeslider: {
+        visible: true,
+        thickness: 0.08,
+        bgcolor: '#f8fafc',
+        bordercolor: '#e2e8f0',
+        borderwidth: 1
+      },
+      // Spike line for crosshair cursor
+      showspikes: true,
+      spikemode: 'across',
+      spikesnap: 'cursor',
+      spikecolor: '#64748b',
+      spikethickness: 1,
+      spikedash: 'dot'
     },
     yaxis: {
       type: 'log',
       gridcolor: 'rgba(0,0,0,0.05)',
-      exponentformat: 'e'
+      exponentformat: 'e',
+      range: yAxisRange,  // Use unified range if provided
+      // Spike line for crosshair cursor
+      showspikes: true,
+      spikemode: 'across',
+      spikesnap: 'cursor',
+      spikecolor: '#64748b',
+      spikethickness: 1,
+      spikedash: 'dot'
     },
     yaxis2: {
       overlaying: 'y',
@@ -637,7 +701,12 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
       zeroline: false
     },
     showlegend: false,
-    hovermode: 'x'
+    hovermode: 'x unified',  // Shows values at cursor position
+    hoverlabel: {
+      bgcolor: 'white',
+      bordercolor: '#e2e8f0',
+      font: { size: 11 }
+    }
   };
 
   Plotly.newPlot(container, traces, layout, {
