@@ -38,7 +38,14 @@ jobs:
           R_EARTH = 6378137.0      # Earth radius in m
 
           # Satellite configurations
+          # Note: CZ-6A DEB (64631) and NOAA 17 DEB (48714) removed - no longer in active TLE catalog (likely decayed)
           SATELLITES = {
+              '22': {
+                  'name': 'Explorer 7',
+                  'cd': 2.2,
+                  'area': 0.5,
+                  'mass': 41.0
+              },
               '43476': {
                   'name': 'GRACE-FO-A',
                   'cd': 2.2,
@@ -51,35 +58,11 @@ jobs:
                   'area': 2.0,
                   'mass': 500.0
               },
-              '39212': {
-                  'name': 'CZ-4C DEB',
+              '62407': {
+                  'name': 'Electron Kick Stage R/B',
                   'cd': 2.2,
-                  'area': 1.0,
-                  'mass': 50.0
-              },
-              '48714': {
-                  'name': 'NOAA 17 DEB',
-                  'cd': 2.2,
-                  'area': 0.5,
-                  'mass': 25.0
-              },
-              '64631': {
-                  'name': 'CZ-6A DEB',
-                  'cd': 2.2,
-                  'area': 1.0,
-                  'mass': 50.0
-              },
-              '22': {
-                  'name': 'Explorer 7',
-                  'cd': 2.2,
-                  'area': 0.5,
-                  'mass': 41.0
-              },
-              '54686': {
-                  'name': 'Dongpo 08',
-                  'cd': 2.2,
-                  'area': 0.6,
-                  'mass': 30.0
+                  'area': 3.0,
+                  'mass': 200.0
               },
               '54695': {
                   'name': 'Jilin-1 Gaofen 03D48',
@@ -87,17 +70,23 @@ jobs:
                   'area': 0.7,
                   'mass': 40.0
               },
+              '54686': {
+                  'name': 'Dongpo 08',
+                  'cd': 2.2,
+                  'area': 0.6,
+                  'mass': 30.0
+              },
               '60012': {
                   'name': 'Object A',
                   'cd': 2.2,
                   'area': 1.0,
                   'mass': 60.0
               },
-              '62407': {
-                  'name': 'Electron Kick Stage R/B',
+              '39212': {
+                  'name': 'CZ-4C DEB',
                   'cd': 2.2,
-                  'area': 3.0,
-                  'mass': 200.0
+                  'area': 1.0,
+                  'mass': 50.0
               }
           }
 
@@ -247,6 +236,11 @@ jobs:
                   existing_data['area'] = sat_config['area']
                   existing_data['mass'] = sat_config['mass']
                   existing_data['generated_at'] = datetime.now(timezone.utc).isoformat()
+
+                  # Store latest TLE for real-time position calculation
+                  if tles:
+                      existing_data['tle_line1'] = tles[-1][0]
+                      existing_data['tle_line2'] = tles[-1][1]
 
                   # Save results
                   with open(data_file, 'w') as f:

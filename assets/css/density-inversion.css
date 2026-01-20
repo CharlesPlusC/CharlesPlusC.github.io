@@ -707,6 +707,89 @@
   padding: 8px;
 }
 
+/* Globe Visualization */
+.globe-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.satellite-globe {
+  flex: 1;
+  min-width: 0;
+  height: 400px;
+  background: #0a0e17;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+}
+
+.satellite-position-list {
+  width: 280px;
+  flex-shrink: 0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.sat-position-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sat-position-item:last-child {
+  border-bottom: none;
+}
+
+.sat-position-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sat-position-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sat-position-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sat-position-coords {
+  font-size: 11px;
+  color: #64748b;
+  font-family: monospace;
+}
+
+.sat-position-alt {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.globe-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.globe-time {
+  font-size: 12px;
+  color: #64748b;
+  font-family: monospace;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .section-header {
@@ -744,5 +827,18 @@
   .control-btn {
     flex: 1;
     text-align: center;
+  }
+
+  .globe-container {
+    flex-direction: column;
+  }
+
+  .satellite-globe {
+    height: 300px;
+  }
+
+  .satellite-position-list {
+    width: 100%;
+    max-height: 200px;
   }
 }

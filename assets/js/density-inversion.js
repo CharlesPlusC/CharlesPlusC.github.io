@@ -4,17 +4,16 @@
  */
 
 // Satellites ordered by perigee altitude (lowest to highest) - fixed ordering
+// Note: CZ-6A DEB (64631) and NOAA 17 DEB (48714) removed - no longer in active TLE catalog (likely decayed)
 const SATELLITES = {
-  '64631': { name: 'CZ-6A DEB', color: '#d97706', order: 1, flag: '🇨🇳', altitude: 367 },
-  '48714': { name: 'NOAA 17 DEB', color: '#059669', order: 2, flag: '🇺🇸', altitude: 420 },
-  '22': { name: 'Explorer 7', color: '#0ea5e9', order: 3, flag: '🇺🇸', altitude: 433 },
-  '43476': { name: 'GRACE-FO-A', color: '#2563eb', order: 4, flag: '🇺🇸🇩🇪', altitude: 448 },
-  '43877': { name: 'Kanopus-V 6', color: '#7c3aed', order: 5, flag: '🇷🇺', altitude: 456 },
-  '62407': { name: 'Electron Kick Stage R/B', color: '#64748b', order: 6, flag: '🇳🇿', altitude: 462 },
-  '54695': { name: 'Jilin-1 Gaofen 03D48', color: '#f43f5e', order: 7, flag: '🇨🇳', altitude: 468 },
-  '54686': { name: 'Dongpo 08', color: '#14b8a6', order: 8, flag: '🇨🇳', altitude: 470 },
-  '60012': { name: 'Object A', color: '#6366f1', order: 9, flag: '🇺🇳', altitude: 526 },
-  '39212': { name: 'CZ-4C DEB', color: '#db2777', order: 10, flag: '🇨🇳', altitude: 596 }
+  '22': { name: 'Explorer 7', color: '#0ea5e9', order: 1, flag: '🇺🇸', altitude: 433 },
+  '43476': { name: 'GRACE-FO-A', color: '#2563eb', order: 2, flag: '🇺🇸🇩🇪', altitude: 448 },
+  '43877': { name: 'Kanopus-V 6', color: '#7c3aed', order: 3, flag: '🇷🇺', altitude: 456 },
+  '62407': { name: 'Electron Kick Stage R/B', color: '#64748b', order: 4, flag: '🇳🇿', altitude: 462 },
+  '54695': { name: 'Jilin-1 Gaofen 03D48', color: '#f43f5e', order: 5, flag: '🇨🇳', altitude: 468 },
+  '54686': { name: 'Dongpo 08', color: '#14b8a6', order: 6, flag: '🇨🇳', altitude: 470 },
+  '60012': { name: 'Object A', color: '#6366f1', order: 7, flag: '🇺🇳', altitude: 526 },
+  '39212': { name: 'CZ-4C DEB', color: '#db2777', order: 8, flag: '🇨🇳', altitude: 596 }
 };
 
 let allData = {};
@@ -22,6 +21,8 @@ let kpData = null;
 let heatmapPeriod = 'year';
 let densityView = 'activity';
 let unifiedYScale = false;  // Toggle for unified y-axis across all charts
+let chartContainers = [];   // Store references to all chart containers for synchronized hover
+let isHoverSyncing = false; // Prevent infinite hover loops
 
 document.addEventListener('DOMContentLoaded', () => {
   setDensityView('activity');
@@ -522,6 +523,7 @@ function renderSatelliteCards() {
   if (!container) return;
 
   container.innerHTML = '';
+  chartContainers = [];  // Reset chart containers for synchronized hover
 
   const now = new Date();
   const sixMonthsAgo = new Date(now);
@@ -712,6 +714,48 @@ function renderCardChart(noradId, color, data, startDate, endDate, yAxisRange = 
   Plotly.newPlot(container, traces, layout, {
     responsive: true,
     displayModeBar: false
+  });
+
+  // Store container reference for synchronized hover
+  chartContainers.push(container);
+
+  // Add synchronized hover event listeners
+  container.on('plotly_hover', function(eventData) {
+    if (isHoverSyncing) return;
+    isHoverSyncing = true;
+
+    const xValue = eventData.points[0].x;
+
+    // Sync hover to all other charts
+    chartContainers.forEach(otherContainer => {
+      if (otherContainer !== container && otherContainer._fullData) {
+        try {
+          Plotly.Fx.hover(otherContainer, { xval: xValue }, ['xy']);
+        } catch (e) {
+          // Ignore errors if chart doesn't have data at this point
+        }
+      }
+    });
+
+    isHoverSyncing = false;
+  });
+
+  container.on('plotly_unhover', function() {
+    if (isHoverSyncing) return;
+    isHoverSyncing = true;
+
+    // Clear hover on all charts
+    chartContainers.forEach(otherContainer => {
+      if (otherContainer !== container) {
+        try {
+          Plotly.Fx.unhover(otherContainer);
+        } catch (e) {
+          // Ignore errors
+        }
+      }
+    });
+
+    isHoverSyncing = false;
   });
 }
 
@@ -920,4 +964,199 @@ function startAuroraRefresh() {
 // Start aurora data loading when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   startAuroraRefresh();
+});
+
+/**
+ * Satellite Globe Visualization
+ * Uses satellite.js for SGP4 propagation to compute accurate positions
+ */
+
+let globeUpdateTimer = null;
+const GLOBE_REFRESH_INTERVAL = 5000; // Update every 5 seconds
+
+function propagateSatellite(tleLine1, tleLine2, date) {
+  try {
+    const satrec = satellite.twoline2satrec(tleLine1, tleLine2);
+    const positionAndVelocity = satellite.propagate(satrec, date);
+
+    if (!positionAndVelocity.position) {
+      return null;
+    }
+
+    const gmst = satellite.gstime(date);
+    const positionGd = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+
+    const longitude = satellite.degreesLong(positionGd.longitude);
+    const latitude = satellite.degreesLat(positionGd.latitude);
+    const altitude = positionGd.height; // km
+
+    return { latitude, longitude, altitude };
+  } catch (e) {
+    console.error('SGP4 propagation error:', e);
+    return null;
+  }
+}
+
+function computeGroundTrack(tleLine1, tleLine2, numPoints = 100) {
+  const track = { lats: [], lons: [] };
+  const now = new Date();
+  const orbitalPeriod = 90 * 60 * 1000; // ~90 minutes in ms for LEO
+
+  for (let i = 0; i < numPoints; i++) {
+    const time = new Date(now.getTime() - orbitalPeriod + (i * orbitalPeriod * 2 / numPoints));
+    const pos = propagateSatellite(tleLine1, tleLine2, time);
+    if (pos) {
+      track.lats.push(pos.latitude);
+      track.lons.push(pos.longitude);
+    }
+  }
+
+  return track;
+}
+
+function renderSatelliteGlobe() {
+  const globeContainer = document.getElementById('satellite-globe');
+  const listContainer = document.getElementById('satellite-list');
+  const timeDisplay = document.getElementById('globe-time');
+
+  if (!globeContainer || !window.Plotly || !window.satellite) return;
+
+  const now = new Date();
+
+  if (timeDisplay) {
+    timeDisplay.textContent = now.toUTCString().replace('GMT', 'UTC');
+  }
+
+  const traces = [];
+  const positions = [];
+
+  // Process each satellite
+  Object.entries(SATELLITES)
+    .sort((a, b) => a[1].order - b[1].order)
+    .forEach(([noradId, sat]) => {
+      const data = allData[noradId];
+      if (!data || !data.tle_line1 || !data.tle_line2) return;
+
+      // Compute current position
+      const pos = propagateSatellite(data.tle_line1, data.tle_line2, now);
+      if (!pos) return;
+
+      positions.push({
+        noradId,
+        name: sat.name,
+        color: sat.color,
+        flag: sat.flag,
+        ...pos
+      });
+
+      // Compute ground track (one orbit)
+      const track = computeGroundTrack(data.tle_line1, data.tle_line2, 60);
+
+      // Add ground track trace
+      traces.push({
+        type: 'scattergeo',
+        mode: 'lines',
+        lon: track.lons,
+        lat: track.lats,
+        line: {
+          width: 1.5,
+          color: sat.color
+        },
+        opacity: 0.4,
+        hoverinfo: 'skip',
+        showlegend: false
+      });
+
+      // Add current position marker
+      traces.push({
+        type: 'scattergeo',
+        mode: 'markers+text',
+        lon: [pos.longitude],
+        lat: [pos.latitude],
+        marker: {
+          size: 12,
+          color: sat.color,
+          symbol: 'circle',
+          line: { width: 2, color: 'white' }
+        },
+        text: [sat.name.split(' ')[0]],
+        textposition: 'top center',
+        textfont: { size: 9, color: '#e2e8f0' },
+        hovertemplate: `<b>${sat.name}</b><br>` +
+          `Lat: ${pos.latitude.toFixed(2)}°<br>` +
+          `Lon: ${pos.longitude.toFixed(2)}°<br>` +
+          `Alt: ${pos.altitude.toFixed(0)} km<extra></extra>`,
+        showlegend: false
+      });
+    });
+
+  const layout = {
+    geo: {
+      projection: {
+        type: 'orthographic',
+        rotation: { lon: -30, lat: 20 }
+      },
+      showland: true,
+      landcolor: '#1e293b',
+      showocean: true,
+      oceancolor: '#0f172a',
+      showcoastlines: true,
+      coastlinecolor: '#334155',
+      coastlinewidth: 0.5,
+      showlakes: false,
+      showcountries: true,
+      countrycolor: '#334155',
+      countrywidth: 0.3,
+      bgcolor: '#0a0e17',
+      lataxis: { showgrid: true, gridcolor: '#1e293b', gridwidth: 0.5 },
+      lonaxis: { showgrid: true, gridcolor: '#1e293b', gridwidth: 0.5 }
+    },
+    paper_bgcolor: '#0a0e17',
+    margin: { t: 0, r: 0, b: 0, l: 0 },
+    showlegend: false
+  };
+
+  Plotly.newPlot(globeContainer, traces, layout, {
+    responsive: true,
+    displayModeBar: false
+  });
+
+  // Update position list
+  if (listContainer) {
+    listContainer.innerHTML = positions.map(pos => `
+      <div class="sat-position-item">
+        <div class="sat-position-dot" style="background: ${pos.color}"></div>
+        <div class="sat-position-info">
+          <div class="sat-position-name">${pos.flag || ''} ${pos.name}</div>
+          <div class="sat-position-coords">${pos.latitude.toFixed(2)}°, ${pos.longitude.toFixed(2)}°</div>
+          <div class="sat-position-alt">${pos.altitude.toFixed(0)} km altitude</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function startGlobeRefresh() {
+  // Initial render after data is loaded
+  setTimeout(renderSatelliteGlobe, 500);
+
+  // Set up periodic refresh
+  if (globeUpdateTimer) {
+    clearInterval(globeUpdateTimer);
+  }
+  globeUpdateTimer = setInterval(renderSatelliteGlobe, GLOBE_REFRESH_INTERVAL);
+}
+
+// Start globe after data loads
+document.addEventListener('DOMContentLoaded', () => {
+  // Wait for data to load, then start globe
+  const checkDataAndStart = setInterval(() => {
+    if (Object.keys(allData).length > 0) {
+      clearInterval(checkDataAndStart);
+      startGlobeRefresh();
+    }
+  }, 500);
+
+  // Timeout after 10 seconds
+  setTimeout(() => clearInterval(checkDataAndStart), 10000);
 });

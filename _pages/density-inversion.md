@@ -7,6 +7,7 @@ author_profile: true
 
 <link rel="stylesheet" href="/assets/css/density-inversion.css">
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script src="https://unpkg.com/satellite.js@5.0.0/dist/satellite.min.js"></script>
 
 <div id="status" class="status">Loading density data...</div>
 
@@ -112,6 +113,20 @@ author_profile: true
       <div class="joy-division-meta">Normalized 0-1 per satellite. <span id="joy-division-window">1 year window.</span></div>
       <div id="joy-division-plot" class="joy-division-plot"></div>
     </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Satellite Positions</div>
+    <div class="globe-controls">
+      <span class="globe-time" id="globe-time">--</span>
+    </div>
+  </div>
+  <p class="section-note">Real-time satellite positions computed from TLEs using SGP4 propagation. Globe shows current locations and ground tracks.</p>
+  <div class="globe-container">
+    <div id="satellite-globe" class="satellite-globe"></div>
+    <div id="satellite-list" class="satellite-position-list"></div>
   </div>
 </div>
 
