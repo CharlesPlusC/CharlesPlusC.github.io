@@ -1119,10 +1119,16 @@ function renderSatelliteGlobe() {
     showlegend: false
   };
 
-  Plotly.newPlot(globeContainer, traces, layout, {
-    responsive: true,
-    displayModeBar: false
-  });
+  // Use Plotly.react() to update without resetting user's view/rotation
+  // Only use newPlot on first render (when container has no data)
+  if (globeContainer.data) {
+    Plotly.react(globeContainer, traces, layout);
+  } else {
+    Plotly.newPlot(globeContainer, traces, layout, {
+      responsive: true,
+      displayModeBar: false
+    });
+  }
 
   // Update position list
   if (listContainer) {
