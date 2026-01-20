@@ -586,10 +586,11 @@ function renderCardChart(noradId, color, data, startDate, endDate) {
     });
 
     const kpColors = kpValues.map(kp => {
-      if (kp >= 7) return 'rgba(239, 68, 68, 0.25)';
-      if (kp >= 5) return 'rgba(249, 115, 22, 0.25)';
-      if (kp >= 4) return 'rgba(234, 179, 8, 0.2)';
-      return 'rgba(34, 197, 94, 0.15)';
+      // Kp index is already logarithmic, so linear mapping preserves that relationship
+      // Map Kp (0-9) to grayscale alpha for consistent visual scaling
+      const normalizedKp = Math.min(Math.max(kp, 0), 9) / 9;
+      const alpha = 0.05 + 0.35 * normalizedKp;
+      return `rgba(100, 100, 100, ${alpha.toFixed(3)})`;
     });
 
     traces.push({
