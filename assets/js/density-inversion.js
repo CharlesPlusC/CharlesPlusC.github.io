@@ -108,6 +108,26 @@ function updateSpaceWeatherIndicator() {
 
   if (!statusText || !kpChip || !timeText) return;
 
+  // Prefer estimated Kp (near real-time) over official 3-hourly Kp
+  if (estimatedKp && estimatedKp.value !== undefined) {
+    const kpValue = estimatedKp.value;
+    const descriptor = getKpDescriptor(kpValue);
+    const kpTime = estimatedKp.time;
+
+    banner.setAttribute('data-level', descriptor.level);
+    statusText.textContent = `${descriptor.label} Conditions`;
+    kpChip.textContent = `Kp ${kpValue.toFixed(1)}`;
+    kpChip.title = 'Estimated Kp (1-minute resolution)';
+    timeText.textContent = 'Est. Kp as of ' + kpTime.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    return;
+  }
+
+  // Fall back to official 3-hourly Kp if estimated not available
   if (!kpData || !kpData.times || !kpData.values || kpData.times.length === 0) {
     statusText.textContent = 'Awaiting Kp data';
     kpChip.textContent = 'Kp --';
@@ -124,7 +144,8 @@ function updateSpaceWeatherIndicator() {
   banner.setAttribute('data-level', descriptor.level);
   statusText.textContent = `${descriptor.label} Conditions`;
   kpChip.textContent = `Kp ${kpValue.toFixed(1)}`;
-  timeText.textContent = 'Kp current as of ' + kpTime.toLocaleString('en-US', {
+  kpChip.title = 'Official 3-hourly Kp';
+  timeText.textContent = 'Kp as of ' + kpTime.toLocaleString('en-US', {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
@@ -858,16 +879,19 @@ function renderCardChart(noradId, color, data, startDate, endDate, yAxisRange = 
 const NOAA_MAG_URL = 'https://services.swpc.noaa.gov/products/solar-wind/mag-7-day.json';
 const NOAA_PLASMA_URL = 'https://services.swpc.noaa.gov/products/solar-wind/plasma-7-day.json';
 const NOAA_KP_URL = 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json';
+const NOAA_KP_ESTIMATED_URL = 'https://services.swpc.noaa.gov/json/planetary_k_index_1m.json';
 const REALTIME_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 let realtimeRefreshTimer = null;
+let estimatedKp = null;  // Store latest estimated Kp for banner display
 
 async function loadRealtimeData() {
   try {
-    const [magResponse, plasmaResponse, kpResponse] = await Promise.all([
+    const [magResponse, plasmaResponse, kpResponse, kpEstResponse] = await Promise.all([
       fetch(NOAA_MAG_URL),
       fetch(NOAA_PLASMA_URL),
-      fetch(NOAA_KP_URL)
+      fetch(NOAA_KP_URL),
+      fetch(NOAA_KP_ESTIMATED_URL)
     ]);
 
     if (!magResponse.ok || !plasmaResponse.ok) {
@@ -877,7 +901,13 @@ async function loadRealtimeData() {
     const magData = await magResponse.json();
     const plasmaData = await plasmaResponse.json();
 
-    // Process real-time Kp data if available
+    // Process estimated Kp (1-minute resolution, near real-time)
+    if (kpEstResponse.ok) {
+      const kpEstJson = await kpEstResponse.json();
+      updateEstimatedKp(kpEstJson);
+    }
+
+    // Process official 3-hourly Kp data for historical charts
     if (kpResponse.ok) {
       const kpJson = await kpResponse.json();
       updateRealtimeKp(kpJson);
@@ -909,6 +939,26 @@ async function loadRealtimeData() {
     console.error('Failed to load realtime data:', err);
     document.getElementById('aurora-update-time').textContent = 'Data unavailable';
   }
+}
+
+function updateEstimatedKp(kpEstJson) {
+  // Estimated Kp format: [{time_tag, kp_index, estimated_kp, kp}, ...]
+  // Get the most recent entry
+  if (!kpEstJson || kpEstJson.length === 0) return;
+
+  const latest = kpEstJson[kpEstJson.length - 1];
+  if (!latest || latest.estimated_kp === undefined) return;
+
+  estimatedKp = {
+    time: new Date(latest.time_tag),
+    value: latest.estimated_kp,
+    kpIndex: latest.kp_index
+  };
+
+  // Update space weather banner with estimated Kp
+  updateSpaceWeatherIndicator();
+
+  console.log(`Estimated Kp: ${estimatedKp.value.toFixed(2)} at ${estimatedKp.time.toISOString()}`);
 }
 
 function updateRealtimeKp(kpJson) {
@@ -948,9 +998,6 @@ function updateRealtimeKp(kpJson) {
     combined.sort((a, b) => a.t.localeCompare(b.t));
     kpData.times = combined.map(x => x.t);
     kpData.values = combined.map(x => x.v);
-
-    // Update space weather banner with latest Kp
-    updateSpaceWeatherIndicator();
 
     console.log(`Added ${addedCount} new Kp values from NOAA (total: ${kpData.times.length})`);
   }
