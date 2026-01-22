@@ -120,12 +120,12 @@ author_profile: true
   <div class="section-header">
     <div class="section-title">Combined Density Plot</div>
   </div>
-  <p class="section-note">All satellites on one plot, colored by altitude (purple=low ~350km, yellow=high ~650km). Gray background shows Kp intensity. Hover for details.</p>
+  <p class="section-note">Gray background shows Kp intensity. Hover for details. Absolute values are INDICATIVE guesses.</p>
   <div id="combined-density-plot" style="width:100%; height:500px;"></div>
 </div>
 
 <div class="page-blurb">
-  <p>These panels show TLE-derived thermospheric density estimates for each satellite along with the current Kp geomagnetic index. The grid and plots highlight day-to-day variability and recent trends so you can connect space weather activity to drag-driven density changes. Density is computed from Celestrak TLEs, and Kp is sourced from GFZ Potsdam.</p>
+  <p>These panels show rough thermospheric density estimates derived from TLE orbital decay rates for 33 debris objects spanning 350-650 km altitude. The normalized "waves" view highlights relative variability across satellites, while the combined plot shows indicative absolute values (treat with caution - ballistic coefficients are guessed). Kp index from GFZ Potsdam and real-time solar wind from NOAA SWPC provide space weather context.</p>
 </div>
 
 <script src="/assets/js/density-inversion.js"></script>
