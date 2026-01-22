@@ -589,7 +589,6 @@ function renderJoyDivisionPlot() {
   // Clear any previous loading message
   container.textContent = '';
 
-  const dates = buildDateRange(startDate, now);
   const spacing = 0.25;
   const amplitude = 0.85;
   const traces = [];
@@ -603,28 +602,47 @@ function renderJoyDivisionPlot() {
 
   const ridges = entries.map(([noradId, sat], index) => {
     const data = allData[noradId];
-    const daily = buildDailySeries(data, dates, startDate, now);
-    const filled = fillMissingValues(daily);
-    const normalized = normalizeSeries(filled);
+
+    // Use raw data points instead of daily averages
+    const times = [];
+    const densities = [];
+    for (let i = 0; i < data.times.length; i++) {
+      const dt = new Date(data.times[i]);
+      if (dt >= startDate && dt <= now) {
+        times.push(dt);
+        densities.push(data.densities[i]);
+      }
+    }
+
+    // Normalize densities 0-1 for this satellite
+    const validDensities = densities.filter(d => d !== null && Number.isFinite(d));
+    const minD = Math.min(...validDensities);
+    const maxD = Math.max(...validDensities);
+    const rangeD = maxD - minD || 1;
+
     const offset = (total - index - 1) * spacing;
-    const y = normalized.map(value => (value === null ? null : offset + value * amplitude));
+    const y = densities.map(d => {
+      if (d === null || !Number.isFinite(d)) return null;
+      const norm = (d - minD) / rangeD;
+      return offset + norm * amplitude;
+    });
 
     // Grayscale color based on altitude (darker = lower, lighter = higher)
     const altNorm = (sat.altitude - minAlt) / altRange;
     const gray = Math.round(140 + altNorm * 100);  // Range from 140 to 240
     const lineColor = `rgb(${gray}, ${gray}, ${gray})`;
 
-    return { offset, y, lineColor, altitude: sat.altitude, name: sat.name };
+    return { times, y, offset, lineColor, altitude: sat.altitude, name: sat.name };
   });
 
   for (let i = 0; i < ridges.length; i++) {
     const ridge = ridges[i];
     const hasValues = ridge.y.some(value => value !== null && Number.isFinite(value));
-    if (!hasValues) continue;
+    if (!hasValues || ridge.times.length === 0) continue;
 
     traces.push({
-      x: dates,
-      y: dates.map(() => ridge.offset),
+      x: ridge.times,
+      y: ridge.times.map(() => ridge.offset),
       mode: 'lines',
       line: { color: 'rgba(0,0,0,0)' },
       hoverinfo: 'skip',
@@ -632,19 +650,18 @@ function renderJoyDivisionPlot() {
     });
 
     traces.push({
-      x: dates,
+      x: ridge.times,
       y: ridge.y,
       mode: 'lines',
       name: `${ridge.name} (${ridge.altitude} km)`,
       line: {
         color: ridge.lineColor,
-        width: 1.4,
-        shape: 'spline',
-        smoothing: 0.35
+        width: 1.2,
+        shape: 'linear'
       },
       fill: 'tonexty',
       fillcolor: '#0b0f1a',
-      connectgaps: true,
+      connectgaps: false,
       hoverinfo: 'name',
       showlegend: false
     });
