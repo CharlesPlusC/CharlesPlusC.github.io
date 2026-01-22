@@ -527,6 +527,14 @@ function renderJoyDivisionPlot() {
   const startDate = new Date(now);
   startDate.setDate(startDate.getDate() - (windowConfig.days - 1));
 
+  const windowLabel = document.getElementById('joy-division-window');
+  if (windowLabel) {
+    windowLabel.textContent = windowConfig.label;
+  }
+
+  // Always render Kp bar if data is available (independent of satellite data)
+  renderJoyDivisionKpBar(startDate, now, windowConfig.days);
+
   const entries = getVisibleSatellites()
     .filter(([noradId]) => allData[noradId]?.times?.length);
 
@@ -535,19 +543,14 @@ function renderJoyDivisionPlot() {
     return;
   }
 
-  const windowLabel = document.getElementById('joy-division-window');
-  if (windowLabel) {
-    windowLabel.textContent = windowConfig.label;
-  }
+  // Clear any previous loading message
+  container.textContent = '';
 
   const dates = buildDateRange(startDate, now);
   const spacing = 0.25;
   const amplitude = 0.85;
   const traces = [];
   const total = entries.length;
-
-  // Render Kp bar at the bottom (3-hourly for week/month, daily for year)
-  renderJoyDivisionKpBar(startDate, now, windowConfig.days);
 
   const ridges = entries.map(([noradId], index) => {
     const data = allData[noradId];

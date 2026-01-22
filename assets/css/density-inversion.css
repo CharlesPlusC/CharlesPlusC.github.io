@@ -499,8 +499,10 @@
 .joy-division-kp-row {
   display: flex;
   align-items: center;
-  margin-top: 8px;
-  padding: 0 10px;
+  margin-top: 12px;
+  padding: 8px 10px;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 4px;
 }
 
 .joy-division-kp-label {
@@ -518,9 +520,9 @@
 
 .joy-division-kp-cell {
   flex: 1;
-  min-width: 0;
-  height: 12px;
-  border-radius: 1px;
+  min-width: 1px;
+  height: 14px;
+  border-radius: 2px;
 }
 
 /* Kp color scale for Joy Division */
