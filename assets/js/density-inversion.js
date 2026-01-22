@@ -652,8 +652,8 @@ function renderCombinedDensityPlot() {
   if (!container) return;
 
   const now = new Date();
-  const sixMonthsAgo = new Date(now);
-  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  const twoMonthsAgo = new Date(now);
+  twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
 
   // Get visible satellites sorted by altitude
   const visibleSatellites = getVisibleSatellites()
@@ -673,7 +673,7 @@ function renderCombinedDensityPlot() {
     const kpValues = [];
     kpData.times.forEach((t, i) => {
       const dt = new Date(t.replace(' ', 'T') + 'Z');
-      if (Number.isNaN(dt.getTime()) || dt < sixMonthsAgo || dt > now) return;
+      if (Number.isNaN(dt.getTime()) || dt < twoMonthsAgo || dt > now) return;
       kpTimes.push(dt);
       kpValues.push(kpData.values[i]);
     });
@@ -707,7 +707,7 @@ function renderCombinedDensityPlot() {
     const densities = [];
     for (let i = 0; i < data.times.length; i++) {
       const dt = new Date(data.times[i]);
-      if (dt >= sixMonthsAgo && dt <= now) {
+      if (dt >= twoMonthsAgo && dt <= now) {
         times.push(dt);
         densities.push(data.densities[i]);
       }
@@ -767,7 +767,7 @@ function renderCombinedDensityPlot() {
     xaxis: {
       gridcolor: 'rgba(0,0,0,0.05)',
       title: { text: 'Date', standoff: 10 },
-      range: [sixMonthsAgo, now],
+      range: [twoMonthsAgo, now],
       showspikes: true,
       spikemode: 'across',
       spikesnap: 'cursor',
@@ -940,6 +940,12 @@ function updateRealtimeKp(kpJson) {
     kpData.values = combined.map(x => x.v);
 
     console.log(`Added ${addedCount} new Kp values from NOAA (total: ${kpData.times.length})`);
+
+    // Re-render plots that show Kp data
+    if (densityView === 'waves') {
+      renderJoyDivisionPlot();
+    }
+    renderCombinedDensityPlot();
   }
 }
 
