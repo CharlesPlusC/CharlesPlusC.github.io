@@ -471,76 +471,45 @@ function renderJoyDivisionKpBar(startDate, endDate, numDays) {
     return;
   }
 
-  // Use 3-hourly for week/month, daily for year
-  const useThreeHourly = numDays <= 30;
-
-  let cells = [];
-
-  if (useThreeHourly) {
-    // 3-hourly resolution - use native Kp data
-    kpData.times.forEach((t, i) => {
-      const dt = new Date(t.replace(' ', 'T') + 'Z');
-      if (dt < startDate || dt > endDate) return;
-      if (kpData.values[i] === null) return;
-
-      const kp = kpData.values[i];
-      let level = 0;
-      if (kp >= 7) level = 4;
-      else if (kp >= 5) level = 3;
-      else if (kp >= 4) level = 2;
-      else if (kp >= 1) level = 1;
-
-      cells.push({
-        date: dt,
-        kp: kp,
-        level: level
-      });
-    });
-  } else {
-    // Daily resolution - bin by day and take max
-    const kpByDay = {};
-    kpData.times.forEach((t, i) => {
-      const dt = new Date(t.replace(' ', 'T') + 'Z');
-      if (dt < startDate || dt > endDate) return;
-      const dayKey = dt.toISOString().split('T')[0];
-      if (!kpByDay[dayKey]) kpByDay[dayKey] = [];
-      if (kpData.values[i] !== null) {
-        kpByDay[dayKey].push(kpData.values[i]);
-      }
-    });
-
-    // Generate cells for each day
-    const cursor = new Date(startDate);
-    while (cursor <= endDate) {
-      const dayKey = cursor.toISOString().split('T')[0];
-      const dayKp = kpByDay[dayKey];
-      let level = 0;
-      let maxKp = 0;
-
-      if (dayKp && dayKp.length > 0) {
-        maxKp = Math.max(...dayKp);
-        if (maxKp >= 7) level = 4;
-        else if (maxKp >= 5) level = 3;
-        else if (maxKp >= 4) level = 2;
-        else if (maxKp >= 1) level = 1;
-      }
-
-      cells.push({
-        date: new Date(cursor),
-        kp: maxKp,
-        level: level
-      });
-
-      cursor.setDate(cursor.getDate() + 1);
-    }
+  // Build date strings for the range (same approach as activity grid)
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const dateStrings = [];
+  for (let i = numDays - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    dateStrings.push(d.toISOString().split('T')[0]);
   }
 
+  // Bin Kp values by day using simple string keys (no timezone issues)
+  const kpByDay = {};
+  kpData.times.forEach((t, i) => {
+    const dayKey = t.split(' ')[0];  // "2025-01-01 00:00:00.000" -> "2025-01-01"
+    if (!kpByDay[dayKey]) kpByDay[dayKey] = [];
+    if (kpData.values[i] !== null) {
+      kpByDay[dayKey].push(kpData.values[i]);
+    }
+  });
+
+  // Generate cells for each day
+  const cells = dateStrings.map(dateStr => {
+    const dayKp = kpByDay[dateStr];
+    let level = 0;
+    let maxKp = 0;
+
+    if (dayKp && dayKp.length > 0) {
+      maxKp = Math.max(...dayKp);
+      if (maxKp >= 7) level = 4;
+      else if (maxKp >= 5) level = 3;
+      else if (maxKp >= 4) level = 2;
+      else if (maxKp >= 1) level = 1;
+    }
+
+    return { dateStr, kp: maxKp, level };
+  });
+
   const cellsHtml = cells.map(cell => {
-    const dateStr = cell.date.toISOString().split('T')[0];
-    const title = useThreeHourly
-      ? `${cell.date.toISOString().slice(0, 16).replace('T', ' ')} UTC: Kp ${cell.kp.toFixed(1)}`
-      : `${dateStr}: Kp ${cell.kp.toFixed(1)}`;
-    return `<div class="joy-division-kp-cell" data-level="${cell.level}" title="${title}"></div>`;
+    return `<div class="joy-division-kp-cell" data-level="${cell.level}" title="${cell.dateStr}: Kp ${cell.kp.toFixed(1)}"></div>`;
   }).join('');
 
   container.innerHTML = `
