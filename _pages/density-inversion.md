@@ -134,14 +134,13 @@ author_profile: true
 
 <div class="section">
   <div class="section-header">
-    <div class="section-title">Satellite Details</div>
+    <div class="section-title">Combined Density Plot</div>
     <div class="chart-controls">
       <button id="show-all-btn" class="control-btn" onclick="toggleShowAllSatellites()">Show All (33)</button>
-      <button id="unified-scale-btn" class="control-btn" onclick="toggleUnifiedYScale()">Unified Y-Scale: Off</button>
     </div>
   </div>
-  <p class="section-note">Satellites ordered by perigee altitude (lowest to highest). Use the range slider below each chart to zoom in on specific time periods. Hover for crosshair cursor with values.</p>
-  <div id="satellite-cards" class="satellite-cards"></div>
+  <p class="section-note">All satellites on one plot, colored by altitude (purple=low ~350km, yellow=high ~650km). Gray background shows Kp intensity. Hover for details.</p>
+  <div id="combined-density-plot" style="width:100%; height:500px;"></div>
 </div>
 
 <div class="page-blurb">

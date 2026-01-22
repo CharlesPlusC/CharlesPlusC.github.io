@@ -47,9 +47,6 @@ let allData = {};
 let kpData = null;
 let heatmapPeriod = 'year';
 let densityView = 'activity';
-let unifiedYScale = false;  // Toggle for unified y-axis across all charts
-let chartContainers = [];   // Store references to all chart containers for synchronized hover
-let isHoverSyncing = false; // Prevent infinite hover loops
 let showAllSatellites = false;  // Toggle between showing 8 primary vs all 33 satellites
 const PRIMARY_SATELLITES = ['22', '43476', '43877', '62407', '54695', '54686', '60012', '39212'];  // Original 8
 
@@ -219,21 +216,6 @@ function setDensityView(view) {
 
 window.setDensityView = setDensityView;
 
-function toggleUnifiedYScale() {
-  unifiedYScale = !unifiedYScale;
-
-  // Update button state
-  const btn = document.getElementById('unified-scale-btn');
-  if (btn) {
-    btn.classList.toggle('active', unifiedYScale);
-    btn.textContent = unifiedYScale ? 'Unified Y-Scale: On' : 'Unified Y-Scale: Off';
-  }
-
-  // Re-render satellite cards with new scale setting
-  renderSatelliteCards();
-}
-
-window.toggleUnifiedYScale = toggleUnifiedYScale;
 
 function getVisibleSatellites() {
   // Returns satellite entries filtered by showAllSatellites toggle
@@ -693,194 +675,128 @@ function renderJoyDivisionPlot() {
   });
 }
 
-// Lazy loading observer for satellite cards
-let cardObserver = null;
-let pendingChartData = new Map();  // Store data needed to render charts when visible
-
-function renderSatelliteCards() {
-  const container = document.getElementById('satellite-cards');
+// Combined density plot - all satellites on one chart, colored by altitude
+function renderCombinedDensityPlot() {
+  const container = document.getElementById('combined-density-plot');
   if (!container) return;
-
-  container.innerHTML = '';
-  chartContainers = [];  // Reset chart containers for synchronized hover
-  pendingChartData.clear();
-
-  // Disconnect previous observer
-  if (cardObserver) {
-    cardObserver.disconnect();
-  }
 
   const now = new Date();
   const sixMonthsAgo = new Date(now);
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-  // Get visible satellites based on toggle
-  const visibleSatellites = getVisibleSatellites();
+  // Get visible satellites sorted by altitude
+  const visibleSatellites = getVisibleSatellites()
+    .filter(([noradId]) => allData[noradId]?.times?.length > 0)
+    .sort((a, b) => a[1].altitude - b[1].altitude);
 
-  // Compute global min/max for unified y-scale (only for visible satellites)
-  let globalMinDensity = Infinity;
-  let globalMaxDensity = -Infinity;
-
-  if (unifiedYScale) {
-    visibleSatellites.forEach(([noradId]) => {
-      const data = allData[noradId];
-      if (!data || !data.times || data.times.length === 0) return;
-
-      for (let i = 0; i < data.times.length; i++) {
-        const dt = new Date(data.times[i]);
-        if (dt < sixMonthsAgo || dt > now) continue;
-        const d = data.densities[i];
-        if (d > 0) {
-          globalMinDensity = Math.min(globalMinDensity, d);
-          globalMaxDensity = Math.max(globalMaxDensity, d);
-        }
-      }
-    });
+  if (visibleSatellites.length === 0) {
+    container.innerHTML = '<p style="text-align:center;color:#64748b;">Loading density data...</p>';
+    return;
   }
-
-  const yAxisRange = unifiedYScale && globalMinDensity < Infinity
-    ? [Math.log10(globalMinDensity * 0.8), Math.log10(globalMaxDensity * 1.2)]
-    : null;
-
-  // Create IntersectionObserver for lazy loading charts
-  cardObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const chartContainer = entry.target;
-        const noradId = chartContainer.dataset.noradId;
-        const chartData = pendingChartData.get(noradId);
-
-        if (chartData && !chartContainer.dataset.rendered) {
-          chartContainer.dataset.rendered = 'true';
-          renderCardChart(noradId, chartData.color, chartData.data, sixMonthsAgo, now, yAxisRange);
-        }
-      }
-    });
-  }, { rootMargin: '100px' });  // Start loading slightly before visible
-
-  visibleSatellites.forEach(([noradId, sat]) => {
-      const data = allData[noradId];
-      if (!data || !data.times || data.times.length === 0) return;
-
-      const lastIdx = data.times.length - 1;
-      const lastAltitude = data.perigees ? data.perigees[lastIdx] : null;
-      const lastUpdate = new Date(data.times[lastIdx]);
-      const updateStr = lastUpdate.toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      });
-
-      const card = document.createElement('div');
-      card.className = 'satellite-card';
-
-      card.innerHTML = `
-        <div class="card-header">
-          <span class="card-dot" style="background: ${sat.color}"></span>
-          <span class="card-name">
-            ${sat.flag ? `<span class="card-flag">${sat.flag}</span>` : ''}
-            ${sat.name}
-          </span>
-          <div class="card-stats">
-            ${lastAltitude ? `
-            <div class="card-stat">
-              <div class="card-stat-label">Altitude</div>
-              <div class="card-stat-value">${lastAltitude.toFixed(0)} km</div>
-            </div>
-            ` : ''}
-            <div class="card-stat">
-              <div class="card-stat-label">Last Updated</div>
-              <div class="card-stat-value">${updateStr}</div>
-            </div>
-          </div>
-        </div>
-        <div class="card-chart" id="chart-${noradId}"></div>
-      `;
-
-      container.appendChild(card);
-
-      // Store chart data for lazy rendering
-      const chartEl = document.getElementById(`chart-${noradId}`);
-      if (chartEl) {
-        chartEl.dataset.noradId = noradId;
-        pendingChartData.set(noradId, { color: sat.color, data });
-        cardObserver.observe(chartEl);
-      }
-    });
-}
-
-function renderCardChart(noradId, color, data, startDate, endDate, yAxisRange = null) {
-  const container = document.getElementById(`chart-${noradId}`);
-  if (!container) return;
 
   const traces = [];
 
-  // Get ALL density data (not filtered) for rangeslider to work properly
-  const allDensityTimes = [];
-  const allDensityValues = [];
-  for (let i = 0; i < data.times.length; i++) {
-    const dt = new Date(data.times[i]);
-    if (Number.isNaN(dt.getTime())) continue;
-    allDensityTimes.push(dt);
-    allDensityValues.push(data.densities[i]);
-  }
-
-  // Kp background bands (full height, color indicates intensity)
+  // Add Kp background if available
   if (kpData && kpData.times) {
     const kpTimes = [];
     const kpValues = [];
     kpData.times.forEach((t, i) => {
       const dt = new Date(t.replace(' ', 'T') + 'Z');
-      if (Number.isNaN(dt.getTime())) return;
+      if (Number.isNaN(dt.getTime()) || dt < sixMonthsAgo || dt > now) return;
       kpTimes.push(dt);
       kpValues.push(kpData.values[i]);
     });
 
     const kpColors = kpValues.map(kp => {
-      // Kp index is already logarithmic, so linear mapping preserves that relationship
-      // Map Kp (0-9) to grayscale alpha for consistent visual scaling
       const normalizedKp = Math.min(Math.max(kp, 0), 9) / 9;
-      const alpha = 0.05 + 0.35 * normalizedKp;
+      const alpha = 0.03 + 0.15 * normalizedKp;
       return `rgba(100, 100, 100, ${alpha.toFixed(3)})`;
     });
 
     traces.push({
       x: kpTimes,
-      y: kpValues.map(() => 1),  // All bars same height
+      y: kpValues.map(() => 1),
       type: 'bar',
       yaxis: 'y2',
       marker: { color: kpColors },
       hoverinfo: 'skip',
-      width: 3 * 3600 * 1000
+      width: 3 * 3600 * 1000,
+      showlegend: false
     });
   }
 
-  // Density line - use all data for rangeslider functionality
+  // Add each satellite as a trace, colored by altitude
+  visibleSatellites.forEach(([noradId, sat]) => {
+    const data = allData[noradId];
+    const altitude = sat.altitude;
+    const color = altitudeToColor(altitude);
+
+    // Filter data to time range
+    const times = [];
+    const densities = [];
+    for (let i = 0; i < data.times.length; i++) {
+      const dt = new Date(data.times[i]);
+      if (dt >= sixMonthsAgo && dt <= now) {
+        times.push(dt);
+        densities.push(data.densities[i]);
+      }
+    }
+
+    if (times.length === 0) return;
+
+    traces.push({
+      x: times,
+      y: densities,
+      type: 'scatter',
+      mode: 'lines',
+      name: `${sat.name} (${altitude} km)`,
+      line: { color: color, width: 1.5 },
+      opacity: 0.8,
+      hovertemplate: `<b>${sat.name}</b><br>Alt: ${altitude} km<br>%{x|%d %b %Y}<br>Density: %{y:.2e} kg/m³<extra></extra>`
+    });
+  });
+
+  // Create colorbar trace (invisible scatter with colorscale)
+  const altitudes = visibleSatellites.map(([, sat]) => sat.altitude);
   traces.push({
-    x: allDensityTimes,
-    y: allDensityValues,
+    x: [null],
+    y: [null],
     type: 'scatter',
-    mode: 'lines',
-    line: { color: color, width: 2 },
-    hovertemplate: '%{x|%d %b %Y %H:%M}<br><b>%{y:.2e}</b> kg/m³<extra></extra>'
+    mode: 'markers',
+    marker: {
+      size: 0,
+      color: [ALT_MIN, ALT_MAX],
+      colorscale: [
+        [0, 'rgb(68, 1, 84)'],
+        [0.2, 'rgb(72, 40, 120)'],
+        [0.4, 'rgb(49, 104, 142)'],
+        [0.5, 'rgb(38, 130, 142)'],
+        [0.6, 'rgb(31, 158, 137)'],
+        [0.8, 'rgb(109, 205, 89)'],
+        [1, 'rgb(253, 231, 37)']
+      ],
+      colorbar: {
+        title: { text: 'Altitude (km)', side: 'right' },
+        tickvals: [350, 400, 450, 500, 550, 600, 650],
+        len: 0.8,
+        thickness: 15,
+        x: 1.02
+      },
+      showscale: true
+    },
+    showlegend: false,
+    hoverinfo: 'skip'
   });
 
   const layout = {
-    font: { family: 'system-ui, -apple-system, sans-serif', size: 10 },
-    margin: { t: 5, r: 40, b: 45, l: 50 },
+    font: { family: 'system-ui, -apple-system, sans-serif', size: 11 },
+    margin: { t: 20, r: 80, b: 60, l: 60 },
     paper_bgcolor: 'white',
     plot_bgcolor: 'white',
     xaxis: {
       gridcolor: 'rgba(0,0,0,0.05)',
-      range: [startDate, endDate],
-      rangeslider: {
-        visible: true,
-        thickness: 0.08,
-        bgcolor: '#f8fafc',
-        bordercolor: '#e2e8f0',
-        borderwidth: 1
-      },
-      // Spike line for crosshair cursor
+      title: { text: 'Date', standoff: 10 },
+      range: [sixMonthsAgo, now],
       showspikes: true,
       spikemode: 'across',
       spikesnap: 'cursor',
@@ -891,15 +807,8 @@ function renderCardChart(noradId, color, data, startDate, endDate, yAxisRange = 
     yaxis: {
       type: 'log',
       gridcolor: 'rgba(0,0,0,0.05)',
-      exponentformat: 'e',
-      range: yAxisRange,  // Use unified range if provided
-      // Spike line for crosshair cursor
-      showspikes: true,
-      spikemode: 'across',
-      spikesnap: 'cursor',
-      spikecolor: '#64748b',
-      spikethickness: 1,
-      spikedash: 'dot'
+      title: { text: 'Density (kg/m³)', standoff: 5 },
+      exponentformat: 'e'
     },
     yaxis2: {
       overlaying: 'y',
@@ -910,7 +819,7 @@ function renderCardChart(noradId, color, data, startDate, endDate, yAxisRange = 
       zeroline: false
     },
     showlegend: false,
-    hovermode: 'x unified',  // Shows values at cursor position
+    hovermode: 'closest',
     hoverlabel: {
       bgcolor: 'white',
       bordercolor: '#e2e8f0',
@@ -920,53 +829,16 @@ function renderCardChart(noradId, color, data, startDate, endDate, yAxisRange = 
 
   Plotly.newPlot(container, traces, layout, {
     responsive: true,
-    displayModeBar: false
+    displayModeBar: true,
+    modeBarButtonsToRemove: ['lasso2d', 'select2d']
   });
-
-  // Store container reference for synchronized hover (only when few satellites)
-  chartContainers.push(container);
-
-  // Only enable synchronized hover when showing 10 or fewer satellites (performance)
-  if (chartContainers.length <= 10) {
-    container.on('plotly_hover', function(eventData) {
-      if (isHoverSyncing) return;
-      isHoverSyncing = true;
-
-      const xValue = eventData.points[0].x;
-
-      // Sync hover to all other charts
-      chartContainers.forEach(otherContainer => {
-        if (otherContainer !== container && otherContainer._fullData) {
-          try {
-            Plotly.Fx.hover(otherContainer, { xval: xValue }, ['xy']);
-          } catch (e) {
-            // Ignore errors if chart doesn't have data at this point
-          }
-        }
-      });
-
-      isHoverSyncing = false;
-    });
-
-    container.on('plotly_unhover', function() {
-      if (isHoverSyncing) return;
-      isHoverSyncing = true;
-
-      // Clear hover on all charts
-      chartContainers.forEach(otherContainer => {
-        if (otherContainer !== container) {
-          try {
-            Plotly.Fx.unhover(otherContainer);
-          } catch (e) {
-            // Ignore errors
-          }
-        }
-      });
-
-      isHoverSyncing = false;
-    });
-  }
 }
+
+// Keep old function name for compatibility but redirect
+function renderSatelliteCards() {
+  renderCombinedDensityPlot();
+}
+
 
 /**
  * Real-Time Solar Wind & Kp Data from NOAA SWPC
@@ -1260,8 +1132,42 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 
 let globeUpdateTimer = null;
-const GLOBE_REFRESH_INTERVAL = 10000; // Update every 10 seconds (was 5s)
+const GLOBE_REFRESH_INTERVAL = 60000; // Update every 60 seconds (reduced from 10s)
 let cachedGroundTracks = new Map();  // Cache ground tracks to avoid recomputation
+
+// Altitude-based color mapping (350-650 km range)
+const ALT_MIN = 350;
+const ALT_MAX = 650;
+
+function altitudeToColor(altitude) {
+  // Normalize altitude to 0-1 range
+  const t = Math.max(0, Math.min(1, (altitude - ALT_MIN) / (ALT_MAX - ALT_MIN)));
+
+  // Viridis-like colorscale: purple -> blue -> teal -> green -> yellow
+  const colors = [
+    [68, 1, 84],      // 0.0 - dark purple
+    [72, 40, 120],    // 0.2 - purple
+    [62, 74, 137],    // 0.3 - blue-purple
+    [49, 104, 142],   // 0.4 - blue
+    [38, 130, 142],   // 0.5 - teal
+    [31, 158, 137],   // 0.6 - teal-green
+    [53, 183, 121],   // 0.7 - green
+    [109, 205, 89],   // 0.8 - yellow-green
+    [180, 222, 44],   // 0.9 - yellow
+    [253, 231, 37]    // 1.0 - bright yellow
+  ];
+
+  const idx = t * (colors.length - 1);
+  const lower = Math.floor(idx);
+  const upper = Math.min(lower + 1, colors.length - 1);
+  const blend = idx - lower;
+
+  const r = Math.round(colors[lower][0] + blend * (colors[upper][0] - colors[lower][0]));
+  const g = Math.round(colors[lower][1] + blend * (colors[upper][1] - colors[lower][1]));
+  const b = Math.round(colors[lower][2] + blend * (colors[upper][2] - colors[lower][2]));
+
+  return `rgb(${r},${g},${b})`;
+}
 
 function propagateSatellite(tleLine1, tleLine2, date) {
   try {
