@@ -536,7 +536,8 @@ function renderJoyDivisionPlot() {
   renderJoyDivisionKpBar(startDate, now, windowConfig.days);
 
   const entries = getVisibleSatellites()
-    .filter(([noradId]) => allData[noradId]?.times?.length);
+    .filter(([noradId]) => allData[noradId]?.times?.length)
+    .sort((a, b) => a[1].altitude - b[1].altitude);  // Sort by altitude (low to high)
 
   if (entries.length === 0) {
     container.textContent = 'Loading density data...';
@@ -552,14 +553,26 @@ function renderJoyDivisionPlot() {
   const traces = [];
   const total = entries.length;
 
-  const ridges = entries.map(([noradId], index) => {
+  // Get altitude range for grayscale mapping
+  const altitudes = entries.map(([, sat]) => sat.altitude);
+  const minAlt = Math.min(...altitudes);
+  const maxAlt = Math.max(...altitudes);
+  const altRange = maxAlt - minAlt || 1;
+
+  const ridges = entries.map(([noradId, sat], index) => {
     const data = allData[noradId];
     const daily = buildDailySeries(data, dates, startDate, now);
     const filled = fillMissingValues(daily);
     const normalized = normalizeSeries(filled);
     const offset = (total - index - 1) * spacing;
     const y = normalized.map(value => (value === null ? null : offset + value * amplitude));
-    return { offset, y };
+
+    // Grayscale color based on altitude (darker = lower, lighter = higher)
+    const altNorm = (sat.altitude - minAlt) / altRange;
+    const gray = Math.round(140 + altNorm * 100);  // Range from 140 to 240
+    const lineColor = `rgb(${gray}, ${gray}, ${gray})`;
+
+    return { offset, y, lineColor, altitude: sat.altitude, name: sat.name };
   });
 
   for (let i = 0; i < ridges.length; i++) {
@@ -580,8 +593,9 @@ function renderJoyDivisionPlot() {
       x: dates,
       y: ridge.y,
       mode: 'lines',
+      name: `${ridge.name} (${ridge.altitude} km)`,
       line: {
-        color: '#e2e8f0',
+        color: ridge.lineColor,
         width: 1.4,
         shape: 'spline',
         smoothing: 0.35
@@ -589,7 +603,7 @@ function renderJoyDivisionPlot() {
       fill: 'tonexty',
       fillcolor: '#0b0f1a',
       connectgaps: true,
-      hoverinfo: 'skip',
+      hoverinfo: 'name',
       showlegend: false
     });
   }
