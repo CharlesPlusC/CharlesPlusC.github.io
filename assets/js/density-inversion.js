@@ -466,14 +466,7 @@ function normalizeSeries(values) {
 
 function renderJoyDivisionKpBar(startDate, endDate, numDays) {
   const container = document.getElementById('joy-division-kp');
-  console.log('renderJoyDivisionKpBar called:', {
-    hasContainer: !!container,
-    hasKpData: !!kpData,
-    kpTimesLength: kpData?.times?.length,
-    numDays
-  });
   if (!container || !kpData || !kpData.times || !kpData.values) {
-    console.log('Early return - missing data');
     if (container) container.innerHTML = '';
     return;
   }
@@ -515,8 +508,6 @@ function renderJoyDivisionKpBar(startDate, endDate, numDays) {
     return { dateStr, kp: maxKp, level };
   });
 
-  console.log('Kp bar cells generated:', cells.length, 'cells with Kp data:', cells.filter(c => c.kp > 0).length);
-
   const cellsHtml = cells.map(cell => {
     return `<div class="joy-division-kp-cell" data-level="${cell.level}" title="${cell.dateStr}: Kp ${cell.kp.toFixed(1)}"></div>`;
   }).join('');
@@ -525,7 +516,6 @@ function renderJoyDivisionKpBar(startDate, endDate, numDays) {
     <span class="joy-division-kp-label">Kp Index</span>
     <div class="joy-division-kp-cells">${cellsHtml}</div>
   `;
-  console.log('Kp bar innerHTML set, container children:', container.children.length);
 }
 
 function renderJoyDivisionPlot() {
