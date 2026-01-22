@@ -62,8 +62,8 @@ author_profile: true
 <div class="section">
   <div class="section-header">
     <div class="view-toggle">
-      <button class="view-btn active" data-view="activity" onclick="setDensityView('activity')">Density Activity</button>
-      <button class="view-btn" data-view="waves" onclick="setDensityView('waves')">Normalized Density Waves</button>
+      <button class="view-btn" data-view="activity" onclick="setDensityView('activity')">Density Activity</button>
+      <button class="view-btn active" data-view="waves" onclick="setDensityView('waves')">Normalized Density Waves</button>
     </div>
     <div class="time-period-selector">
       <button class="period-btn" onclick="setHeatmapPeriod('week')">1 Week</button>
@@ -71,7 +71,7 @@ author_profile: true
       <button class="period-btn active" onclick="setHeatmapPeriod('year')">1 Year</button>
     </div>
   </div>
-  <div id="density-activity" class="density-view">
+  <div id="density-activity" class="density-view is-hidden">
     <div id="activity-grid" class="activity-grid"></div>
     <div class="legends-row">
       <div class="grid-legend">
@@ -107,7 +107,7 @@ author_profile: true
       </div>
     </div>
   </div>
-  <div id="density-waves" class="density-view is-hidden">
+  <div id="density-waves" class="density-view">
     <div class="joy-division-card">
       <div class="joy-division-meta">Normalized 0-1 per satellite. <span id="joy-division-window">1 year window.</span></div>
       <div id="joy-division-plot" class="joy-division-plot"></div>

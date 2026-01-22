@@ -46,10 +46,10 @@ const SATELLITES = {
 let allData = {};
 let kpData = null;
 let heatmapPeriod = 'year';
-let densityView = 'activity';
+let densityView = 'waves';
 
 document.addEventListener('DOMContentLoaded', () => {
-  setDensityView('activity');
+  setDensityView('waves');
   loadAllData();
 });
 
