@@ -6,6 +6,7 @@
 // Satellites ordered by perigee altitude (lowest to highest) - fixed ordering
 // Note: CZ-6A DEB (64631) and NOAA 17 DEB (48714) removed - no longer in active TLE catalog (likely decayed)
 const SATELLITES = {
+  // Original satellites
   '22': { name: 'Explorer 7', color: '#0ea5e9', order: 1, flag: '🇺🇸', altitude: 433 },
   '43476': { name: 'GRACE-FO-A', color: '#2563eb', order: 2, flag: '🇺🇸🇩🇪', altitude: 448 },
   '43877': { name: 'Kanopus-V 6', color: '#7c3aed', order: 3, flag: '🇷🇺', altitude: 456 },
@@ -13,7 +14,33 @@ const SATELLITES = {
   '54695': { name: 'Jilin-1 Gaofen 03D48', color: '#f43f5e', order: 5, flag: '🇨🇳', altitude: 468 },
   '54686': { name: 'Dongpo 08', color: '#14b8a6', order: 6, flag: '🇨🇳', altitude: 470 },
   '60012': { name: 'Object A', color: '#6366f1', order: 7, flag: '🇺🇳', altitude: 526 },
-  '39212': { name: 'CZ-4C DEB', color: '#db2777', order: 8, flag: '🇨🇳', altitude: 596 }
+  '39212': { name: 'CZ-4C DEB', color: '#db2777', order: 8, flag: '🇨🇳', altitude: 596 },
+  // New debris objects (350-650 km altitude spread)
+  '50058': { name: 'COSMOS 1408 DEB (50058)', color: '#ef4444', order: 9, flag: '🇷🇺', altitude: 355 },
+  '50621': { name: 'COSMOS 1408 DEB (50621)', color: '#f97316', order: 10, flag: '🇷🇺', altitude: 370 },
+  '34488': { name: 'IRIDIUM 33 DEB (34488)', color: '#f59e0b', order: 11, flag: '🇺🇸', altitude: 385 },
+  '34693': { name: 'IRIDIUM 33 DEB (34693)', color: '#eab308', order: 12, flag: '🇺🇸', altitude: 390 },
+  '33815': { name: 'COSMOS 2251 DEB (33815)', color: '#84cc16', order: 13, flag: '🇷🇺', altitude: 400 },
+  '33821': { name: 'COSMOS 2251 DEB (33821)', color: '#22c55e', order: 14, flag: '🇷🇺', altitude: 415 },
+  '50404': { name: 'COSMOS 1408 DEB (50404)', color: '#10b981', order: 15, flag: '🇷🇺', altitude: 428 },
+  '33818': { name: 'COSMOS 2251 DEB (33818)', color: '#14b8a6', order: 16, flag: '🇷🇺', altitude: 438 },
+  '35622': { name: 'IRIDIUM 33 DEB (35622)', color: '#06b6d4', order: 17, flag: '🇺🇸', altitude: 450 },
+  '40996': { name: 'IRIDIUM 33 DEB (40996)', color: '#0891b2', order: 18, flag: '🇺🇸', altitude: 465 },
+  '34088': { name: 'IRIDIUM 33 DEB (34088)', color: '#0284c7', order: 19, flag: '🇺🇸', altitude: 475 },
+  '33960': { name: 'IRIDIUM 33 DEB (33960)', color: '#2563eb', order: 20, flag: '🇺🇸', altitude: 487 },
+  '33799': { name: 'COSMOS 2251 DEB (33799)', color: '#4f46e5', order: 21, flag: '🇷🇺', altitude: 502 },
+  '35744': { name: 'IRIDIUM 33 DEB (35744)', color: '#7c3aed', order: 22, flag: '🇺🇸', altitude: 518 },
+  '33860': { name: 'IRIDIUM 33 DEB (33860)', color: '#9333ea', order: 23, flag: '🇺🇸', altitude: 527 },
+  '34077': { name: 'IRIDIUM 33 DEB (34077)', color: '#a855f7', order: 24, flag: '🇺🇸', altitude: 532 },
+  '34652': { name: 'IRIDIUM 33 DEB (34652)', color: '#c026d3', order: 25, flag: '🇺🇸', altitude: 542 },
+  '33881': { name: 'IRIDIUM 33 DEB (33881)', color: '#db2777', order: 26, flag: '🇺🇸', altitude: 553 },
+  '34366': { name: 'IRIDIUM 33 DEB (34366)', color: '#e11d48', order: 27, flag: '🇺🇸', altitude: 560 },
+  '35051': { name: 'IRIDIUM 33 DEB (35051)', color: '#be123c', order: 28, flag: '🇺🇸', altitude: 575 },
+  '33773': { name: 'IRIDIUM 33 DEB (33773)', color: '#9f1239', order: 29, flag: '🇺🇸', altitude: 588 },
+  '35620': { name: 'IRIDIUM 33 DEB (35620)', color: '#881337', order: 30, flag: '🇺🇸', altitude: 598 },
+  '33776': { name: 'IRIDIUM 33 DEB (33776)', color: '#71717a', order: 31, flag: '🇺🇸', altitude: 602 },
+  '38228': { name: 'IRIDIUM 33 DEB (38228)', color: '#525252', order: 32, flag: '🇺🇸', altitude: 628 },
+  '35680': { name: 'IRIDIUM 33 DEB (35680)', color: '#44403c', order: 33, flag: '🇺🇸', altitude: 642 }
 };
 
 let allData = {};
