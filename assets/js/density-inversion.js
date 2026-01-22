@@ -104,9 +104,9 @@ async function loadAllData() {
 
     renderActivityGrid();
     renderSatelliteCards();
-    if (densityView === 'waves') {
-      renderJoyDivisionPlot();
-    }
+    // Always render Joy Division plot since it's the default view
+    // and needs kpData which is now loaded
+    renderJoyDivisionPlot();
   } else {
     status.textContent = 'No data available';
     status.classList.add('error');
