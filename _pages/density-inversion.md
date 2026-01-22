@@ -70,6 +70,7 @@ author_profile: true
       <button class="period-btn" onclick="setHeatmapPeriod('week')">1 Week</button>
       <button class="period-btn" onclick="setHeatmapPeriod('month')">1 Month</button>
       <button class="period-btn active" onclick="setHeatmapPeriod('year')">1 Year</button>
+      <button id="show-all-btn-grid" class="control-btn" onclick="toggleShowAllSatellites()" style="margin-left: 1rem;">Show All (33)</button>
     </div>
   </div>
   <div id="density-activity" class="density-view">
@@ -135,6 +136,7 @@ author_profile: true
   <div class="section-header">
     <div class="section-title">Satellite Details</div>
     <div class="chart-controls">
+      <button id="show-all-btn" class="control-btn" onclick="toggleShowAllSatellites()">Show All (33)</button>
       <button id="unified-scale-btn" class="control-btn" onclick="toggleUnifiedYScale()">Unified Y-Scale: Off</button>
     </div>
   </div>

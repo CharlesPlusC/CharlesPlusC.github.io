@@ -50,6 +50,8 @@ let densityView = 'activity';
 let unifiedYScale = false;  // Toggle for unified y-axis across all charts
 let chartContainers = [];   // Store references to all chart containers for synchronized hover
 let isHoverSyncing = false; // Prevent infinite hover loops
+let showAllSatellites = false;  // Toggle between showing 8 primary vs all 33 satellites
+const PRIMARY_SATELLITES = ['22', '43476', '43877', '62407', '54695', '54686', '60012', '39212'];  // Original 8
 
 document.addEventListener('DOMContentLoaded', () => {
   setDensityView('activity');
@@ -233,6 +235,37 @@ function toggleUnifiedYScale() {
 
 window.toggleUnifiedYScale = toggleUnifiedYScale;
 
+function getVisibleSatellites() {
+  // Returns satellite entries filtered by showAllSatellites toggle
+  return Object.entries(SATELLITES)
+    .filter(([noradId]) => showAllSatellites || PRIMARY_SATELLITES.includes(noradId))
+    .sort((a, b) => a[1].order - b[1].order);
+}
+
+function toggleShowAllSatellites() {
+  showAllSatellites = !showAllSatellites;
+
+  // Update all show-all buttons
+  const newText = showAllSatellites ? `Show Primary (${PRIMARY_SATELLITES.length})` : `Show All (${Object.keys(SATELLITES).length})`;
+  document.querySelectorAll('#show-all-btn, #show-all-btn-grid').forEach(btn => {
+    btn.textContent = newText;
+    btn.classList.toggle('active', showAllSatellites);
+  });
+
+  // Clear ground track cache when switching
+  cachedGroundTracks.clear();
+
+  // Re-render all views with new satellite set
+  renderActivityGrid();
+  renderSatelliteCards();
+  renderSatelliteGlobe();
+  if (densityView === 'waves') {
+    renderJoyDivisionPlot();
+  }
+}
+
+window.toggleShowAllSatellites = toggleShowAllSatellites;
+
 function renderActivityGrid() {
   const container = document.getElementById('activity-grid');
   if (!container) return;
@@ -257,10 +290,11 @@ function renderActivityGrid() {
     dates.push(d.toISOString().split('T')[0]);
   }
 
-  // Render satellite rows
-  Object.entries(SATELLITES)
-    .sort((a, b) => a[1].order - b[1].order)
-    .forEach(([noradId, sat]) => {
+  // Use DocumentFragment for batch DOM operations
+  const fragment = document.createDocumentFragment();
+
+  // Render satellite rows (filtered by visibility toggle)
+  getVisibleSatellites().forEach(([noradId, sat]) => {
       const data = allData[noradId];
       if (!data || !data.times || data.times.length === 0) return;
 
@@ -325,8 +359,11 @@ function renderActivityGrid() {
       });
 
       row.appendChild(cells);
-      container.appendChild(row);
+      fragment.appendChild(row);
     });
+
+  // Append all satellite rows at once
+  container.appendChild(fragment);
 
   // Add Kp index row
   if (kpData && kpData.times && kpData.values) {
@@ -568,8 +605,7 @@ function renderJoyDivisionPlot() {
   const startDate = new Date(now);
   startDate.setDate(startDate.getDate() - (windowConfig.days - 1));
 
-  const entries = Object.entries(SATELLITES)
-    .sort((a, b) => a[1].order - b[1].order)
+  const entries = getVisibleSatellites()
     .filter(([noradId]) => allData[noradId]?.times?.length);
 
   if (entries.length === 0) {
@@ -657,23 +693,36 @@ function renderJoyDivisionPlot() {
   });
 }
 
+// Lazy loading observer for satellite cards
+let cardObserver = null;
+let pendingChartData = new Map();  // Store data needed to render charts when visible
+
 function renderSatelliteCards() {
   const container = document.getElementById('satellite-cards');
   if (!container) return;
 
   container.innerHTML = '';
   chartContainers = [];  // Reset chart containers for synchronized hover
+  pendingChartData.clear();
+
+  // Disconnect previous observer
+  if (cardObserver) {
+    cardObserver.disconnect();
+  }
 
   const now = new Date();
   const sixMonthsAgo = new Date(now);
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-  // Compute global min/max for unified y-scale
+  // Get visible satellites based on toggle
+  const visibleSatellites = getVisibleSatellites();
+
+  // Compute global min/max for unified y-scale (only for visible satellites)
   let globalMinDensity = Infinity;
   let globalMaxDensity = -Infinity;
 
   if (unifiedYScale) {
-    Object.entries(SATELLITES).forEach(([noradId]) => {
+    visibleSatellites.forEach(([noradId]) => {
       const data = allData[noradId];
       if (!data || !data.times || data.times.length === 0) return;
 
@@ -693,9 +742,23 @@ function renderSatelliteCards() {
     ? [Math.log10(globalMinDensity * 0.8), Math.log10(globalMaxDensity * 1.2)]
     : null;
 
-  Object.entries(SATELLITES)
-    .sort((a, b) => a[1].order - b[1].order)
-    .forEach(([noradId, sat]) => {
+  // Create IntersectionObserver for lazy loading charts
+  cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const chartContainer = entry.target;
+        const noradId = chartContainer.dataset.noradId;
+        const chartData = pendingChartData.get(noradId);
+
+        if (chartData && !chartContainer.dataset.rendered) {
+          chartContainer.dataset.rendered = 'true';
+          renderCardChart(noradId, chartData.color, chartData.data, sixMonthsAgo, now, yAxisRange);
+        }
+      }
+    });
+  }, { rootMargin: '100px' });  // Start loading slightly before visible
+
+  visibleSatellites.forEach(([noradId, sat]) => {
       const data = allData[noradId];
       if (!data || !data.times || data.times.length === 0) return;
 
@@ -736,8 +799,13 @@ function renderSatelliteCards() {
 
       container.appendChild(card);
 
-      // Render chart after card is in DOM
-      setTimeout(() => renderCardChart(noradId, sat.color, data, sixMonthsAgo, now, yAxisRange), 10);
+      // Store chart data for lazy rendering
+      const chartEl = document.getElementById(`chart-${noradId}`);
+      if (chartEl) {
+        chartEl.dataset.noradId = noradId;
+        pendingChartData.set(noradId, { color: sat.color, data });
+        cardObserver.observe(chartEl);
+      }
     });
 }
 
@@ -855,47 +923,49 @@ function renderCardChart(noradId, color, data, startDate, endDate, yAxisRange = 
     displayModeBar: false
   });
 
-  // Store container reference for synchronized hover
+  // Store container reference for synchronized hover (only when few satellites)
   chartContainers.push(container);
 
-  // Add synchronized hover event listeners
-  container.on('plotly_hover', function(eventData) {
-    if (isHoverSyncing) return;
-    isHoverSyncing = true;
+  // Only enable synchronized hover when showing 10 or fewer satellites (performance)
+  if (chartContainers.length <= 10) {
+    container.on('plotly_hover', function(eventData) {
+      if (isHoverSyncing) return;
+      isHoverSyncing = true;
 
-    const xValue = eventData.points[0].x;
+      const xValue = eventData.points[0].x;
 
-    // Sync hover to all other charts
-    chartContainers.forEach(otherContainer => {
-      if (otherContainer !== container && otherContainer._fullData) {
-        try {
-          Plotly.Fx.hover(otherContainer, { xval: xValue }, ['xy']);
-        } catch (e) {
-          // Ignore errors if chart doesn't have data at this point
+      // Sync hover to all other charts
+      chartContainers.forEach(otherContainer => {
+        if (otherContainer !== container && otherContainer._fullData) {
+          try {
+            Plotly.Fx.hover(otherContainer, { xval: xValue }, ['xy']);
+          } catch (e) {
+            // Ignore errors if chart doesn't have data at this point
+          }
         }
-      }
+      });
+
+      isHoverSyncing = false;
     });
 
-    isHoverSyncing = false;
-  });
+    container.on('plotly_unhover', function() {
+      if (isHoverSyncing) return;
+      isHoverSyncing = true;
 
-  container.on('plotly_unhover', function() {
-    if (isHoverSyncing) return;
-    isHoverSyncing = true;
-
-    // Clear hover on all charts
-    chartContainers.forEach(otherContainer => {
-      if (otherContainer !== container) {
-        try {
-          Plotly.Fx.unhover(otherContainer);
-        } catch (e) {
-          // Ignore errors
+      // Clear hover on all charts
+      chartContainers.forEach(otherContainer => {
+        if (otherContainer !== container) {
+          try {
+            Plotly.Fx.unhover(otherContainer);
+          } catch (e) {
+            // Ignore errors
+          }
         }
-      }
-    });
+      });
 
-    isHoverSyncing = false;
-  });
+      isHoverSyncing = false;
+    });
+  }
 }
 
 /**
@@ -1190,7 +1260,8 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 
 let globeUpdateTimer = null;
-const GLOBE_REFRESH_INTERVAL = 5000; // Update every 5 seconds
+const GLOBE_REFRESH_INTERVAL = 10000; // Update every 10 seconds (was 5s)
+let cachedGroundTracks = new Map();  // Cache ground tracks to avoid recomputation
 
 function propagateSatellite(tleLine1, tleLine2, date) {
   try {
@@ -1215,13 +1286,22 @@ function propagateSatellite(tleLine1, tleLine2, date) {
   }
 }
 
-function computeGroundTrack(tleLine1, tleLine2, numPoints = 100) {
+function computeGroundTrack(noradId, tleLine1, tleLine2, numPoints = 40) {
+  // Check cache - ground tracks only need updating every minute
+  const cacheKey = noradId;
+  const cached = cachedGroundTracks.get(cacheKey);
+  const now = Date.now();
+
+  if (cached && (now - cached.timestamp) < 60000) {
+    return cached.track;
+  }
+
   const track = { lats: [], lons: [] };
-  const now = new Date();
+  const nowDate = new Date();
   const orbitalPeriod = 90 * 60 * 1000; // ~90 minutes in ms for LEO
 
   for (let i = 0; i < numPoints; i++) {
-    const time = new Date(now.getTime() - orbitalPeriod + (i * orbitalPeriod * 2 / numPoints));
+    const time = new Date(nowDate.getTime() - orbitalPeriod + (i * orbitalPeriod * 2 / numPoints));
     const pos = propagateSatellite(tleLine1, tleLine2, time);
     if (pos) {
       track.lats.push(pos.latitude);
@@ -1229,6 +1309,7 @@ function computeGroundTrack(tleLine1, tleLine2, numPoints = 100) {
     }
   }
 
+  cachedGroundTracks.set(cacheKey, { track, timestamp: now });
   return track;
 }
 
@@ -1248,10 +1329,8 @@ function renderSatelliteGlobe() {
   const traces = [];
   const positions = [];
 
-  // Process each satellite
-  Object.entries(SATELLITES)
-    .sort((a, b) => a[1].order - b[1].order)
-    .forEach(([noradId, sat]) => {
+  // Process visible satellites only
+  getVisibleSatellites().forEach(([noradId, sat]) => {
       const data = allData[noradId];
       if (!data || !data.tle_line1 || !data.tle_line2) return;
 
@@ -1267,8 +1346,8 @@ function renderSatelliteGlobe() {
         ...pos
       });
 
-      // Compute ground track (one orbit)
-      const track = computeGroundTrack(data.tle_line1, data.tle_line2, 60);
+      // Compute ground track (cached, reduced points)
+      const track = computeGroundTrack(noradId, data.tle_line1, data.tle_line2, 40);
 
       // Add ground track trace
       traces.push({
