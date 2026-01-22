@@ -7,7 +7,6 @@ author_profile: true
 
 <link rel="stylesheet" href="/assets/css/density-inversion.css">
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-<script src="https://unpkg.com/satellite.js@5.0.0/dist/satellite.min.js"></script>
 
 <div id="status" class="status">Loading density data...</div>
 
@@ -70,7 +69,6 @@ author_profile: true
       <button class="period-btn" onclick="setHeatmapPeriod('week')">1 Week</button>
       <button class="period-btn" onclick="setHeatmapPeriod('month')">1 Month</button>
       <button class="period-btn active" onclick="setHeatmapPeriod('year')">1 Year</button>
-      <button id="show-all-btn-grid" class="control-btn" onclick="toggleShowAllSatellites()" style="margin-left: 1rem;">Show All (33)</button>
     </div>
   </div>
   <div id="density-activity" class="density-view">
@@ -120,24 +118,7 @@ author_profile: true
 
 <div class="section">
   <div class="section-header">
-    <div class="section-title">Satellite Positions</div>
-    <div class="globe-controls">
-      <span class="globe-time" id="globe-time">--</span>
-    </div>
-  </div>
-  <p class="section-note">Real-time satellite positions computed from TLEs using SGP4 propagation. Globe shows current locations and ground tracks.</p>
-  <div class="globe-container">
-    <div id="satellite-globe" class="satellite-globe"></div>
-    <div id="satellite-list" class="satellite-position-list"></div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="section-header">
     <div class="section-title">Combined Density Plot</div>
-    <div class="chart-controls">
-      <button id="show-all-btn" class="control-btn" onclick="toggleShowAllSatellites()">Show All (33)</button>
-    </div>
   </div>
   <p class="section-note">All satellites on one plot, colored by altitude (purple=low ~350km, yellow=high ~650km). Gray background shows Kp intensity. Hover for details.</p>
   <div id="combined-density-plot" style="width:100%; height:500px;"></div>

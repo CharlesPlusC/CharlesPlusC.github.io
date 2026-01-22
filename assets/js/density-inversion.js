@@ -47,8 +47,6 @@ let allData = {};
 let kpData = null;
 let heatmapPeriod = 'year';
 let densityView = 'activity';
-let showAllSatellites = false;  // Toggle between showing 8 primary vs all 33 satellites
-const PRIMARY_SATELLITES = ['22', '43476', '43877', '62407', '54695', '54686', '60012', '39212'];  // Original 8
 
 document.addEventListener('DOMContentLoaded', () => {
   setDensityView('activity');
@@ -106,8 +104,6 @@ async function loadAllData() {
 
     renderActivityGrid();
     renderSatelliteCards();
-    renderSatelliteGlobe();  // Render globe immediately - data is ready
-    startGlobeRefresh();     // Start periodic updates
     if (densityView === 'waves') {
       renderJoyDivisionPlot();
     }
@@ -218,35 +214,10 @@ window.setDensityView = setDensityView;
 
 
 function getVisibleSatellites() {
-  // Returns satellite entries filtered by showAllSatellites toggle
+  // Returns all satellite entries sorted by order
   return Object.entries(SATELLITES)
-    .filter(([noradId]) => showAllSatellites || PRIMARY_SATELLITES.includes(noradId))
     .sort((a, b) => a[1].order - b[1].order);
 }
-
-function toggleShowAllSatellites() {
-  showAllSatellites = !showAllSatellites;
-
-  // Update all show-all buttons
-  const newText = showAllSatellites ? `Show Primary (${PRIMARY_SATELLITES.length})` : `Show All (${Object.keys(SATELLITES).length})`;
-  document.querySelectorAll('#show-all-btn, #show-all-btn-grid').forEach(btn => {
-    btn.textContent = newText;
-    btn.classList.toggle('active', showAllSatellites);
-  });
-
-  // Clear ground track cache when switching
-  cachedGroundTracks.clear();
-
-  // Re-render all views with new satellite set
-  renderActivityGrid();
-  renderSatelliteCards();
-  renderSatelliteGlobe();
-  if (densityView === 'waves') {
-    renderJoyDivisionPlot();
-  }
-}
-
-window.toggleShowAllSatellites = toggleShowAllSatellites;
 
 function renderActivityGrid() {
   const container = document.getElementById('activity-grid');
@@ -1126,15 +1097,6 @@ document.addEventListener('DOMContentLoaded', () => {
   startRealtimeRefresh();
 });
 
-/**
- * Satellite Globe Visualization
- * Uses satellite.js for SGP4 propagation to compute accurate positions
- */
-
-let globeUpdateTimer = null;
-const GLOBE_REFRESH_INTERVAL = 60000; // Update every 60 seconds (reduced from 10s)
-let cachedGroundTracks = new Map();  // Cache ground tracks to avoid recomputation
-
 // Altitude-based color mapping (350-650 km range)
 const ALT_MIN = 350;
 const ALT_MAX = 650;
@@ -1167,196 +1129,4 @@ function altitudeToColor(altitude) {
   const b = Math.round(colors[lower][2] + blend * (colors[upper][2] - colors[lower][2]));
 
   return `rgb(${r},${g},${b})`;
-}
-
-function propagateSatellite(tleLine1, tleLine2, date) {
-  try {
-    const satrec = satellite.twoline2satrec(tleLine1, tleLine2);
-    const positionAndVelocity = satellite.propagate(satrec, date);
-
-    if (!positionAndVelocity.position) {
-      return null;
-    }
-
-    const gmst = satellite.gstime(date);
-    const positionGd = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
-
-    const longitude = satellite.degreesLong(positionGd.longitude);
-    const latitude = satellite.degreesLat(positionGd.latitude);
-    const altitude = positionGd.height; // km
-
-    return { latitude, longitude, altitude };
-  } catch (e) {
-    console.error('SGP4 propagation error:', e);
-    return null;
-  }
-}
-
-function computeGroundTrack(noradId, tleLine1, tleLine2, numPoints = 40) {
-  // Check cache - ground tracks only need updating every minute
-  const cacheKey = noradId;
-  const cached = cachedGroundTracks.get(cacheKey);
-  const now = Date.now();
-
-  if (cached && (now - cached.timestamp) < 60000) {
-    return cached.track;
-  }
-
-  const track = { lats: [], lons: [] };
-  const nowDate = new Date();
-  const orbitalPeriod = 90 * 60 * 1000; // ~90 minutes in ms for LEO
-
-  for (let i = 0; i < numPoints; i++) {
-    const time = new Date(nowDate.getTime() - orbitalPeriod + (i * orbitalPeriod * 2 / numPoints));
-    const pos = propagateSatellite(tleLine1, tleLine2, time);
-    if (pos) {
-      track.lats.push(pos.latitude);
-      track.lons.push(pos.longitude);
-    }
-  }
-
-  cachedGroundTracks.set(cacheKey, { track, timestamp: now });
-  return track;
-}
-
-function renderSatelliteGlobe() {
-  const globeContainer = document.getElementById('satellite-globe');
-  const listContainer = document.getElementById('satellite-list');
-  const timeDisplay = document.getElementById('globe-time');
-
-  if (!globeContainer || !window.Plotly || !window.satellite) return;
-
-  const now = new Date();
-
-  if (timeDisplay) {
-    timeDisplay.textContent = now.toUTCString().replace('GMT', 'UTC');
-  }
-
-  const traces = [];
-  const positions = [];
-
-  // Process visible satellites only
-  getVisibleSatellites().forEach(([noradId, sat]) => {
-      const data = allData[noradId];
-      if (!data || !data.tle_line1 || !data.tle_line2) return;
-
-      // Compute current position
-      const pos = propagateSatellite(data.tle_line1, data.tle_line2, now);
-      if (!pos) return;
-
-      positions.push({
-        noradId,
-        name: sat.name,
-        color: sat.color,
-        flag: sat.flag,
-        ...pos
-      });
-
-      // Compute ground track (cached, reduced points)
-      const track = computeGroundTrack(noradId, data.tle_line1, data.tle_line2, 40);
-
-      // Add ground track trace
-      traces.push({
-        type: 'scattergeo',
-        mode: 'lines',
-        lon: track.lons,
-        lat: track.lats,
-        line: {
-          width: 1.5,
-          color: sat.color
-        },
-        opacity: 0.4,
-        hoverinfo: 'skip',
-        showlegend: false
-      });
-
-      // Add current position marker
-      traces.push({
-        type: 'scattergeo',
-        mode: 'markers+text',
-        lon: [pos.longitude],
-        lat: [pos.latitude],
-        marker: {
-          size: 12,
-          color: sat.color,
-          symbol: 'circle',
-          line: { width: 2, color: 'white' }
-        },
-        text: [sat.name.split(' ')[0]],
-        textposition: 'top center',
-        textfont: { size: 9, color: '#e2e8f0' },
-        hovertemplate: `<b>${sat.name}</b><br>` +
-          `Lat: ${pos.latitude.toFixed(2)}°<br>` +
-          `Lon: ${pos.longitude.toFixed(2)}°<br>` +
-          `Alt: ${pos.altitude.toFixed(0)} km<extra></extra>`,
-        showlegend: false
-      });
-    });
-
-  // Check if globe already exists - if so, just update the data traces
-  const isInitialRender = !globeContainer.data;
-
-  if (isInitialRender) {
-    // First render - create the full plot with default rotation
-    const layout = {
-      geo: {
-        projection: {
-          type: 'orthographic',
-          rotation: { lon: -30, lat: 20 }
-        },
-        showland: true,
-        landcolor: '#1e293b',
-        showocean: true,
-        oceancolor: '#0f172a',
-        showcoastlines: true,
-        coastlinecolor: '#334155',
-        coastlinewidth: 0.5,
-        showlakes: false,
-        showcountries: true,
-        countrycolor: '#334155',
-        countrywidth: 0.3,
-        bgcolor: '#0a0e17',
-        lataxis: { showgrid: true, gridcolor: '#1e293b', gridwidth: 0.5 },
-        lonaxis: { showgrid: true, gridcolor: '#1e293b', gridwidth: 0.5 }
-      },
-      paper_bgcolor: '#0a0e17',
-      margin: { t: 0, r: 0, b: 0, l: 0 },
-      showlegend: false
-    };
-
-    Plotly.newPlot(globeContainer, traces, layout, {
-      responsive: true,
-      displayModeBar: false
-    });
-  } else {
-    // Subsequent updates - only update trace data, preserving user's rotation
-    // Use deleteTraces + addTraces to update data without touching layout
-    const numExistingTraces = globeContainer.data.length;
-    const traceIndices = Array.from({ length: numExistingTraces }, (_, i) => i);
-
-    Plotly.deleteTraces(globeContainer, traceIndices);
-    Plotly.addTraces(globeContainer, traces);
-  }
-
-  // Update position list
-  if (listContainer) {
-    listContainer.innerHTML = positions.map(pos => `
-      <div class="sat-position-item">
-        <div class="sat-position-dot" style="background: ${pos.color}"></div>
-        <div class="sat-position-info">
-          <div class="sat-position-name">${pos.flag || ''} ${pos.name}</div>
-          <div class="sat-position-coords">${pos.latitude.toFixed(2)}°, ${pos.longitude.toFixed(2)}°</div>
-          <div class="sat-position-alt">${pos.altitude.toFixed(0)} km altitude</div>
-        </div>
-      </div>
-    `).join('');
-  }
-}
-
-function startGlobeRefresh() {
-  // Set up periodic refresh (initial render is called separately)
-  if (globeUpdateTimer) {
-    clearInterval(globeUpdateTimer);
-  }
-  globeUpdateTimer = setInterval(renderSatelliteGlobe, GLOBE_REFRESH_INTERVAL);
 }
