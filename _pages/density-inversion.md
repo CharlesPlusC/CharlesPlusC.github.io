@@ -148,13 +148,9 @@ author_profile: true
         </div>
       </div>
     </div>
-    <div class="stats-section">
+    <div class="stats-section stats-section-wide">
       <div class="stats-section-title">TLEs Collected (30 days)</div>
       <div id="tle-collection-plot" class="mini-plot"></div>
-    </div>
-    <div class="stats-section stats-section-wide">
-      <div class="stats-section-title">Kp vs Normalized Drag (30 days)</div>
-      <div id="kp-drag-correlation-plot" class="correlation-plot"></div>
     </div>
   </div>
 </div>

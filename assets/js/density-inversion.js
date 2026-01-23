@@ -868,7 +868,7 @@ function renderSatelliteCards() {
 
 /**
  * Live Drag Stats Panel
- * Shows trends and Kp vs normalized drag correlation plot
+ * Shows trends based on most recent data (not relative to wall clock)
  */
 function renderDensityStats() {
   const now = new Date();
@@ -880,8 +880,18 @@ function renderDensityStats() {
       const data = allData[noradId];
       // Pre-compute times as Date objects
       const times = data.times.map(t => new Date(t));
-      return { noradId, sat, data, times };
-    });
+      // Find the most recent data point for this satellite
+      let latestTime = null;
+      let latestIdx = -1;
+      for (let i = 0; i < times.length; i++) {
+        if (data.densities[i] > 0 && (!latestTime || times[i] > latestTime)) {
+          latestTime = times[i];
+          latestIdx = i;
+        }
+      }
+      return { noradId, sat, data, times, latestTime, latestIdx };
+    })
+    .filter(s => s.latestTime !== null);
 
   if (satellitesWithData.length === 0) return;
 
@@ -895,32 +905,34 @@ function renderDensityStats() {
       const diff = Math.abs(times[i] - targetTime);
       if (diff < minDiff) {
         minDiff = diff;
-        closest = { time: times[i], density: densities[i], diff: diff };
+        closest = { time: times[i], density: densities[i], diff: diff, idx: i };
       }
     }
 
     return closest;
   }
 
-  // Helper: calculate percent change between point closest to cutoff and most recent point
+  // Helper: calculate percent change over N hours (relative to each satellite's latest point)
   function calcTrendForPeriod(hours) {
-    const targetTime = new Date(now - hours * 3600 * 1000);
-    const maxTimeDiff = hours * 3600 * 1000 * 0.5; // Allow 50% tolerance
     const changes = [];
 
-    satellitesWithData.forEach(({ data, times }) => {
-      // Find most recent point (closest to now)
-      const latest = findClosestPoint(times, data.densities, now);
-      if (!latest || latest.diff > 12 * 3600 * 1000) return; // Must be within 12h of now
+    satellitesWithData.forEach(({ data, times, latestTime, latestIdx }) => {
+      // Target time is N hours before this satellite's latest data point
+      const targetTime = new Date(latestTime - hours * 3600 * 1000);
 
       // Find point closest to the target time
       const earliest = findClosestPoint(times, data.densities, targetTime);
-      if (!earliest || earliest.diff > maxTimeDiff) return; // Must be within tolerance
+      if (!earliest) return;
 
-      // Make sure they're different points and in correct order
-      if (earliest.time >= latest.time) return;
+      // Check that earliest is reasonably close to target (within 50% of the period)
+      const maxDiff = hours * 3600 * 1000 * 0.5;
+      if (earliest.diff > maxDiff) return;
 
-      const pctChange = ((latest.density - earliest.density) / earliest.density) * 100;
+      // Make sure it's a different point from latest
+      if (earliest.idx === latestIdx) return;
+
+      const latestDensity = data.densities[latestIdx];
+      const pctChange = ((latestDensity - earliest.density) / earliest.density) * 100;
       if (isFinite(pctChange) && Math.abs(pctChange) < 200) {
         changes.push(pctChange);
       }
@@ -953,9 +965,6 @@ function renderDensityStats() {
     }
   });
 
-  // Render Kp vs Normalized Drag correlation plot
-  renderKpDragCorrelationPlot(satellitesWithData, now);
-
   // Render TLE collection histogram
   renderTleCollectionPlot(satellitesWithData, now);
 
@@ -964,153 +973,6 @@ function renderDensityStats() {
   if (updateEl) {
     updateEl.textContent = 'Based on latest TLE data';
   }
-}
-
-/**
- * Render scatter plot: Kp (x-axis) vs normalized drag (0-1) over 30 days
- * Each point is a (daily mean Kp, normalized drag) pair from one satellite
- * Normalized drag is computed per-satellite over the 30-day window
- */
-function renderKpDragCorrelationPlot(satellitesWithData, now) {
-  const container = document.getElementById('kp-drag-correlation-plot');
-  if (!container || !window.Plotly) return;
-
-  const days = 30;
-  const cutoff = new Date(now - days * 24 * 3600 * 1000);
-
-  // Build daily Kp averages first
-  const dailyKp = new Map();
-  if (kpData && kpData.times && kpData.values) {
-    for (let i = 0; i < kpData.times.length; i++) {
-      const t = new Date(kpData.times[i].replace(' ', 'T') + 'Z');
-      if (t < cutoff || t > now) continue;
-      const dayKey = t.toISOString().slice(0, 10);
-      if (!dailyKp.has(dayKey)) dailyKp.set(dayKey, []);
-      dailyKp.get(dayKey).push(kpData.values[i]);
-    }
-  }
-
-  // Convert to day -> mean Kp
-  const meanKpByDay = new Map();
-  dailyKp.forEach((vals, day) => {
-    meanKpByDay.set(day, vals.reduce((a, b) => a + b, 0) / vals.length);
-  });
-
-  // Collect all (Kp, normalizedDrag) pairs from all satellites
-  const scatterPoints = [];
-
-  satellitesWithData.forEach(({ sat, data, times }) => {
-    // Get all densities in the 30-day window for this satellite
-    const pointsInWindow = [];
-    for (let i = 0; i < times.length; i++) {
-      const t = times[i];
-      if (t < cutoff || t > now) continue;
-      if (data.densities[i] <= 0) continue;
-      pointsInWindow.push({ time: t, density: data.densities[i] });
-    }
-
-    if (pointsInWindow.length < 5) return;
-
-    // Calculate min/max for normalization
-    const densities = pointsInWindow.map(p => p.density);
-    const minD = Math.min(...densities);
-    const maxD = Math.max(...densities);
-    const range = maxD - minD;
-    if (range <= 0) return;
-
-    // Group by day and normalize
-    const byDay = new Map();
-    pointsInWindow.forEach(p => {
-      const dayKey = p.time.toISOString().slice(0, 10);
-      const normalized = (p.density - minD) / range;
-      if (!byDay.has(dayKey)) byDay.set(dayKey, []);
-      byDay.get(dayKey).push(normalized);
-    });
-
-    // Create scatter points: daily mean normalized drag vs daily mean Kp
-    byDay.forEach((normVals, day) => {
-      if (meanKpByDay.has(day)) {
-        const meanNormDrag = normVals.reduce((a, b) => a + b, 0) / normVals.length;
-        scatterPoints.push({
-          kp: meanKpByDay.get(day),
-          normDrag: meanNormDrag,
-          satellite: sat.name,
-          day: day
-        });
-      }
-    });
-  });
-
-  if (scatterPoints.length < 10) {
-    container.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:11px;padding:20px;">Insufficient data</div>';
-    return;
-  }
-
-  // Create scatter plot
-  const traces = [{
-    x: scatterPoints.map(p => p.kp),
-    y: scatterPoints.map(p => p.normDrag),
-    type: 'scatter',
-    mode: 'markers',
-    marker: {
-      size: 4,
-      color: 'rgba(99, 102, 241, 0.5)',
-      line: { width: 0 }
-    },
-    text: scatterPoints.map(p => `${p.satellite}<br>${p.day}`),
-    hovertemplate: '<b>%{text}</b><br>Kp: %{x:.1f}<br>Norm. Drag: %{y:.2f}<extra></extra>'
-  }];
-
-  // Add trend line (linear regression)
-  const n = scatterPoints.length;
-  const sumX = scatterPoints.reduce((s, p) => s + p.kp, 0);
-  const sumY = scatterPoints.reduce((s, p) => s + p.normDrag, 0);
-  const sumXY = scatterPoints.reduce((s, p) => s + p.kp * p.normDrag, 0);
-  const sumX2 = scatterPoints.reduce((s, p) => s + p.kp * p.kp, 0);
-
-  const denom = n * sumX2 - sumX * sumX;
-  if (denom !== 0) {
-    const slope = (n * sumXY - sumX * sumY) / denom;
-    const intercept = (sumY - slope * sumX) / n;
-
-    traces.push({
-      x: [0, 9],
-      y: [intercept, slope * 9 + intercept],
-      type: 'scatter',
-      mode: 'lines',
-      line: { color: '#f59e0b', width: 2, dash: 'dash' },
-      hoverinfo: 'skip'
-    });
-  }
-
-  const layout = {
-    margin: { l: 30, r: 10, t: 5, b: 25 },
-    paper_bgcolor: 'transparent',
-    plot_bgcolor: 'transparent',
-    showlegend: false,
-    xaxis: {
-      title: { text: 'Kp', font: { size: 9, color: '#64748b' }, standoff: 2 },
-      showgrid: true,
-      gridcolor: 'rgba(148, 163, 184, 0.15)',
-      tickfont: { size: 8, color: '#94a3b8' },
-      range: [0, 9],
-      dtick: 2
-    },
-    yaxis: {
-      title: { text: 'Drag (0-1)', font: { size: 9, color: '#64748b' }, standoff: 2 },
-      showgrid: true,
-      gridcolor: 'rgba(148, 163, 184, 0.15)',
-      tickfont: { size: 8, color: '#94a3b8' },
-      range: [0, 1],
-      dtick: 0.25
-    },
-    hovermode: 'closest'
-  };
-
-  Plotly.newPlot(container, traces, layout, {
-    displayModeBar: false,
-    responsive: true
-  });
 }
 
 /**
