@@ -868,38 +868,28 @@ function renderSatelliteCards() {
 
 /**
  * Live Drag Stats Panel
- * Uses WALL CLOCK time - shows "--" when data is stale for that window
+ * Simple: for each window, find points in that window, calculate change from earliest to latest
  */
 function renderDensityStats() {
   const now = new Date();
 
-  // Get satellites with sufficient data
+  // Get satellites with data
   const satellitesWithData = Object.entries(SATELLITES)
-    .filter(([noradId]) => allData[noradId]?.times?.length > 10)
+    .filter(([noradId]) => allData[noradId]?.times?.length > 2)
     .map(([noradId, sat]) => {
       const data = allData[noradId];
-      // Pre-compute times as Date objects
       const times = data.times.map(t => new Date(t));
-      // Find the most recent data point for this satellite
-      let latestTime = null;
-      let latestIdx = -1;
-      for (let i = 0; i < times.length; i++) {
-        if (data.densities[i] > 0 && (!latestTime || times[i] > latestTime)) {
-          latestTime = times[i];
-          latestIdx = i;
-        }
-      }
-      return { noradId, sat, data, times, latestTime, latestIdx };
-    })
-    .filter(s => s.latestTime !== null);
+      return { noradId, sat, data, times };
+    });
 
   if (satellitesWithData.length === 0) return;
 
-  // Find the overall most recent data point across all satellites
+  // Find global latest time for data age display
   let globalLatestTime = null;
-  satellitesWithData.forEach(({ latestTime }) => {
-    if (!globalLatestTime || latestTime > globalLatestTime) {
-      globalLatestTime = latestTime;
+  satellitesWithData.forEach(({ times }) => {
+    const latest = times.reduce((a, b) => a > b ? a : b, new Date(0));
+    if (!globalLatestTime || latest > globalLatestTime) {
+      globalLatestTime = latest;
     }
   });
 
@@ -919,56 +909,34 @@ function renderDensityStats() {
     }
   }
 
-  // Helper: find points within a time window [windowStart, windowEnd]
-  function findPointsInWindow(times, densities, windowStart, windowEnd) {
-    const points = [];
-    for (let i = 0; i < times.length; i++) {
-      if (densities[i] > 0 && times[i] >= windowStart && times[i] <= windowEnd) {
-        points.push({ time: times[i], density: densities[i], idx: i });
-      }
-    }
-    return points;
-  }
-
-  // Helper: calculate percent change over N hours using WALL CLOCK time
-  // Returns null if we don't have data recent enough for this window
+  // Simple trend calculation: find points in window, calc change from earliest to latest
   function calcTrendForPeriod(hours) {
-    const windowEnd = now;
     const windowStart = new Date(now - hours * 3600 * 1000);
-
-    // For a trend to be valid, we need:
-    // 1. At least one data point within the last 25% of the window (recent end)
-    // 2. At least one data point in the earlier part of the window
-    const recentCutoff = new Date(now - hours * 0.25 * 3600 * 1000);
-
     const changes = [];
-    let hasRecentData = false;
 
     satellitesWithData.forEach(({ data, times }) => {
-      // Get all points in the window
-      const pointsInWindow = findPointsInWindow(times, data.densities, windowStart, windowEnd);
-      if (pointsInWindow.length < 2) return;
+      // Get points in window
+      const points = [];
+      for (let i = 0; i < times.length; i++) {
+        if (times[i] >= windowStart && times[i] <= now && data.densities[i] > 0) {
+          points.push({ time: times[i], density: data.densities[i] });
+        }
+      }
 
-      // Check if we have a point in the recent quarter
-      const recentPoints = pointsInWindow.filter(p => p.time >= recentCutoff);
-      const earlierPoints = pointsInWindow.filter(p => p.time < recentCutoff);
+      if (points.length < 2) return;
 
-      if (recentPoints.length === 0 || earlierPoints.length === 0) return;
+      // Sort by time
+      points.sort((a, b) => a.time - b.time);
 
-      hasRecentData = true;
+      const earliest = points[0];
+      const latest = points[points.length - 1];
 
-      // Use the most recent point and the earliest point in window
-      const latestPoint = recentPoints.reduce((a, b) => a.time > b.time ? a : b);
-      const earliestPoint = earlierPoints.reduce((a, b) => a.time < b.time ? a : b);
-
-      const pctChange = ((latestPoint.density - earliestPoint.density) / earliestPoint.density) * 100;
-      if (isFinite(pctChange) && Math.abs(pctChange) < 200) {
+      const pctChange = ((latest.density - earliest.density) / earliest.density) * 100;
+      if (isFinite(pctChange) && Math.abs(pctChange) < 500) {
         changes.push(pctChange);
       }
     });
 
-    // Return null if we don't have any satellites with recent enough data
-    if (!hasRecentData) return null;
     return changes;
   }
 
@@ -984,12 +952,7 @@ function renderDensityStats() {
     const changes = calcTrendForPeriod(hours);
     const el = document.getElementById(id);
     if (el) {
-      if (changes === null) {
-        // No recent enough data for this window
-        el.textContent = '--';
-        el.className = 'trend-value stale';
-        el.title = `No data within the last ${hours} hours`;
-      } else if (changes.length >= 1) {
+      if (changes.length >= 1) {
         const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
         const sign = mean >= 0 ? '+' : '';
         el.textContent = `${sign}${mean.toFixed(1)}%`;
@@ -998,7 +961,7 @@ function renderDensityStats() {
       } else {
         el.textContent = '--';
         el.className = 'trend-value neutral';
-        el.title = 'Insufficient data points';
+        el.title = `No data in last ${hours}h`;
       }
     }
   });
