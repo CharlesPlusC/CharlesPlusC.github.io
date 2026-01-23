@@ -64,6 +64,7 @@ author_profile: true
     <div class="view-toggle">
       <button class="view-btn" data-view="activity" onclick="setDensityView('activity')">Density Activity</button>
       <button class="view-btn active" data-view="waves" onclick="setDensityView('waves')">Normalized Density Waves</button>
+      <button class="view-btn" data-view="absolute" onclick="setDensityView('absolute')">Absolute Densities</button>
     </div>
     <div class="time-period-selector">
       <button class="period-btn" onclick="setHeatmapPeriod('week')">1 Week</button>
@@ -114,14 +115,10 @@ author_profile: true
       <div id="joy-division-kp" class="joy-division-kp-row"></div>
     </div>
   </div>
-</div>
-
-<div class="section">
-  <div class="section-header">
-    <div class="section-title">Combined Density Plot</div>
+  <div id="density-absolute" class="density-view is-hidden">
+    <p class="section-note">Gray background shows Kp intensity. Hover for details. Absolute values are INDICATIVE guesses.</p>
+    <div id="combined-density-plot" style="width:100%; height:500px;"></div>
   </div>
-  <p class="section-note">Gray background shows Kp intensity. Hover for details. Absolute values are INDICATIVE guesses.</p>
-  <div id="combined-density-plot" style="width:100%; height:500px;"></div>
 </div>
 
 <div class="page-blurb">

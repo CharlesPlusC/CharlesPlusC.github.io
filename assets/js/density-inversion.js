@@ -196,13 +196,23 @@ function setDensityView(view) {
 
   const activity = document.getElementById('density-activity');
   const waves = document.getElementById('density-waves');
+  const absolute = document.getElementById('density-absolute');
   if (activity) activity.classList.toggle('is-hidden', view !== 'activity');
   if (waves) waves.classList.toggle('is-hidden', view !== 'waves');
+  if (absolute) absolute.classList.toggle('is-hidden', view !== 'absolute');
 
   if (view === 'waves') {
     renderJoyDivisionPlot();
     if (window.Plotly) {
       const container = document.getElementById('joy-division-plot');
+      if (container) {
+        requestAnimationFrame(() => Plotly.Plots.resize(container));
+      }
+    }
+  } else if (view === 'absolute') {
+    renderCombinedDensityPlot();
+    if (window.Plotly) {
+      const container = document.getElementById('combined-density-plot');
       if (container) {
         requestAnimationFrame(() => Plotly.Plots.resize(container));
       }
