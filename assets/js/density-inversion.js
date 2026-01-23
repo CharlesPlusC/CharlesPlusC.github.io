@@ -107,6 +107,7 @@ async function loadAllData() {
     // Always render Joy Division plot since it's the default view
     // and needs kpData which is now loaded
     renderJoyDivisionPlot();
+    renderDensityStats();
   } else {
     status.textContent = 'No data available';
     status.classList.add('error');
@@ -863,6 +864,192 @@ function renderCombinedDensityPlot() {
 // Keep old function name for compatibility but redirect
 function renderSatelliteCards() {
   renderCombinedDensityPlot();
+}
+
+/**
+ * Live Density Stats Panel
+ * Shows trends, biggest movers, and Kp correlation
+ */
+function renderDensityStats() {
+  const now = new Date();
+
+  // Get satellites with data
+  const satellitesWithData = Object.entries(SATELLITES)
+    .filter(([noradId]) => allData[noradId]?.times?.length > 5)
+    .map(([noradId, sat]) => {
+      const data = allData[noradId];
+      return { noradId, sat, data };
+    });
+
+  if (satellitesWithData.length === 0) return;
+
+  // Calculate mean density change for different time periods
+  const periods = [
+    { hours: 6, id: 'trend-6h' },
+    { hours: 12, id: 'trend-12h' },
+    { hours: 24, id: 'trend-24h' },
+    { hours: 48, id: 'trend-48h' }
+  ];
+
+  periods.forEach(({ hours, id }) => {
+    const changes = [];
+    const cutoff = new Date(now - hours * 3600 * 1000);
+
+    satellitesWithData.forEach(({ data }) => {
+      // Find data points near the cutoff and near now
+      let startIdx = -1, endIdx = -1;
+      for (let i = 0; i < data.times.length; i++) {
+        const t = new Date(data.times[i]);
+        if (startIdx === -1 && t >= cutoff) startIdx = i;
+        if (t <= now) endIdx = i;
+      }
+
+      if (startIdx >= 0 && endIdx > startIdx && data.densities[startIdx] > 0) {
+        const startDensity = data.densities[startIdx];
+        const endDensity = data.densities[endIdx];
+        const pctChange = ((endDensity - startDensity) / startDensity) * 100;
+        if (isFinite(pctChange)) changes.push(pctChange);
+      }
+    });
+
+    const el = document.getElementById(id);
+    if (el && changes.length > 0) {
+      const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
+      const sign = mean >= 0 ? '+' : '';
+      el.textContent = `${sign}${mean.toFixed(1)}%`;
+      el.className = 'trend-value ' + (mean > 2 ? 'positive' : mean < -2 ? 'negative' : 'neutral');
+    }
+  });
+
+  // Find biggest movers in last 24h
+  const changes24h = [];
+  const cutoff24h = new Date(now - 24 * 3600 * 1000);
+
+  satellitesWithData.forEach(({ noradId, sat, data }) => {
+    let startIdx = -1, endIdx = -1;
+    for (let i = 0; i < data.times.length; i++) {
+      const t = new Date(data.times[i]);
+      if (startIdx === -1 && t >= cutoff24h) startIdx = i;
+      if (t <= now) endIdx = i;
+    }
+
+    if (startIdx >= 0 && endIdx > startIdx && data.densities[startIdx] > 0) {
+      const startDensity = data.densities[startIdx];
+      const endDensity = data.densities[endIdx];
+      const pctChange = ((endDensity - startDensity) / startDensity) * 100;
+      if (isFinite(pctChange)) {
+        changes24h.push({ noradId, sat, pctChange });
+      }
+    }
+  });
+
+  if (changes24h.length > 0) {
+    changes24h.sort((a, b) => b.pctChange - a.pctChange);
+    const biggest = changes24h[0];
+    const smallest = changes24h[changes24h.length - 1];
+
+    const moverUp = document.getElementById('mover-up');
+    const moverDown = document.getElementById('mover-down');
+
+    if (moverUp) {
+      const nameEl = moverUp.querySelector('.mover-name');
+      const valueEl = moverUp.querySelector('.mover-value');
+      if (nameEl) nameEl.textContent = biggest.sat.name.split(' ')[0];
+      if (valueEl) valueEl.textContent = `+${biggest.pctChange.toFixed(1)}%`;
+    }
+
+    if (moverDown) {
+      const nameEl = moverDown.querySelector('.mover-name');
+      const valueEl = moverDown.querySelector('.mover-value');
+      if (nameEl) nameEl.textContent = smallest.sat.name.split(' ')[0];
+      if (valueEl) valueEl.textContent = `${smallest.pctChange.toFixed(1)}%`;
+    }
+  }
+
+  // Calculate Kp correlation over last 48h
+  if (kpData && kpData.times && kpData.values) {
+    const cutoff48h = new Date(now - 48 * 3600 * 1000);
+
+    // Build time series of mean density (normalized) and Kp
+    const densityByTime = new Map();
+    satellitesWithData.forEach(({ data }) => {
+      // Normalize each satellite's density to 0-1
+      const densities = data.densities.filter(d => d > 0);
+      const minD = Math.min(...densities);
+      const maxD = Math.max(...densities);
+      const range = maxD - minD || 1;
+
+      for (let i = 0; i < data.times.length; i++) {
+        const t = new Date(data.times[i]);
+        if (t >= cutoff48h && t <= now) {
+          const hour = Math.floor(t.getTime() / (3600 * 1000));
+          const norm = (data.densities[i] - minD) / range;
+          if (!densityByTime.has(hour)) densityByTime.set(hour, []);
+          densityByTime.get(hour).push(norm);
+        }
+      }
+    });
+
+    // Build Kp series aligned to hours
+    const kpByHour = new Map();
+    for (let i = 0; i < kpData.times.length; i++) {
+      const t = new Date(kpData.times[i].replace(' ', 'T') + 'Z');
+      if (t >= cutoff48h && t <= now) {
+        const hour = Math.floor(t.getTime() / (3600 * 1000));
+        kpByHour.set(hour, kpData.values[i]);
+      }
+    }
+
+    // Compute Pearson correlation
+    const pairs = [];
+    densityByTime.forEach((densities, hour) => {
+      if (kpByHour.has(hour)) {
+        const meanDensity = densities.reduce((a, b) => a + b, 0) / densities.length;
+        pairs.push({ density: meanDensity, kp: kpByHour.get(hour) });
+      }
+    });
+
+    if (pairs.length >= 5) {
+      const n = pairs.length;
+      const sumX = pairs.reduce((s, p) => s + p.kp, 0);
+      const sumY = pairs.reduce((s, p) => s + p.density, 0);
+      const sumXY = pairs.reduce((s, p) => s + p.kp * p.density, 0);
+      const sumX2 = pairs.reduce((s, p) => s + p.kp * p.kp, 0);
+      const sumY2 = pairs.reduce((s, p) => s + p.density * p.density, 0);
+
+      const numerator = n * sumXY - sumX * sumY;
+      const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+
+      if (denominator > 0) {
+        const r = numerator / denominator;
+        const valueEl = document.getElementById('correlation-value');
+        const labelEl = document.getElementById('correlation-label');
+
+        if (valueEl) {
+          valueEl.textContent = r.toFixed(2);
+          if (r > 0.6) valueEl.className = 'correlation-value strong-positive';
+          else if (r > 0.3) valueEl.className = 'correlation-value moderate-positive';
+          else if (r > -0.3) valueEl.className = 'correlation-value weak';
+          else if (r > -0.6) valueEl.className = 'correlation-value moderate-negative';
+          else valueEl.className = 'correlation-value strong-negative';
+        }
+
+        if (labelEl) {
+          if (r > 0.6) labelEl.textContent = 'Strong positive';
+          else if (r > 0.3) labelEl.textContent = 'Moderate positive';
+          else if (r > -0.3) labelEl.textContent = 'Weak/None';
+          else if (r > -0.6) labelEl.textContent = 'Moderate negative';
+          else labelEl.textContent = 'Strong negative';
+        }
+      }
+    }
+  }
+
+  // Update timestamp
+  const updateEl = document.getElementById('stats-update-time');
+  if (updateEl) {
+    updateEl.textContent = 'Based on latest TLE data';
+  }
 }
 
 

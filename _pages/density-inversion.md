@@ -121,6 +121,58 @@ author_profile: true
   </div>
 </div>
 
+<div id="density-stats" class="density-stats-panel">
+  <div class="stats-header">
+    <span class="stats-title">Live Density Trends</span>
+    <span class="stats-update" id="stats-update-time"></span>
+  </div>
+  <div class="stats-grid">
+    <div class="stats-section">
+      <div class="stats-section-title">Mean Density Change</div>
+      <div class="stats-trend-row" id="density-trends">
+        <div class="trend-item">
+          <span class="trend-period">6h</span>
+          <span class="trend-value" id="trend-6h">--</span>
+        </div>
+        <div class="trend-item">
+          <span class="trend-period">12h</span>
+          <span class="trend-value" id="trend-12h">--</span>
+        </div>
+        <div class="trend-item">
+          <span class="trend-period">24h</span>
+          <span class="trend-value" id="trend-24h">--</span>
+        </div>
+        <div class="trend-item">
+          <span class="trend-period">48h</span>
+          <span class="trend-value" id="trend-48h">--</span>
+        </div>
+      </div>
+    </div>
+    <div class="stats-section">
+      <div class="stats-section-title">Biggest Movers (24h)</div>
+      <div class="stats-movers" id="density-movers">
+        <div class="mover-item" id="mover-up">
+          <span class="mover-arrow up">▲</span>
+          <span class="mover-name">--</span>
+          <span class="mover-value">--</span>
+        </div>
+        <div class="mover-item" id="mover-down">
+          <span class="mover-arrow down">▼</span>
+          <span class="mover-name">--</span>
+          <span class="mover-value">--</span>
+        </div>
+      </div>
+    </div>
+    <div class="stats-section">
+      <div class="stats-section-title">Kp Correlation (48h)</div>
+      <div class="stats-correlation" id="kp-correlation">
+        <span class="correlation-value" id="correlation-value">--</span>
+        <span class="correlation-label" id="correlation-label">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="page-blurb">
   <p>These panels show rough thermospheric density estimates derived from TLE orbital decay rates for 33 debris objects spanning 350-650 km altitude. The normalized "waves" view highlights relative variability across satellites, while the combined plot shows indicative absolute values (treat with caution - ballistic coefficients are guessed). Kp index from GFZ Potsdam and real-time solar wind from NOAA SWPC provide space weather context.</p>
 </div>
