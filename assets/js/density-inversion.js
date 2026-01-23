@@ -956,6 +956,9 @@ function renderDensityStats() {
   // Render Kp vs Normalized Drag correlation plot
   renderKpDragCorrelationPlot(satellitesWithData, now);
 
+  // Render TLE collection histogram
+  renderTleCollectionPlot(satellitesWithData, now);
+
   // Update timestamp
   const updateEl = document.getElementById('stats-update-time');
   if (updateEl) {
@@ -1102,6 +1105,78 @@ function renderKpDragCorrelationPlot(satellitesWithData, now) {
       dtick: 0.25
     },
     hovermode: 'closest'
+  };
+
+  Plotly.newPlot(container, traces, layout, {
+    displayModeBar: false,
+    responsive: true
+  });
+}
+
+/**
+ * Render bar chart showing TLE collection count per 8-hour slice over 30 days
+ */
+function renderTleCollectionPlot(satellitesWithData, now) {
+  const container = document.getElementById('tle-collection-plot');
+  if (!container || !window.Plotly) return;
+
+  const days = 30;
+  const hoursPerSlice = 8;
+  const cutoff = new Date(now - days * 24 * 3600 * 1000);
+
+  // Count TLEs per 8-hour slice
+  const sliceCounts = new Map();
+
+  satellitesWithData.forEach(({ times }) => {
+    times.forEach(t => {
+      if (t < cutoff || t > now) return;
+      // Round down to 8-hour slice
+      const sliceStart = new Date(Math.floor(t.getTime() / (hoursPerSlice * 3600 * 1000)) * hoursPerSlice * 3600 * 1000);
+      const key = sliceStart.toISOString();
+      sliceCounts.set(key, (sliceCounts.get(key) || 0) + 1);
+    });
+  });
+
+  if (sliceCounts.size < 5) {
+    container.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:11px;padding:15px;">Insufficient data</div>';
+    return;
+  }
+
+  // Sort by time
+  const sortedSlices = Array.from(sliceCounts.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]));
+
+  const times = sortedSlices.map(([t]) => new Date(t));
+  const counts = sortedSlices.map(([, c]) => c);
+
+  const traces = [{
+    x: times,
+    y: counts,
+    type: 'bar',
+    marker: {
+      color: 'rgba(99, 102, 241, 0.6)'
+    },
+    hovertemplate: '%{x|%b %d %H:%M}<br>TLEs: %{y}<extra></extra>'
+  }];
+
+  const layout = {
+    margin: { l: 25, r: 5, t: 5, b: 20 },
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    showlegend: false,
+    bargap: 0.1,
+    xaxis: {
+      showgrid: false,
+      tickfont: { size: 7, color: '#94a3b8' },
+      nticks: 5
+    },
+    yaxis: {
+      showgrid: true,
+      gridcolor: 'rgba(148, 163, 184, 0.15)',
+      tickfont: { size: 7, color: '#94a3b8' },
+      dtick: Math.ceil(Math.max(...counts) / 3)
+    },
+    hovermode: 'x'
   };
 
   Plotly.newPlot(container, traces, layout, {
