@@ -867,23 +867,61 @@ function renderSatelliteCards() {
 }
 
 /**
- * Live Density Stats Panel
- * Shows trends, biggest movers, and Kp correlation
+ * Live Drag Stats Panel
+ * Shows trends (using changes), biggest movers, and Kp vs delta-drag correlation plot
  */
 function renderDensityStats() {
   const now = new Date();
 
-  // Get satellites with data
+  // Get satellites with sufficient data
   const satellitesWithData = Object.entries(SATELLITES)
-    .filter(([noradId]) => allData[noradId]?.times?.length > 5)
+    .filter(([noradId]) => allData[noradId]?.times?.length > 10)
     .map(([noradId, sat]) => {
       const data = allData[noradId];
-      return { noradId, sat, data };
+      // Pre-compute times as Date objects
+      const times = data.times.map(t => new Date(t));
+      return { noradId, sat, data, times };
     });
 
   if (satellitesWithData.length === 0) return;
 
-  // Calculate mean density change for different time periods
+  // Helper: calculate percent change between first-half avg and second-half avg within a time window
+  function calcTrendForPeriod(hours) {
+    const cutoff = new Date(now - hours * 3600 * 1000);
+    const midpoint = new Date(now - (hours / 2) * 3600 * 1000);
+    const changes = [];
+
+    satellitesWithData.forEach(({ data, times }) => {
+      const firstHalf = [];
+      const secondHalf = [];
+
+      for (let i = 0; i < times.length; i++) {
+        const t = times[i];
+        if (t < cutoff || t > now) continue;
+        if (data.densities[i] <= 0) continue;
+
+        if (t < midpoint) {
+          firstHalf.push(data.densities[i]);
+        } else {
+          secondHalf.push(data.densities[i]);
+        }
+      }
+
+      // Need at least 1 point in each half
+      if (firstHalf.length >= 1 && secondHalf.length >= 1) {
+        const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+        const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+        if (avgFirst > 0) {
+          const pctChange = ((avgSecond - avgFirst) / avgFirst) * 100;
+          if (isFinite(pctChange)) changes.push(pctChange);
+        }
+      }
+    });
+
+    return changes;
+  }
+
+  // Calculate mean drag change for different time periods
   const periods = [
     { hours: 6, id: 'trend-6h' },
     { hours: 12, id: 'trend-12h' },
@@ -892,53 +930,50 @@ function renderDensityStats() {
   ];
 
   periods.forEach(({ hours, id }) => {
-    const changes = [];
-    const cutoff = new Date(now - hours * 3600 * 1000);
-
-    satellitesWithData.forEach(({ data }) => {
-      // Find data points near the cutoff and near now
-      let startIdx = -1, endIdx = -1;
-      for (let i = 0; i < data.times.length; i++) {
-        const t = new Date(data.times[i]);
-        if (startIdx === -1 && t >= cutoff) startIdx = i;
-        if (t <= now) endIdx = i;
-      }
-
-      if (startIdx >= 0 && endIdx > startIdx && data.densities[startIdx] > 0) {
-        const startDensity = data.densities[startIdx];
-        const endDensity = data.densities[endIdx];
-        const pctChange = ((endDensity - startDensity) / startDensity) * 100;
-        if (isFinite(pctChange)) changes.push(pctChange);
-      }
-    });
-
+    const changes = calcTrendForPeriod(hours);
     const el = document.getElementById(id);
-    if (el && changes.length > 0) {
-      const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
-      const sign = mean >= 0 ? '+' : '';
-      el.textContent = `${sign}${mean.toFixed(1)}%`;
-      el.className = 'trend-value ' + (mean > 2 ? 'positive' : mean < -2 ? 'negative' : 'neutral');
+    if (el) {
+      if (changes.length >= 3) {
+        const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
+        const sign = mean >= 0 ? '+' : '';
+        el.textContent = `${sign}${mean.toFixed(1)}%`;
+        el.className = 'trend-value ' + (mean > 2 ? 'positive' : mean < -2 ? 'negative' : 'neutral');
+      } else {
+        el.textContent = '--';
+        el.className = 'trend-value neutral';
+      }
     }
   });
 
-  // Find biggest movers in last 24h
-  const changes24h = [];
+  // Find biggest movers in last 24h (using first-half vs second-half comparison)
   const cutoff24h = new Date(now - 24 * 3600 * 1000);
+  const midpoint24h = new Date(now - 12 * 3600 * 1000);
+  const changes24h = [];
 
-  satellitesWithData.forEach(({ noradId, sat, data }) => {
-    let startIdx = -1, endIdx = -1;
-    for (let i = 0; i < data.times.length; i++) {
-      const t = new Date(data.times[i]);
-      if (startIdx === -1 && t >= cutoff24h) startIdx = i;
-      if (t <= now) endIdx = i;
+  satellitesWithData.forEach(({ noradId, sat, data, times }) => {
+    const firstHalf = [];
+    const secondHalf = [];
+
+    for (let i = 0; i < times.length; i++) {
+      const t = times[i];
+      if (t < cutoff24h || t > now) continue;
+      if (data.densities[i] <= 0) continue;
+
+      if (t < midpoint24h) {
+        firstHalf.push(data.densities[i]);
+      } else {
+        secondHalf.push(data.densities[i]);
+      }
     }
 
-    if (startIdx >= 0 && endIdx > startIdx && data.densities[startIdx] > 0) {
-      const startDensity = data.densities[startIdx];
-      const endDensity = data.densities[endIdx];
-      const pctChange = ((endDensity - startDensity) / startDensity) * 100;
-      if (isFinite(pctChange)) {
-        changes24h.push({ noradId, sat, pctChange });
+    if (firstHalf.length >= 1 && secondHalf.length >= 1) {
+      const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+      const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+      if (avgFirst > 0) {
+        const pctChange = ((avgSecond - avgFirst) / avgFirst) * 100;
+        if (isFinite(pctChange)) {
+          changes24h.push({ noradId, sat, pctChange });
+        }
       }
     }
   });
@@ -951,14 +986,14 @@ function renderDensityStats() {
     const moverUp = document.getElementById('mover-up');
     const moverDown = document.getElementById('mover-down');
 
-    if (moverUp) {
+    if (moverUp && biggest.pctChange > 0) {
       const nameEl = moverUp.querySelector('.mover-name');
       const valueEl = moverUp.querySelector('.mover-value');
       if (nameEl) nameEl.textContent = biggest.sat.name.split(' ')[0];
       if (valueEl) valueEl.textContent = `+${biggest.pctChange.toFixed(1)}%`;
     }
 
-    if (moverDown) {
+    if (moverDown && smallest.pctChange < 0) {
       const nameEl = moverDown.querySelector('.mover-name');
       const valueEl = moverDown.querySelector('.mover-value');
       if (nameEl) nameEl.textContent = smallest.sat.name.split(' ')[0];
@@ -966,90 +1001,164 @@ function renderDensityStats() {
     }
   }
 
-  // Calculate Kp correlation over last 48h
-  if (kpData && kpData.times && kpData.values) {
-    const cutoff48h = new Date(now - 48 * 3600 * 1000);
-
-    // Build time series of mean density (normalized) and Kp
-    const densityByTime = new Map();
-    satellitesWithData.forEach(({ data }) => {
-      // Normalize each satellite's density to 0-1
-      const densities = data.densities.filter(d => d > 0);
-      const minD = Math.min(...densities);
-      const maxD = Math.max(...densities);
-      const range = maxD - minD || 1;
-
-      for (let i = 0; i < data.times.length; i++) {
-        const t = new Date(data.times[i]);
-        if (t >= cutoff48h && t <= now) {
-          const hour = Math.floor(t.getTime() / (3600 * 1000));
-          const norm = (data.densities[i] - minD) / range;
-          if (!densityByTime.has(hour)) densityByTime.set(hour, []);
-          densityByTime.get(hour).push(norm);
-        }
-      }
-    });
-
-    // Build Kp series aligned to hours
-    const kpByHour = new Map();
-    for (let i = 0; i < kpData.times.length; i++) {
-      const t = new Date(kpData.times[i].replace(' ', 'T') + 'Z');
-      if (t >= cutoff48h && t <= now) {
-        const hour = Math.floor(t.getTime() / (3600 * 1000));
-        kpByHour.set(hour, kpData.values[i]);
-      }
-    }
-
-    // Compute Pearson correlation
-    const pairs = [];
-    densityByTime.forEach((densities, hour) => {
-      if (kpByHour.has(hour)) {
-        const meanDensity = densities.reduce((a, b) => a + b, 0) / densities.length;
-        pairs.push({ density: meanDensity, kp: kpByHour.get(hour) });
-      }
-    });
-
-    if (pairs.length >= 5) {
-      const n = pairs.length;
-      const sumX = pairs.reduce((s, p) => s + p.kp, 0);
-      const sumY = pairs.reduce((s, p) => s + p.density, 0);
-      const sumXY = pairs.reduce((s, p) => s + p.kp * p.density, 0);
-      const sumX2 = pairs.reduce((s, p) => s + p.kp * p.kp, 0);
-      const sumY2 = pairs.reduce((s, p) => s + p.density * p.density, 0);
-
-      const numerator = n * sumXY - sumX * sumY;
-      const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
-
-      if (denominator > 0) {
-        const r = numerator / denominator;
-        const valueEl = document.getElementById('correlation-value');
-        const labelEl = document.getElementById('correlation-label');
-
-        if (valueEl) {
-          valueEl.textContent = r.toFixed(2);
-          if (r > 0.6) valueEl.className = 'correlation-value strong-positive';
-          else if (r > 0.3) valueEl.className = 'correlation-value moderate-positive';
-          else if (r > -0.3) valueEl.className = 'correlation-value weak';
-          else if (r > -0.6) valueEl.className = 'correlation-value moderate-negative';
-          else valueEl.className = 'correlation-value strong-negative';
-        }
-
-        if (labelEl) {
-          if (r > 0.6) labelEl.textContent = 'Strong positive';
-          else if (r > 0.3) labelEl.textContent = 'Moderate positive';
-          else if (r > -0.3) labelEl.textContent = 'Weak/None';
-          else if (r > -0.6) labelEl.textContent = 'Moderate negative';
-          else labelEl.textContent = 'Strong negative';
-        }
-      }
-    }
-  }
+  // Render Kp vs Delta-Drag correlation plot over 21 days
+  renderKpDragCorrelationPlot(satellitesWithData, now);
 
   // Update timestamp
   const updateEl = document.getElementById('stats-update-time');
   if (updateEl) {
     updateEl.textContent = 'Based on latest TLE data';
   }
+}
+
+/**
+ * Render mini correlation plot: Kp (line) vs mean delta-drag (bars) over 21 days
+ */
+function renderKpDragCorrelationPlot(satellitesWithData, now) {
+  const container = document.getElementById('kp-drag-correlation-plot');
+  if (!container || !window.Plotly) return;
+
+  const days = 21;
+  const cutoff = new Date(now - days * 24 * 3600 * 1000);
+
+  // Build daily delta-drag: for each day, compute mean % change from previous day
+  // Group data by day for each satellite
+  const dailyChanges = new Map(); // day string -> array of % changes
+
+  satellitesWithData.forEach(({ data, times }) => {
+    // Group by day
+    const byDay = new Map();
+    for (let i = 0; i < times.length; i++) {
+      const t = times[i];
+      if (t < cutoff || t > now) continue;
+      if (data.densities[i] <= 0) continue;
+      const dayKey = t.toISOString().slice(0, 10);
+      if (!byDay.has(dayKey)) byDay.set(dayKey, []);
+      byDay.get(dayKey).push(data.densities[i]);
+    }
+
+    // Calculate daily averages
+    const dailyAvgs = [];
+    byDay.forEach((vals, day) => {
+      dailyAvgs.push({ day, avg: vals.reduce((a, b) => a + b, 0) / vals.length });
+    });
+    dailyAvgs.sort((a, b) => a.day.localeCompare(b.day));
+
+    // Calculate day-over-day % changes
+    for (let i = 1; i < dailyAvgs.length; i++) {
+      const prev = dailyAvgs[i - 1].avg;
+      const curr = dailyAvgs[i].avg;
+      if (prev > 0) {
+        const pctChange = ((curr - prev) / prev) * 100;
+        if (isFinite(pctChange)) {
+          const day = dailyAvgs[i].day;
+          if (!dailyChanges.has(day)) dailyChanges.set(day, []);
+          dailyChanges.get(day).push(pctChange);
+        }
+      }
+    }
+  });
+
+  // Build daily Kp averages
+  const dailyKp = new Map();
+  if (kpData && kpData.times && kpData.values) {
+    for (let i = 0; i < kpData.times.length; i++) {
+      const t = new Date(kpData.times[i].replace(' ', 'T') + 'Z');
+      if (t < cutoff || t > now) continue;
+      const dayKey = t.toISOString().slice(0, 10);
+      if (!dailyKp.has(dayKey)) dailyKp.set(dayKey, []);
+      dailyKp.get(dayKey).push(kpData.values[i]);
+    }
+  }
+
+  // Build aligned arrays for plotting
+  const dates = [];
+  const meanDeltaDrag = [];
+  const meanKp = [];
+
+  // Get all days in range
+  const allDays = new Set([...dailyChanges.keys(), ...dailyKp.keys()]);
+  const sortedDays = Array.from(allDays).sort();
+
+  sortedDays.forEach(day => {
+    const changes = dailyChanges.get(day);
+    const kps = dailyKp.get(day);
+
+    if (changes && changes.length > 0 && kps && kps.length > 0) {
+      dates.push(day);
+      meanDeltaDrag.push(changes.reduce((a, b) => a + b, 0) / changes.length);
+      meanKp.push(kps.reduce((a, b) => a + b, 0) / kps.length);
+    }
+  });
+
+  if (dates.length < 3) {
+    container.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:11px;padding:20px;">Insufficient data</div>';
+    return;
+  }
+
+  // Create dual-axis plot
+  const traces = [
+    {
+      x: dates,
+      y: meanDeltaDrag,
+      type: 'bar',
+      name: 'Δ Drag',
+      marker: {
+        color: meanDeltaDrag.map(v => v >= 0 ? 'rgba(220, 38, 38, 0.7)' : 'rgba(37, 99, 235, 0.7)')
+      },
+      hovertemplate: '%{x}<br>Δ Drag: %{y:.1f}%<extra></extra>'
+    },
+    {
+      x: dates,
+      y: meanKp,
+      type: 'scatter',
+      mode: 'lines',
+      name: 'Kp',
+      yaxis: 'y2',
+      line: { color: '#f59e0b', width: 2 },
+      hovertemplate: '%{x}<br>Kp: %{y:.1f}<extra></extra>'
+    }
+  ];
+
+  const layout = {
+    margin: { l: 35, r: 35, t: 5, b: 20 },
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    showlegend: false,
+    xaxis: {
+      showgrid: false,
+      showticklabels: true,
+      tickfont: { size: 8, color: '#94a3b8' },
+      tickangle: 0,
+      nticks: 5
+    },
+    yaxis: {
+      showgrid: true,
+      gridcolor: 'rgba(148, 163, 184, 0.15)',
+      zeroline: true,
+      zerolinecolor: 'rgba(148, 163, 184, 0.3)',
+      showticklabels: true,
+      tickfont: { size: 8, color: '#94a3b8' },
+      ticksuffix: '%',
+      title: ''
+    },
+    yaxis2: {
+      overlaying: 'y',
+      side: 'right',
+      showgrid: false,
+      showticklabels: true,
+      tickfont: { size: 8, color: '#f59e0b' },
+      range: [0, 9],
+      title: ''
+    },
+    hovermode: 'x unified',
+    bargap: 0.3
+  };
+
+  Plotly.newPlot(container, traces, layout, {
+    displayModeBar: false,
+    responsive: true
+  });
 }
 
 

@@ -121,15 +121,15 @@ author_profile: true
   </div>
 </div>
 
-<div id="density-stats" class="density-stats-panel">
+<div id="drag-stats" class="drag-stats-panel">
   <div class="stats-header">
-    <span class="stats-title">Live Density Trends</span>
+    <span class="stats-title">Live Drag Trends</span>
     <span class="stats-update" id="stats-update-time"></span>
   </div>
   <div class="stats-grid">
     <div class="stats-section">
-      <div class="stats-section-title">Mean Density Change</div>
-      <div class="stats-trend-row" id="density-trends">
+      <div class="stats-section-title">Mean Drag Change</div>
+      <div class="stats-trend-row" id="drag-trends">
         <div class="trend-item">
           <span class="trend-period">6h</span>
           <span class="trend-value" id="trend-6h">--</span>
@@ -150,7 +150,7 @@ author_profile: true
     </div>
     <div class="stats-section">
       <div class="stats-section-title">Biggest Movers (24h)</div>
-      <div class="stats-movers" id="density-movers">
+      <div class="stats-movers" id="drag-movers">
         <div class="mover-item" id="mover-up">
           <span class="mover-arrow up">▲</span>
           <span class="mover-name">--</span>
@@ -163,12 +163,9 @@ author_profile: true
         </div>
       </div>
     </div>
-    <div class="stats-section">
-      <div class="stats-section-title">Kp Correlation (48h)</div>
-      <div class="stats-correlation" id="kp-correlation">
-        <span class="correlation-value" id="correlation-value">--</span>
-        <span class="correlation-label" id="correlation-label">Loading...</span>
-      </div>
+    <div class="stats-section stats-section-wide">
+      <div class="stats-section-title">Kp vs Drag Change (21 days)</div>
+      <div id="kp-drag-correlation-plot" class="correlation-plot"></div>
     </div>
   </div>
 </div>
