@@ -1004,20 +1004,38 @@ function renderDensityStats() {
 }
 
 /**
- * Render mini correlation plot: Kp (line) vs mean delta-drag (bars) over 21 days
+ * Render scatter plot: Kp (x-axis) vs all individual delta-drag values (y-axis) over 30 days
+ * Each point represents one satellite's daily % change paired with that day's mean Kp
  */
 function renderKpDragCorrelationPlot(satellitesWithData, now) {
   const container = document.getElementById('kp-drag-correlation-plot');
   if (!container || !window.Plotly) return;
 
-  const days = 21;
+  const days = 30;
   const cutoff = new Date(now - days * 24 * 3600 * 1000);
 
-  // Build daily delta-drag: for each day, compute mean % change from previous day
-  // Group data by day for each satellite
-  const dailyChanges = new Map(); // day string -> array of % changes
+  // Build daily Kp averages first
+  const dailyKp = new Map();
+  if (kpData && kpData.times && kpData.values) {
+    for (let i = 0; i < kpData.times.length; i++) {
+      const t = new Date(kpData.times[i].replace(' ', 'T') + 'Z');
+      if (t < cutoff || t > now) continue;
+      const dayKey = t.toISOString().slice(0, 10);
+      if (!dailyKp.has(dayKey)) dailyKp.set(dayKey, []);
+      dailyKp.get(dayKey).push(kpData.values[i]);
+    }
+  }
 
-  satellitesWithData.forEach(({ data, times }) => {
+  // Convert to day -> mean Kp
+  const meanKpByDay = new Map();
+  dailyKp.forEach((vals, day) => {
+    meanKpByDay.set(day, vals.reduce((a, b) => a + b, 0) / vals.length);
+  });
+
+  // Collect all (Kp, deltaDrag) pairs from all satellites
+  const scatterPoints = [];
+
+  satellitesWithData.forEach(({ sat, data, times }) => {
     // Group by day
     const byDay = new Map();
     for (let i = 0; i < times.length; i++) {
@@ -1036,115 +1054,97 @@ function renderKpDragCorrelationPlot(satellitesWithData, now) {
     });
     dailyAvgs.sort((a, b) => a.day.localeCompare(b.day));
 
-    // Calculate day-over-day % changes
+    // Calculate day-over-day % changes and pair with Kp
     for (let i = 1; i < dailyAvgs.length; i++) {
       const prev = dailyAvgs[i - 1].avg;
       const curr = dailyAvgs[i].avg;
-      if (prev > 0) {
+      const day = dailyAvgs[i].day;
+
+      if (prev > 0 && meanKpByDay.has(day)) {
         const pctChange = ((curr - prev) / prev) * 100;
-        if (isFinite(pctChange)) {
-          const day = dailyAvgs[i].day;
-          if (!dailyChanges.has(day)) dailyChanges.set(day, []);
-          dailyChanges.get(day).push(pctChange);
+        if (isFinite(pctChange) && Math.abs(pctChange) < 100) { // Filter outliers
+          scatterPoints.push({
+            kp: meanKpByDay.get(day),
+            deltaDrag: pctChange,
+            satellite: sat.name,
+            day: day
+          });
         }
       }
     }
   });
 
-  // Build daily Kp averages
-  const dailyKp = new Map();
-  if (kpData && kpData.times && kpData.values) {
-    for (let i = 0; i < kpData.times.length; i++) {
-      const t = new Date(kpData.times[i].replace(' ', 'T') + 'Z');
-      if (t < cutoff || t > now) continue;
-      const dayKey = t.toISOString().slice(0, 10);
-      if (!dailyKp.has(dayKey)) dailyKp.set(dayKey, []);
-      dailyKp.get(dayKey).push(kpData.values[i]);
-    }
-  }
-
-  // Build aligned arrays for plotting
-  const dates = [];
-  const meanDeltaDrag = [];
-  const meanKp = [];
-
-  // Get all days in range
-  const allDays = new Set([...dailyChanges.keys(), ...dailyKp.keys()]);
-  const sortedDays = Array.from(allDays).sort();
-
-  sortedDays.forEach(day => {
-    const changes = dailyChanges.get(day);
-    const kps = dailyKp.get(day);
-
-    if (changes && changes.length > 0 && kps && kps.length > 0) {
-      dates.push(day);
-      meanDeltaDrag.push(changes.reduce((a, b) => a + b, 0) / changes.length);
-      meanKp.push(kps.reduce((a, b) => a + b, 0) / kps.length);
-    }
-  });
-
-  if (dates.length < 3) {
+  if (scatterPoints.length < 10) {
     container.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:11px;padding:20px;">Insufficient data</div>';
     return;
   }
 
-  // Create dual-axis plot
-  const traces = [
-    {
-      x: dates,
-      y: meanDeltaDrag,
-      type: 'bar',
-      name: 'Δ Drag',
-      marker: {
-        color: meanDeltaDrag.map(v => v >= 0 ? 'rgba(220, 38, 38, 0.7)' : 'rgba(37, 99, 235, 0.7)')
-      },
-      hovertemplate: '%{x}<br>Δ Drag: %{y:.1f}%<extra></extra>'
+  // Create scatter plot
+  const traces = [{
+    x: scatterPoints.map(p => p.kp),
+    y: scatterPoints.map(p => p.deltaDrag),
+    type: 'scatter',
+    mode: 'markers',
+    marker: {
+      size: 5,
+      color: scatterPoints.map(p => p.deltaDrag),
+      colorscale: [
+        [0, 'rgba(37, 99, 235, 0.7)'],   // blue for negative
+        [0.5, 'rgba(148, 163, 184, 0.5)'], // gray for zero
+        [1, 'rgba(220, 38, 38, 0.7)']    // red for positive
+      ],
+      cmin: -20,
+      cmax: 20,
+      line: { width: 0 }
     },
-    {
-      x: dates,
-      y: meanKp,
-      type: 'scatter',
-      mode: 'lines',
-      name: 'Kp',
-      yaxis: 'y2',
-      line: { color: '#f59e0b', width: 2 },
-      hovertemplate: '%{x}<br>Kp: %{y:.1f}<extra></extra>'
-    }
-  ];
+    text: scatterPoints.map(p => `${p.satellite}<br>${p.day}`),
+    hovertemplate: '<b>%{text}</b><br>Kp: %{x:.1f}<br>Δ Drag: %{y:.1f}%<extra></extra>'
+  }];
+
+  // Add trend line (linear regression)
+  const n = scatterPoints.length;
+  const sumX = scatterPoints.reduce((s, p) => s + p.kp, 0);
+  const sumY = scatterPoints.reduce((s, p) => s + p.deltaDrag, 0);
+  const sumXY = scatterPoints.reduce((s, p) => s + p.kp * p.deltaDrag, 0);
+  const sumX2 = scatterPoints.reduce((s, p) => s + p.kp * p.kp, 0);
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+
+  const minKp = Math.min(...scatterPoints.map(p => p.kp));
+  const maxKp = Math.max(...scatterPoints.map(p => p.kp));
+
+  traces.push({
+    x: [minKp, maxKp],
+    y: [slope * minKp + intercept, slope * maxKp + intercept],
+    type: 'scatter',
+    mode: 'lines',
+    line: { color: '#f59e0b', width: 2, dash: 'dash' },
+    hoverinfo: 'skip'
+  });
 
   const layout = {
-    margin: { l: 35, r: 35, t: 5, b: 20 },
+    margin: { l: 35, r: 10, t: 5, b: 25 },
     paper_bgcolor: 'transparent',
     plot_bgcolor: 'transparent',
     showlegend: false,
     xaxis: {
-      showgrid: false,
-      showticklabels: true,
+      title: { text: 'Kp', font: { size: 9, color: '#64748b' }, standoff: 2 },
+      showgrid: true,
+      gridcolor: 'rgba(148, 163, 184, 0.15)',
       tickfont: { size: 8, color: '#94a3b8' },
-      tickangle: 0,
-      nticks: 5
+      range: [0, 9],
+      dtick: 2
     },
     yaxis: {
+      title: { text: 'Δ Drag %', font: { size: 9, color: '#64748b' }, standoff: 2 },
       showgrid: true,
       gridcolor: 'rgba(148, 163, 184, 0.15)',
       zeroline: true,
-      zerolinecolor: 'rgba(148, 163, 184, 0.3)',
-      showticklabels: true,
-      tickfont: { size: 8, color: '#94a3b8' },
-      ticksuffix: '%',
-      title: ''
+      zerolinecolor: 'rgba(148, 163, 184, 0.4)',
+      tickfont: { size: 8, color: '#94a3b8' }
     },
-    yaxis2: {
-      overlaying: 'y',
-      side: 'right',
-      showgrid: false,
-      showticklabels: true,
-      tickfont: { size: 8, color: '#f59e0b' },
-      range: [0, 9],
-      title: ''
-    },
-    hovermode: 'x unified',
-    bargap: 0.3
+    hovermode: 'closest'
   };
 
   Plotly.newPlot(container, traces, layout, {

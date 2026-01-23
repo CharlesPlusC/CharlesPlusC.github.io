@@ -164,7 +164,7 @@ author_profile: true
       </div>
     </div>
     <div class="stats-section stats-section-wide">
-      <div class="stats-section-title">Kp vs Drag Change (21 days)</div>
+      <div class="stats-section-title">Kp vs Drag Change (30 days)</div>
       <div id="kp-drag-correlation-plot" class="correlation-plot"></div>
     </div>
   </div>
