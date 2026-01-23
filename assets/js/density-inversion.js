@@ -1049,23 +1049,7 @@ function renderTleCollectionPlot(satellitesWithData, now) {
       tickfont: { size: 7, color: '#94a3b8' },
       dtick: Math.ceil(maxCount / 3)
     },
-    hovermode: 'x',
-    shapes: [{
-      type: 'line',
-      x0: now,
-      x1: now,
-      y0: 0,
-      y1: maxCount,
-      line: { color: 'rgba(239, 68, 68, 0.5)', width: 1, dash: 'dot' }
-    }],
-    annotations: [{
-      x: now,
-      y: maxCount,
-      text: 'now',
-      showarrow: false,
-      font: { size: 8, color: '#ef4444' },
-      yanchor: 'bottom'
-    }]
+    hovermode: 'x'
   };
 
   Plotly.newPlot(container, traces, layout, {
