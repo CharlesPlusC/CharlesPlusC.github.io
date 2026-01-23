@@ -2,8 +2,8 @@ name: Update TLE Density Data
 
 on:
   schedule:
-    # Run every 8 hours
-    - cron: '0 */8 * * *'
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
   workflow_dispatch: # Allow manual trigger
 
 jobs:

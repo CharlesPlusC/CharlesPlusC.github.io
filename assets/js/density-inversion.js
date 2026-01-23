@@ -868,7 +868,7 @@ function renderSatelliteCards() {
 
 /**
  * Live Drag Stats Panel
- * Shows trends based on most recent data (not relative to wall clock)
+ * Uses WALL CLOCK time - shows "--" when data is stale for that window
  */
 function renderDensityStats() {
   const now = new Date();
@@ -895,49 +895,80 @@ function renderDensityStats() {
 
   if (satellitesWithData.length === 0) return;
 
-  // Helper: find the closest point to a target time
-  function findClosestPoint(times, densities, targetTime) {
-    let closest = null;
-    let minDiff = Infinity;
-
-    for (let i = 0; i < times.length; i++) {
-      if (densities[i] <= 0) continue;
-      const diff = Math.abs(times[i] - targetTime);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closest = { time: times[i], density: densities[i], diff: diff, idx: i };
-      }
+  // Find the overall most recent data point across all satellites
+  let globalLatestTime = null;
+  satellitesWithData.forEach(({ latestTime }) => {
+    if (!globalLatestTime || latestTime > globalLatestTime) {
+      globalLatestTime = latestTime;
     }
+  });
 
-    return closest;
+  // Show data age indicator
+  const dataAgeEl = document.getElementById('data-age');
+  if (dataAgeEl && globalLatestTime) {
+    const ageHours = (now - globalLatestTime) / (3600 * 1000);
+    if (ageHours < 1) {
+      dataAgeEl.textContent = `Latest data: ${Math.round(ageHours * 60)} min ago`;
+      dataAgeEl.className = 'data-age';
+    } else if (ageHours < 24) {
+      dataAgeEl.textContent = `Latest data: ${ageHours.toFixed(1)} hours ago`;
+      dataAgeEl.className = 'data-age' + (ageHours > 12 ? ' stale' : '');
+    } else {
+      dataAgeEl.textContent = `Latest data: ${(ageHours / 24).toFixed(1)} days ago`;
+      dataAgeEl.className = 'data-age stale';
+    }
   }
 
-  // Helper: calculate percent change over N hours (relative to each satellite's latest point)
+  // Helper: find points within a time window [windowStart, windowEnd]
+  function findPointsInWindow(times, densities, windowStart, windowEnd) {
+    const points = [];
+    for (let i = 0; i < times.length; i++) {
+      if (densities[i] > 0 && times[i] >= windowStart && times[i] <= windowEnd) {
+        points.push({ time: times[i], density: densities[i], idx: i });
+      }
+    }
+    return points;
+  }
+
+  // Helper: calculate percent change over N hours using WALL CLOCK time
+  // Returns null if we don't have data recent enough for this window
   function calcTrendForPeriod(hours) {
+    const windowEnd = now;
+    const windowStart = new Date(now - hours * 3600 * 1000);
+
+    // For a trend to be valid, we need:
+    // 1. At least one data point within the last 25% of the window (recent end)
+    // 2. At least one data point in the earlier part of the window
+    const recentCutoff = new Date(now - hours * 0.25 * 3600 * 1000);
+
     const changes = [];
+    let hasRecentData = false;
 
-    satellitesWithData.forEach(({ data, times, latestTime, latestIdx }) => {
-      // Target time is N hours before this satellite's latest data point
-      const targetTime = new Date(latestTime - hours * 3600 * 1000);
+    satellitesWithData.forEach(({ data, times }) => {
+      // Get all points in the window
+      const pointsInWindow = findPointsInWindow(times, data.densities, windowStart, windowEnd);
+      if (pointsInWindow.length < 2) return;
 
-      // Find point closest to the target time
-      const earliest = findClosestPoint(times, data.densities, targetTime);
-      if (!earliest) return;
+      // Check if we have a point in the recent quarter
+      const recentPoints = pointsInWindow.filter(p => p.time >= recentCutoff);
+      const earlierPoints = pointsInWindow.filter(p => p.time < recentCutoff);
 
-      // Check that earliest is reasonably close to target (within 50% of the period)
-      const maxDiff = hours * 3600 * 1000 * 0.5;
-      if (earliest.diff > maxDiff) return;
+      if (recentPoints.length === 0 || earlierPoints.length === 0) return;
 
-      // Make sure it's a different point from latest
-      if (earliest.idx === latestIdx) return;
+      hasRecentData = true;
 
-      const latestDensity = data.densities[latestIdx];
-      const pctChange = ((latestDensity - earliest.density) / earliest.density) * 100;
+      // Use the most recent point and the earliest point in window
+      const latestPoint = recentPoints.reduce((a, b) => a.time > b.time ? a : b);
+      const earliestPoint = earlierPoints.reduce((a, b) => a.time < b.time ? a : b);
+
+      const pctChange = ((latestPoint.density - earliestPoint.density) / earliestPoint.density) * 100;
       if (isFinite(pctChange) && Math.abs(pctChange) < 200) {
         changes.push(pctChange);
       }
     });
 
+    // Return null if we don't have any satellites with recent enough data
+    if (!hasRecentData) return null;
     return changes;
   }
 
@@ -953,14 +984,21 @@ function renderDensityStats() {
     const changes = calcTrendForPeriod(hours);
     const el = document.getElementById(id);
     if (el) {
-      if (changes.length >= 1) {
+      if (changes === null) {
+        // No recent enough data for this window
+        el.textContent = '--';
+        el.className = 'trend-value stale';
+        el.title = `No data within the last ${hours} hours`;
+      } else if (changes.length >= 1) {
         const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
         const sign = mean >= 0 ? '+' : '';
         el.textContent = `${sign}${mean.toFixed(1)}%`;
         el.className = 'trend-value ' + (mean > 2 ? 'positive' : mean < -2 ? 'negative' : 'neutral');
+        el.title = `Based on ${changes.length} satellite(s)`;
       } else {
         el.textContent = '--';
         el.className = 'trend-value neutral';
+        el.title = 'Insufficient data points';
       }
     }
   });
@@ -977,6 +1015,7 @@ function renderDensityStats() {
 
 /**
  * Render bar chart showing TLE collection count per 8-hour slice over 30 days
+ * Uses CURRENT TIME as the endpoint - empty recent windows show as 0
  */
 function renderTleCollectionPlot(satellitesWithData, now) {
   const container = document.getElementById('tle-collection-plot');
@@ -984,36 +1023,44 @@ function renderTleCollectionPlot(satellitesWithData, now) {
 
   const days = 30;
   const hoursPerSlice = 8;
-  const cutoff = new Date(now - days * 24 * 3600 * 1000);
+  const sliceMs = hoursPerSlice * 3600 * 1000;
 
-  // Count TLEs per 8-hour slice
+  // Generate ALL 8-hour slots from now backwards (30 days = 90 slots)
+  // Round current time down to nearest 8-hour boundary, then go back
+  const currentSliceEnd = Math.ceil(now.getTime() / sliceMs) * sliceMs;
+  const numSlots = Math.ceil(days * 24 / hoursPerSlice);
+
+  // Build a map of TLE counts by slot
   const sliceCounts = new Map();
 
   satellitesWithData.forEach(({ times }) => {
     times.forEach(t => {
-      if (t < cutoff || t > now) return;
-      // Round down to 8-hour slice
-      const sliceStart = new Date(Math.floor(t.getTime() / (hoursPerSlice * 3600 * 1000)) * hoursPerSlice * 3600 * 1000);
-      const key = sliceStart.toISOString();
-      sliceCounts.set(key, (sliceCounts.get(key) || 0) + 1);
+      // Round down to 8-hour slice start
+      const sliceStart = Math.floor(t.getTime() / sliceMs) * sliceMs;
+      sliceCounts.set(sliceStart, (sliceCounts.get(sliceStart) || 0) + 1);
     });
   });
 
-  if (sliceCounts.size < 5) {
+  // Generate all time slots from oldest to now (including empty ones as 0)
+  const allTimes = [];
+  const allCounts = [];
+
+  for (let i = numSlots - 1; i >= 0; i--) {
+    const sliceStart = currentSliceEnd - (i + 1) * sliceMs;
+    allTimes.push(new Date(sliceStart));
+    allCounts.push(sliceCounts.get(sliceStart) || 0);
+  }
+
+  if (allTimes.length === 0) {
     container.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:11px;padding:15px;">Insufficient data</div>';
     return;
   }
 
-  // Sort by time
-  const sortedSlices = Array.from(sliceCounts.entries())
-    .sort((a, b) => a[0].localeCompare(b[0]));
-
-  const times = sortedSlices.map(([t]) => new Date(t));
-  const counts = sortedSlices.map(([, c]) => c);
+  const maxCount = Math.max(...allCounts, 1);
 
   const traces = [{
-    x: times,
-    y: counts,
+    x: allTimes,
+    y: allCounts,
     type: 'bar',
     marker: {
       color: 'rgba(99, 102, 241, 0.6)'
@@ -1030,13 +1077,14 @@ function renderTleCollectionPlot(satellitesWithData, now) {
     xaxis: {
       showgrid: false,
       tickfont: { size: 7, color: '#94a3b8' },
-      nticks: 5
+      nticks: 5,
+      range: [allTimes[0], now]  // Explicitly set range to include current time
     },
     yaxis: {
       showgrid: true,
       gridcolor: 'rgba(148, 163, 184, 0.15)',
       tickfont: { size: 7, color: '#94a3b8' },
-      dtick: Math.ceil(Math.max(...counts) / 3)
+      dtick: Math.ceil(maxCount / 3)
     },
     hovermode: 'x'
   };

@@ -923,6 +923,18 @@
   color: #64748b;
 }
 
+.trend-value.stale {
+  color: #f59e0b;
+  font-size: 9px;
+}
+
+.data-age {
+  margin-top: 8px;
+  font-size: 10px;
+  color: #94a3b8;
+  text-align: center;
+}
+
 .mini-plot {
   width: 100%;
   height: 70px;

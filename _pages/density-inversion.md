@@ -147,6 +147,7 @@ author_profile: true
           <span class="trend-value" id="trend-72h">--</span>
         </div>
       </div>
+      <div class="data-age" id="data-age"></div>
     </div>
     <div class="stats-section stats-section-wide">
       <div class="stats-section-title">TLEs Collected (30 days)</div>
