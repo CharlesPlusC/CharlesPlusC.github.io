@@ -148,23 +148,8 @@ author_profile: true
         </div>
       </div>
     </div>
-    <div class="stats-section">
-      <div class="stats-section-title">Biggest Movers (24h)</div>
-      <div class="stats-movers" id="drag-movers">
-        <div class="mover-item" id="mover-up">
-          <span class="mover-arrow up">▲</span>
-          <span class="mover-name">--</span>
-          <span class="mover-value">--</span>
-        </div>
-        <div class="mover-item" id="mover-down">
-          <span class="mover-arrow down">▼</span>
-          <span class="mover-name">--</span>
-          <span class="mover-value">--</span>
-        </div>
-      </div>
-    </div>
     <div class="stats-section stats-section-wide">
-      <div class="stats-section-title">Kp vs Drag Change (30 days)</div>
+      <div class="stats-section-title">Kp vs Normalized Drag (30 days)</div>
       <div id="kp-drag-correlation-plot" class="correlation-plot"></div>
     </div>
   </div>
