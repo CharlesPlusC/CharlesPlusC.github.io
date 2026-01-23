@@ -135,16 +135,16 @@ author_profile: true
           <span class="trend-value" id="trend-6h">--</span>
         </div>
         <div class="trend-item">
-          <span class="trend-period">12h</span>
-          <span class="trend-value" id="trend-12h">--</span>
-        </div>
-        <div class="trend-item">
           <span class="trend-period">24h</span>
           <span class="trend-value" id="trend-24h">--</span>
         </div>
         <div class="trend-item">
           <span class="trend-period">48h</span>
           <span class="trend-value" id="trend-48h">--</span>
+        </div>
+        <div class="trend-item">
+          <span class="trend-period">72h</span>
+          <span class="trend-value" id="trend-72h">--</span>
         </div>
       </div>
     </div>

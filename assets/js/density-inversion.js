@@ -885,34 +885,30 @@ function renderDensityStats() {
 
   if (satellitesWithData.length === 0) return;
 
-  // Helper: calculate percent change between first-half avg and second-half avg within a time window
+  // Helper: calculate percent change between earliest and latest points within a time window
   function calcTrendForPeriod(hours) {
     const cutoff = new Date(now - hours * 3600 * 1000);
-    const midpoint = new Date(now - (hours / 2) * 3600 * 1000);
     const changes = [];
 
     satellitesWithData.forEach(({ data, times }) => {
-      const firstHalf = [];
-      const secondHalf = [];
-
+      // Find all points within the window
+      const pointsInWindow = [];
       for (let i = 0; i < times.length; i++) {
         const t = times[i];
-        if (t < cutoff || t > now) continue;
-        if (data.densities[i] <= 0) continue;
-
-        if (t < midpoint) {
-          firstHalf.push(data.densities[i]);
-        } else {
-          secondHalf.push(data.densities[i]);
+        if (t >= cutoff && t <= now && data.densities[i] > 0) {
+          pointsInWindow.push({ time: t, density: data.densities[i] });
         }
       }
 
-      // Need at least 1 point in each half
-      if (firstHalf.length >= 1 && secondHalf.length >= 1) {
-        const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
-        const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
-        if (avgFirst > 0) {
-          const pctChange = ((avgSecond - avgFirst) / avgFirst) * 100;
+      // Need at least 2 points to calculate a change
+      if (pointsInWindow.length >= 2) {
+        // Sort by time and get earliest/latest
+        pointsInWindow.sort((a, b) => a.time - b.time);
+        const earliest = pointsInWindow[0];
+        const latest = pointsInWindow[pointsInWindow.length - 1];
+
+        if (earliest.density > 0) {
+          const pctChange = ((latest.density - earliest.density) / earliest.density) * 100;
           if (isFinite(pctChange)) changes.push(pctChange);
         }
       }
@@ -924,16 +920,16 @@ function renderDensityStats() {
   // Calculate mean drag change for different time periods
   const periods = [
     { hours: 6, id: 'trend-6h' },
-    { hours: 12, id: 'trend-12h' },
     { hours: 24, id: 'trend-24h' },
-    { hours: 48, id: 'trend-48h' }
+    { hours: 48, id: 'trend-48h' },
+    { hours: 72, id: 'trend-72h' }
   ];
 
   periods.forEach(({ hours, id }) => {
     const changes = calcTrendForPeriod(hours);
     const el = document.getElementById(id);
     if (el) {
-      if (changes.length >= 3) {
+      if (changes.length >= 1) {
         const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
         const sign = mean >= 0 ? '+' : '';
         el.textContent = `${sign}${mean.toFixed(1)}%`;
@@ -945,32 +941,28 @@ function renderDensityStats() {
     }
   });
 
-  // Find biggest movers in last 24h (using first-half vs second-half comparison)
+  // Find biggest movers in last 24h (earliest vs latest point comparison)
   const cutoff24h = new Date(now - 24 * 3600 * 1000);
-  const midpoint24h = new Date(now - 12 * 3600 * 1000);
   const changes24h = [];
 
   satellitesWithData.forEach(({ noradId, sat, data, times }) => {
-    const firstHalf = [];
-    const secondHalf = [];
-
+    // Find all points within the 24h window
+    const pointsInWindow = [];
     for (let i = 0; i < times.length; i++) {
       const t = times[i];
-      if (t < cutoff24h || t > now) continue;
-      if (data.densities[i] <= 0) continue;
-
-      if (t < midpoint24h) {
-        firstHalf.push(data.densities[i]);
-      } else {
-        secondHalf.push(data.densities[i]);
+      if (t >= cutoff24h && t <= now && data.densities[i] > 0) {
+        pointsInWindow.push({ time: t, density: data.densities[i] });
       }
     }
 
-    if (firstHalf.length >= 1 && secondHalf.length >= 1) {
-      const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
-      const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
-      if (avgFirst > 0) {
-        const pctChange = ((avgSecond - avgFirst) / avgFirst) * 100;
+    // Need at least 2 points
+    if (pointsInWindow.length >= 2) {
+      pointsInWindow.sort((a, b) => a.time - b.time);
+      const earliest = pointsInWindow[0];
+      const latest = pointsInWindow[pointsInWindow.length - 1];
+
+      if (earliest.density > 0) {
+        const pctChange = ((latest.density - earliest.density) / earliest.density) * 100;
         if (isFinite(pctChange)) {
           changes24h.push({ noradId, sat, pctChange });
         }
