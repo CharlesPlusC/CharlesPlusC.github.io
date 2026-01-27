@@ -4,6 +4,7 @@
  */
 
 // Satellites ordered by perigee altitude (lowest to highest) - fixed ordering
+// 50 debris objects spanning 350-650 km altitude
 // Note: CZ-6A DEB (64631) and NOAA 17 DEB (48714) removed - no longer in active TLE catalog (likely decayed)
 const SATELLITES = {
   // Original satellites
@@ -40,7 +41,27 @@ const SATELLITES = {
   '35620': { name: 'IRIDIUM 33 DEB (35620)', color: '#881337', order: 30, flag: '🇺🇸', altitude: 598 },
   '33776': { name: 'IRIDIUM 33 DEB (33776)', color: '#71717a', order: 31, flag: '🇺🇸', altitude: 602 },
   '38228': { name: 'IRIDIUM 33 DEB (38228)', color: '#525252', order: 32, flag: '🇺🇸', altitude: 628 },
-  '35680': { name: 'IRIDIUM 33 DEB (35680)', color: '#44403c', order: 33, flag: '🇺🇸', altitude: 642 }
+  '35680': { name: 'IRIDIUM 33 DEB (35680)', color: '#44403c', order: 33, flag: '🇺🇸', altitude: 642 },
+  // NEW: Fengyun 1C debris (2007 Chinese ASAT) - 6 objects
+  '29878': { name: 'FENGYUN 1C DEB (29878)', color: '#16a34a', order: 34, flag: '🇨🇳', altitude: 479 },
+  '29944': { name: 'FENGYUN 1C DEB (29944)', color: '#15803d', order: 35, flag: '🇨🇳', altitude: 494 },
+  '30017': { name: 'FENGYUN 1C DEB (30017)', color: '#166534', order: 36, flag: '🇨🇳', altitude: 542 },
+  '29866': { name: 'FENGYUN 1C DEB (29866)', color: '#14532d', order: 37, flag: '🇨🇳', altitude: 548 },
+  '29982': { name: 'FENGYUN 1C DEB (29982)', color: '#065f46', order: 38, flag: '🇨🇳', altitude: 591 },
+  '30016': { name: 'FENGYUN 1C DEB (30016)', color: '#047857', order: 39, flag: '🇨🇳', altitude: 606 },
+  // NEW: Additional COSMOS 2251 debris - 6 objects
+  '34118': { name: 'COSMOS 2251 DEB (34118)', color: '#0f766e', order: 40, flag: '🇷🇺', altitude: 543 },
+  '34136': { name: 'COSMOS 2251 DEB (34136)', color: '#0d9488', order: 41, flag: '🇷🇺', altitude: 576 },
+  '33830': { name: 'COSMOS 2251 DEB (33830)', color: '#0891b2', order: 42, flag: '🇷🇺', altitude: 614 },
+  '34115': { name: 'COSMOS 2251 DEB (34115)', color: '#0284c7', order: 43, flag: '🇷🇺', altitude: 613 },
+  '34129': { name: 'COSMOS 2251 DEB (34129)', color: '#0369a1', order: 44, flag: '🇷🇺', altitude: 623 },
+  '34070': { name: 'COSMOS 2251 DEB (34070)', color: '#1d4ed8', order: 45, flag: '🇷🇺', altitude: 631 },
+  '33785': { name: 'COSMOS 2251 DEB (33785)', color: '#4338ca', order: 46, flag: '🇷🇺', altitude: 647 },
+  // NEW: Additional IRIDIUM 33 debris - 4 objects
+  '35929': { name: 'IRIDIUM 33 DEB (35929)', color: '#6d28d9', order: 47, flag: '🇺🇸', altitude: 547 },
+  '35484': { name: 'IRIDIUM 33 DEB (35484)', color: '#7c3aed', order: 48, flag: '🇺🇸', altitude: 553 },
+  '36028': { name: 'IRIDIUM 33 DEB (36028)', color: '#8b5cf6', order: 49, flag: '🇺🇸', altitude: 571 },
+  '34486': { name: 'IRIDIUM 33 DEB (34486)', color: '#a78bfa', order: 50, flag: '🇺🇸', altitude: 572 }
 };
 
 let allData = {};

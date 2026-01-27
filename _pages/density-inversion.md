@@ -189,7 +189,7 @@ author_profile: true
 </div>
 
 <div class="page-blurb">
-  <p>These panels show rough thermospheric density estimates derived from TLE orbital decay rates for 33 debris objects spanning 350-650 km altitude. TLEs are sourced from Celestrak. The normalized "waves" view highlights relative variability across satellites, while the combined plot shows indicative absolute values (treat with caution - ballistic coefficients are guessed). Space weather context from NOAA SWPC: real-time solar wind (DSCOVR at L1), GOES magnetometer (geostationary), and Kp index.</p>
+  <p>These panels show rough thermospheric density estimates derived from TLE orbital decay rates for 50 debris objects spanning 350-650 km altitude (Fengyun-1C, COSMOS 2251, Iridium 33, and COSMOS 1408 debris). TLEs are sourced from Space-Track. The normalized "waves" view highlights relative variability across satellites, while the combined plot shows indicative absolute values (treat with caution - ballistic coefficients are guessed). Space weather context from NOAA SWPC: real-time solar wind (DSCOVR at L1), GOES magnetometer (geostationary), and Kp index.</p>
 </div>
 
 <script src="/assets/js/density-inversion.js"></script>
