@@ -942,10 +942,10 @@ function renderDensityStats() {
 
   // Calculate mean drag change for different time periods
   const periods = [
-    { hours: 6, id: 'trend-6h' },
     { hours: 24, id: 'trend-24h' },
     { hours: 48, id: 'trend-48h' },
-    { hours: 72, id: 'trend-72h' }
+    { hours: 72, id: 'trend-72h' },
+    { hours: 120, id: 'trend-5d' }
   ];
 
   periods.forEach(({ hours, id }) => {
@@ -1346,9 +1346,180 @@ function startRealtimeRefresh() {
   realtimeRefreshTimer = setInterval(loadRealtimeData, REALTIME_REFRESH_INTERVAL);
 }
 
-// Start realtime data loading (solar wind + Kp) when DOM is ready
+/**
+ * GOES Magnetometer Data
+ * Shows Hp component from GOES-East and GOES-West satellites
+ * Hp dropping = energy building in magnetotail
+ * Hp sharp rise = substorm onset (dipolarization)
+ */
+const GOES_PRIMARY_URL = 'https://services.swpc.noaa.gov/json/goes/primary/magnetometers-1-day.json';
+const GOES_SECONDARY_URL = 'https://services.swpc.noaa.gov/json/goes/secondary/magnetometers-1-day.json';
+
+let goesRefreshTimer = null;
+
+async function loadGOESData() {
+  try {
+    const [primaryResponse, secondaryResponse] = await Promise.all([
+      fetch(GOES_PRIMARY_URL),
+      fetch(GOES_SECONDARY_URL)
+    ]);
+
+    if (!primaryResponse.ok || !secondaryResponse.ok) {
+      throw new Error('Failed to fetch GOES magnetometer data');
+    }
+
+    const primaryData = await primaryResponse.json();
+    const secondaryData = await secondaryResponse.json();
+
+    // Parse data - primary is GOES-West (sat 19), secondary is GOES-East (sat 18)
+    const westRecords = primaryData.map(row => ({
+      time: new Date(row.time_tag),
+      hp: row.Hp,
+      he: row.He,
+      hn: row.Hn,
+      total: row.total
+    })).filter(r => !isNaN(r.hp));
+
+    const eastRecords = secondaryData.map(row => ({
+      time: new Date(row.time_tag),
+      hp: row.Hp,
+      he: row.He,
+      hn: row.Hn,
+      total: row.total
+    })).filter(r => !isNaN(r.hp));
+
+    updateGOESDisplay(eastRecords, westRecords);
+    renderGOESChart(eastRecords, westRecords);
+
+  } catch (err) {
+    console.error('Failed to load GOES data:', err);
+    const updateEl = document.getElementById('goes-update-time');
+    if (updateEl) updateEl.textContent = 'Data unavailable';
+  }
+}
+
+function updateGOESDisplay(eastRecords, westRecords) {
+  // Get most recent values
+  const latestEast = eastRecords[eastRecords.length - 1];
+  const latestWest = westRecords[westRecords.length - 1];
+
+  // Update GOES-East Hp
+  const eastEl = document.getElementById('goes-east-hp');
+  if (eastEl && latestEast) {
+    eastEl.textContent = latestEast.hp.toFixed(0);
+  }
+
+  // Update GOES-West Hp
+  const westEl = document.getElementById('goes-west-hp');
+  if (westEl && latestWest) {
+    westEl.textContent = latestWest.hp.toFixed(0);
+  }
+
+  // Update timestamp (use most recent of the two)
+  const updateEl = document.getElementById('goes-update-time');
+  if (updateEl) {
+    const latestTime = latestEast && latestWest ?
+      new Date(Math.max(latestEast.time, latestWest.time)) :
+      (latestEast?.time || latestWest?.time);
+
+    if (latestTime) {
+      updateEl.textContent = 'Updated ' + latestTime.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  }
+}
+
+function renderGOESChart(eastRecords, westRecords) {
+  const container = document.getElementById('goes-hp-chart');
+  if (!container || !window.Plotly) return;
+
+  // Filter to last 24 hours
+  const now = new Date();
+  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+  const recentEast = eastRecords.filter(r => r.time >= twentyFourHoursAgo);
+  const recentWest = westRecords.filter(r => r.time >= twentyFourHoursAgo);
+
+  if (recentEast.length === 0 && recentWest.length === 0) return;
+
+  // GOES-East trace (green)
+  const eastTrace = {
+    x: recentEast.map(r => r.time),
+    y: recentEast.map(r => r.hp),
+    type: 'scatter',
+    mode: 'lines',
+    name: 'GOES-East',
+    line: {
+      color: '#22c55e',
+      width: 1.5
+    },
+    hovertemplate: '%{x|%H:%M}<br>East Hp: %{y:.0f} nT<extra></extra>'
+  };
+
+  // GOES-West trace (blue)
+  const westTrace = {
+    x: recentWest.map(r => r.time),
+    y: recentWest.map(r => r.hp),
+    type: 'scatter',
+    mode: 'lines',
+    name: 'GOES-West',
+    line: {
+      color: '#3b82f6',
+      width: 1.5
+    },
+    hovertemplate: '%{x|%H:%M}<br>West Hp: %{y:.0f} nT<extra></extra>'
+  };
+
+  const layout = {
+    margin: { t: 5, r: 10, b: 20, l: 35 },
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    xaxis: {
+      showgrid: false,
+      tickformat: '%H:%M',
+      tickfont: { size: 9, color: 'rgba(148, 163, 184, 0.7)' },
+      nticks: 6
+    },
+    yaxis: {
+      showgrid: true,
+      gridcolor: 'rgba(148, 163, 184, 0.1)',
+      tickfont: { size: 9, color: 'rgba(148, 163, 184, 0.7)' },
+      zeroline: false,
+      title: {
+        text: 'nT',
+        font: { size: 9, color: 'rgba(148, 163, 184, 0.5)' },
+        standoff: 5
+      }
+    },
+    showlegend: false,
+    hovermode: 'x unified'
+  };
+
+  Plotly.newPlot(container, [eastTrace, westTrace], layout, {
+    responsive: true,
+    displayModeBar: false
+  });
+}
+
+function startGOESRefresh() {
+  // Load immediately
+  loadGOESData();
+
+  // Refresh every 10 minutes (same as solar wind)
+  if (goesRefreshTimer) {
+    clearInterval(goesRefreshTimer);
+  }
+  goesRefreshTimer = setInterval(loadGOESData, REALTIME_REFRESH_INTERVAL);
+}
+
+// Start realtime data loading (solar wind + Kp + GOES) when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   startRealtimeRefresh();
+  startGOESRefresh();
 });
 
 // Altitude-based color mapping (350-650 km range)

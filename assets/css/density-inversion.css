@@ -357,6 +357,168 @@
   color: #f97316;
 }
 
+/* GOES Magnetometer Bar */
+.goes-mag-bar {
+  background: linear-gradient(135deg, #0c1520 0%, #152238 100%);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 0 0 24px;
+}
+
+.goes-mag-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.goes-mag-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(148, 163, 184, 0.9);
+  font-weight: 500;
+}
+
+.goes-mag-update {
+  font-size: 10px;
+  color: rgba(148, 163, 184, 0.7);
+}
+
+.goes-mag-content {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.goes-mag-metrics {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.goes-mag-metric {
+  text-align: center;
+  padding: 8px 14px;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 8px;
+  min-width: 85px;
+}
+
+.goes-mag-sat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.goes-mag-sat-label.goes-east {
+  color: #22c55e;
+}
+
+.goes-mag-sat-label.goes-west {
+  color: #3b82f6;
+}
+
+.goes-mag-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.goes-mag-unit {
+  font-size: 10px;
+  color: rgba(148, 163, 184, 0.6);
+  margin-top: 2px;
+}
+
+.goes-chart-container {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.goes-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.goes-chart-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(148, 163, 184, 0.7);
+}
+
+.goes-chart-legend {
+  display: flex;
+  gap: 12px;
+}
+
+.goes-legend-item {
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.goes-legend-item.goes-east {
+  color: #22c55e;
+}
+
+.goes-legend-item.goes-west {
+  color: #3b82f6;
+}
+
+.goes-legend-dot {
+  width: 8px;
+  height: 3px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.goes-hp-chart {
+  flex: 1;
+  min-height: 80px;
+}
+
+.goes-chart-hint {
+  font-size: 9px;
+  color: rgba(148, 163, 184, 0.5);
+  text-align: center;
+  margin-top: 4px;
+}
+
+@media (max-width: 720px) {
+  .goes-mag-content {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .goes-mag-metrics {
+    justify-content: center;
+  }
+
+  .goes-mag-metric {
+    min-width: 80px;
+  }
+
+  .goes-mag-value {
+    font-size: 18px;
+  }
+
+  .goes-hp-chart {
+    min-height: 70px;
+  }
+}
+
 @media (max-width: 720px) {
   .aurora-bar-content {
     flex-direction: column;

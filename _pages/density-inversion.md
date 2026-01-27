@@ -59,6 +59,38 @@ author_profile: true
   </div>
 </div>
 
+<div id="goes-mag-bar" class="goes-mag-bar">
+  <div class="goes-mag-header">
+    <span class="goes-mag-title">GOES Magnetometer</span>
+    <span class="goes-mag-update" id="goes-update-time">Loading...</span>
+  </div>
+  <div class="goes-mag-content">
+    <div class="goes-mag-metrics">
+      <div class="goes-mag-metric">
+        <div class="goes-mag-sat-label goes-east">GOES-East</div>
+        <div class="goes-mag-value" id="goes-east-hp">--</div>
+        <div class="goes-mag-unit">Hp nT</div>
+      </div>
+      <div class="goes-mag-metric">
+        <div class="goes-mag-sat-label goes-west">GOES-West</div>
+        <div class="goes-mag-value" id="goes-west-hp">--</div>
+        <div class="goes-mag-unit">Hp nT</div>
+      </div>
+    </div>
+    <div class="goes-chart-container">
+      <div class="goes-chart-header">
+        <span class="goes-chart-label">Hp (24h)</span>
+        <div class="goes-chart-legend">
+          <span class="goes-legend-item goes-east"><span class="goes-legend-dot"></span>East</span>
+          <span class="goes-legend-item goes-west"><span class="goes-legend-dot"></span>West</span>
+        </div>
+      </div>
+      <div id="goes-hp-chart" class="goes-hp-chart"></div>
+      <div class="goes-chart-hint">↓ Drop = energy building • ↑ Sharp rise = substorm onset</div>
+    </div>
+  </div>
+</div>
+
 <div class="section">
   <div class="section-header">
     <div class="view-toggle">
@@ -131,10 +163,6 @@ author_profile: true
       <div class="stats-section-title">Mean Drag Change</div>
       <div class="stats-trend-row" id="drag-trends">
         <div class="trend-item">
-          <span class="trend-period">6h</span>
-          <span class="trend-value" id="trend-6h">--</span>
-        </div>
-        <div class="trend-item">
           <span class="trend-period">24h</span>
           <span class="trend-value" id="trend-24h">--</span>
         </div>
@@ -145,6 +173,10 @@ author_profile: true
         <div class="trend-item">
           <span class="trend-period">72h</span>
           <span class="trend-value" id="trend-72h">--</span>
+        </div>
+        <div class="trend-item">
+          <span class="trend-period">5-Day</span>
+          <span class="trend-value" id="trend-5d">--</span>
         </div>
       </div>
       <div class="data-age" id="data-age"></div>
@@ -157,7 +189,7 @@ author_profile: true
 </div>
 
 <div class="page-blurb">
-  <p>These panels show rough thermospheric density estimates derived from TLE orbital decay rates for 33 debris objects spanning 350-650 km altitude. The normalized "waves" view highlights relative variability across satellites, while the combined plot shows indicative absolute values (treat with caution - ballistic coefficients are guessed). Kp index from GFZ Potsdam and real-time solar wind from NOAA SWPC provide space weather context.</p>
+  <p>These panels show rough thermospheric density estimates derived from TLE orbital decay rates for 33 debris objects spanning 350-650 km altitude. TLEs are sourced from Celestrak. The normalized "waves" view highlights relative variability across satellites, while the combined plot shows indicative absolute values (treat with caution - ballistic coefficients are guessed). Space weather context from NOAA SWPC: real-time solar wind (DSCOVR at L1), GOES magnetometer (geostationary), and Kp index.</p>
 </div>
 
 <script src="/assets/js/density-inversion.js"></script>
