@@ -1097,6 +1097,33 @@
   text-align: center;
 }
 
+.tle-age-metrics {
+  margin-top: 4px;
+  font-size: 9px;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.6;
+}
+.tle-age-label {
+  color: #64748b;
+  font-weight: 600;
+  margin-right: 2px;
+}
+.tle-age-item strong {
+  color: #64748b;
+}
+.tle-age-sep {
+  margin: 0 3px;
+  color: #cbd5e1;
+}
+.tle-age-warn strong {
+  color: #f59e0b;
+}
+.tle-age-stale {
+  color: #ef4444;
+  font-weight: 600;
+}
+
 .mini-plot {
   width: 100%;
   height: 70px;

@@ -990,6 +990,34 @@ function renderDensityStats() {
   // Render TLE collection histogram
   renderTleCollectionPlot(satellitesWithData, now);
 
+  // Compute and display TLE age metrics (per-satellite age = time since last TLE)
+  const tleAgeEl = document.getElementById('tle-age-metrics');
+  if (tleAgeEl) {
+    const ages = satellitesWithData.map(({ times }) => {
+      const latest = times.reduce((a, b) => a > b ? a : b, new Date(0));
+      return (now - latest) / (3600 * 1000); // hours
+    }).filter(a => isFinite(a) && a >= 0);
+
+    if (ages.length > 0) {
+      const meanAge = ages.reduce((a, b) => a + b, 0) / ages.length;
+      const minAge = Math.min(...ages);
+      const maxAge = Math.max(...ages);
+      const staleCount = ages.filter(a => a > 120).length; // >5 days
+
+      const fmt = (h) => h < 24 ? `${h.toFixed(1)}h` : `${(h / 24).toFixed(1)}d`;
+      const maxClass = maxAge > 120 ? ' tle-age-warn' : '';
+
+      tleAgeEl.innerHTML =
+        `<span class="tle-age-label">TLE Age</span> ` +
+        `<span class="tle-age-item">mean <strong>${fmt(meanAge)}</strong></span>` +
+        `<span class="tle-age-sep">&middot;</span>` +
+        `<span class="tle-age-item">newest <strong>${fmt(minAge)}</strong></span>` +
+        `<span class="tle-age-sep">&middot;</span>` +
+        `<span class="tle-age-item${maxClass}">oldest <strong>${fmt(maxAge)}</strong></span>` +
+        (staleCount > 0 ? `<span class="tle-age-sep">&middot;</span><span class="tle-age-stale">${staleCount} stale</span>` : '');
+    }
+  }
+
   // Update timestamp
   const updateEl = document.getElementById('stats-update-time');
   if (updateEl) {
