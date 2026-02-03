@@ -990,6 +990,9 @@ function renderDensityStats() {
   // Render TLE collection histogram
   renderTleCollectionPlot(satellitesWithData, now);
 
+  // Render TLE age distribution histogram
+  renderTleAgePlot(satellitesWithData, now);
+
   // Compute and display TLE age metrics (per-satellite age = time since last TLE)
   const tleAgeEl = document.getElementById('tle-age-metrics');
   if (tleAgeEl) {
@@ -1099,6 +1102,71 @@ function renderTleCollectionPlot(satellitesWithData, now) {
       dtick: Math.ceil(maxCount / 3)
     },
     hovermode: 'x'
+  };
+
+  Plotly.newPlot(container, traces, layout, {
+    displayModeBar: false,
+    responsive: true
+  });
+}
+
+/**
+ * Render histogram showing distribution of TLE ages across satellites
+ * Buckets: <6h, 6-12h, 12-24h, 1-2d, 2-5d, >5d
+ */
+function renderTleAgePlot(satellitesWithData, now) {
+  const container = document.getElementById('tle-age-plot');
+  if (!container || !window.Plotly) return;
+
+  // Calculate age (hours) for each satellite's latest TLE
+  const ages = satellitesWithData.map(({ times }) => {
+    const latest = times.reduce((a, b) => a > b ? a : b, new Date(0));
+    return (now - latest) / (3600 * 1000);
+  }).filter(a => isFinite(a) && a >= 0);
+
+  if (ages.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:11px;padding:15px;">No data</div>';
+    return;
+  }
+
+  // Define buckets
+  const buckets = [
+    { label: '<6h', min: 0, max: 6, color: 'rgba(34, 197, 94, 0.7)' },
+    { label: '6-12h', min: 6, max: 12, color: 'rgba(34, 197, 94, 0.5)' },
+    { label: '12-24h', min: 12, max: 24, color: 'rgba(234, 179, 8, 0.6)' },
+    { label: '1-2d', min: 24, max: 48, color: 'rgba(234, 179, 8, 0.7)' },
+    { label: '2-5d', min: 48, max: 120, color: 'rgba(249, 115, 22, 0.7)' },
+    { label: '>5d', min: 120, max: Infinity, color: 'rgba(239, 68, 68, 0.7)' }
+  ];
+
+  const counts = buckets.map(b => ages.filter(a => a >= b.min && a < b.max).length);
+
+  const traces = [{
+    x: buckets.map(b => b.label),
+    y: counts,
+    type: 'bar',
+    marker: {
+      color: buckets.map(b => b.color)
+    },
+    hovertemplate: '%{x}: %{y} satellites<extra></extra>'
+  }];
+
+  const layout = {
+    margin: { l: 25, r: 5, t: 5, b: 20 },
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    showlegend: false,
+    bargap: 0.15,
+    xaxis: {
+      showgrid: false,
+      tickfont: { size: 8, color: '#94a3b8' }
+    },
+    yaxis: {
+      showgrid: true,
+      gridcolor: 'rgba(148, 163, 184, 0.15)',
+      tickfont: { size: 7, color: '#94a3b8' },
+      dtick: Math.max(1, Math.ceil(Math.max(...counts) / 4))
+    }
   };
 
   Plotly.newPlot(container, traces, layout, {

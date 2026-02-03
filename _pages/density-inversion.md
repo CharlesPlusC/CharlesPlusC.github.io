@@ -181,9 +181,13 @@ author_profile: true
       </div>
       <div class="data-age" id="data-age"></div>
     </div>
-    <div class="stats-section stats-section-wide">
+    <div class="stats-section">
       <div class="stats-section-title">TLEs Collected (30 days)</div>
       <div id="tle-collection-plot" class="mini-plot"></div>
+    </div>
+    <div class="stats-section">
+      <div class="stats-section-title">TLE Age Distribution</div>
+      <div id="tle-age-plot" class="mini-plot"></div>
       <div id="tle-age-metrics" class="tle-age-metrics"></div>
     </div>
   </div>
