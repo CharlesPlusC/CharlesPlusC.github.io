@@ -77,7 +77,28 @@ jobs:
               '35620': {'name': 'IRIDIUM 33 DEB (35620)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
               '33776': {'name': 'IRIDIUM 33 DEB (33776)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
               '38228': {'name': 'IRIDIUM 33 DEB (38228)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
-              '35680': {'name': 'IRIDIUM 33 DEB (35680)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0}
+              '35680': {'name': 'IRIDIUM 33 DEB (35680)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              # Bootstrapped debris objects (added to recurring updates)
+              # FENGYUN 1C debris (2007 Chinese ASAT test)
+              '29878': {'name': 'FENGYUN 1C DEB (29878)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '29944': {'name': 'FENGYUN 1C DEB (29944)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '30017': {'name': 'FENGYUN 1C DEB (30017)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '29866': {'name': 'FENGYUN 1C DEB (29866)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '29982': {'name': 'FENGYUN 1C DEB (29982)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '30016': {'name': 'FENGYUN 1C DEB (30016)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              # COSMOS 2251 debris (2009 Iridium-Cosmos collision)
+              '34118': {'name': 'COSMOS 2251 DEB (34118)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34136': {'name': 'COSMOS 2251 DEB (34136)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '33830': {'name': 'COSMOS 2251 DEB (33830)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34115': {'name': 'COSMOS 2251 DEB (34115)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34129': {'name': 'COSMOS 2251 DEB (34129)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34070': {'name': 'COSMOS 2251 DEB (34070)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '33785': {'name': 'COSMOS 2251 DEB (33785)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              # IRIDIUM 33 debris (2009 Iridium-Cosmos collision)
+              '35929': {'name': 'IRIDIUM 33 DEB (35929)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '35484': {'name': 'IRIDIUM 33 DEB (35484)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '36028': {'name': 'IRIDIUM 33 DEB (36028)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34486': {'name': 'IRIDIUM 33 DEB (34486)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0}
           }
 
           def parse_mean_motion(line2):
