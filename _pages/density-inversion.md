@@ -156,7 +156,6 @@ author_profile: true
     <p class="section-note">Stacked normalized density (0-1) per 100km altitude band. Shaded regions show Bayesian ±1σ posterior predictive intervals that account for sample size. Hover for details.</p>
     <div id="altitude-bands-plot" style="width:100%; height:500px;"></div>
     <div id="altitude-bands-kp" class="joy-division-kp-row"></div>
-    <div id="altitude-bands-counts" class="altitude-bands-counts"></div>
   </div>
 </div>
 

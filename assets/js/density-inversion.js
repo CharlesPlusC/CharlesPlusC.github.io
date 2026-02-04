@@ -1799,11 +1799,11 @@ function renderAltitudeBandsPlot() {
   }
 
   const tickvals = bands.map((_, i) => i * bandSpacing + amplitude / 2);
-  const ticktext = bands.map(b => b.name);
+  const ticktext = bands.map((b, i) => `${b.name} (n=${bandBins[i].satCount})`);
 
   const layout = {
     font: { family: 'system-ui, -apple-system, sans-serif', size: 11, color: '#94a3b8' },
-    margin: { t: 40, r: 30, b: 50, l: 90 },
+    margin: { t: 40, r: 30, b: 50, l: 115 },
     paper_bgcolor: '#0b0f1a',
     plot_bgcolor: '#0b0f1a',
     title: {
@@ -1849,8 +1849,6 @@ function renderAltitudeBandsPlot() {
   // Render Kp bar below the plot
   renderAltitudeBandsKpBar(new Date(startTs), new Date(nowTs), numDays);
 
-  // Render satellite counts
-  renderAltitudeBandsCounts(bandBins, bands);
 }
 
 /**
@@ -1904,25 +1902,6 @@ function renderAltitudeBandsKpBar(startDate, endDate, numDays) {
     <span class="joy-division-kp-label">Kp Index</span>
     <div class="joy-division-kp-cells">${cellsHtml}</div>
   `;
-}
-
-/**
- * Render satellite counts for each altitude band
- */
-function renderAltitudeBandsCounts(bandBins, bands) {
-  const container = document.getElementById('altitude-bands-counts');
-  if (!container) return;
-
-  const countsHtml = bands.map((band, i) => {
-    const count = bandBins[i].satCount;
-    return `<span class="band-count">
-      <span class="band-dot" style="background: ${band.color};"></span>
-      <span class="band-label">${band.name}:</span>
-      <span class="band-n">n=${count}</span>
-    </span>`;
-  }).join('');
-
-  container.innerHTML = countsHtml;
 }
 
 // Altitude-based color mapping (350-650 km range)
