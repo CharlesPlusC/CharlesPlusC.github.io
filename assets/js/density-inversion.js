@@ -262,9 +262,11 @@ function setDensityView(view) {
   const activity = document.getElementById('density-activity');
   const waves = document.getElementById('density-waves');
   const absolute = document.getElementById('density-absolute');
+  const bands = document.getElementById('density-bands');
   if (activity) activity.classList.toggle('is-hidden', view !== 'activity');
   if (waves) waves.classList.toggle('is-hidden', view !== 'waves');
   if (absolute) absolute.classList.toggle('is-hidden', view !== 'absolute');
+  if (bands) bands.classList.toggle('is-hidden', view !== 'bands');
 
   if (view === 'waves') {
     renderJoyDivisionPlot();
@@ -278,6 +280,14 @@ function setDensityView(view) {
     renderCombinedDensityPlot();
     if (window.Plotly) {
       const container = document.getElementById('combined-density-plot');
+      if (container) {
+        requestAnimationFrame(() => Plotly.Plots.resize(container));
+      }
+    }
+  } else if (view === 'bands') {
+    renderAltitudeBandsPlot();
+    if (window.Plotly) {
+      const container = document.getElementById('altitude-bands-plot');
       if (container) {
         requestAnimationFrame(() => Plotly.Plots.resize(container));
       }
@@ -1613,6 +1623,199 @@ document.addEventListener('DOMContentLoaded', () => {
   startRealtimeRefresh();
   startGOESRefresh();
 });
+
+/**
+ * Altitude Bands Plot
+ * Shows mean normalized density (0-1) per 100km altitude band with uncertainty
+ */
+function renderAltitudeBandsPlot() {
+  const container = document.getElementById('altitude-bands-plot');
+  if (!container || !window.Plotly) return;
+
+  const now = new Date();
+  const windowConfig = getJoyDivisionWindow();
+  const startDate = new Date(now);
+  startDate.setDate(startDate.getDate() - (windowConfig.days - 1));
+
+  // Define altitude bands
+  const bands = [
+    { min: 300, max: 400, color: '#ef4444', name: '300-400 km' },
+    { min: 400, max: 500, color: '#f97316', name: '400-500 km' },
+    { min: 500, max: 600, color: '#eab308', name: '500-600 km' },
+    { min: 600, max: 700, color: '#22c55e', name: '600-700 km' },
+    { min: 700, max: 800, color: '#3b82f6', name: '700-800 km' }
+  ];
+
+  // Group satellites by altitude band
+  const bandSatellites = bands.map(band => {
+    const sats = Object.entries(SATELLITES)
+      .filter(([noradId, sat]) => {
+        const alt = sat.altitude;
+        return alt >= band.min && alt < band.max && allData[noradId]?.times?.length > 0;
+      })
+      .map(([noradId, sat]) => ({ noradId, sat, data: allData[noradId] }));
+    return { ...band, satellites: sats };
+  });
+
+  // Generate daily time bins
+  const numDays = windowConfig.days;
+  const dates = [];
+  for (let i = 0; i < numDays; i++) {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    d.setHours(12, 0, 0, 0); // Noon of each day
+    dates.push(d);
+  }
+
+  const traces = [];
+
+  // Process each altitude band
+  bandSatellites.forEach((band, bandIndex) => {
+    if (band.satellites.length === 0) return;
+
+    // For each satellite, normalize its densities to 0-1 over the window
+    const normalizedData = band.satellites.map(({ noradId, sat, data }) => {
+      // Get all densities in the window for normalization
+      const windowDensities = [];
+      const windowTimes = [];
+      for (let i = 0; i < data.times.length; i++) {
+        const dt = new Date(data.times[i]);
+        if (dt >= startDate && dt <= now && data.densities[i] > 0) {
+          windowDensities.push(data.densities[i]);
+          windowTimes.push(dt);
+        }
+      }
+
+      if (windowDensities.length === 0) return null;
+
+      const minD = Math.min(...windowDensities);
+      const maxD = Math.max(...windowDensities);
+      const rangeD = maxD - minD || 1;
+
+      // Normalize to 0-1
+      const normalized = windowDensities.map(d => (d - minD) / rangeD);
+      return { times: windowTimes, normalized };
+    }).filter(d => d !== null);
+
+    if (normalizedData.length === 0) return;
+
+    // Bin normalized values by day and compute mean + std
+    const dailyMeans = [];
+    const dailyStdLower = [];
+    const dailyStdUpper = [];
+    const validDates = [];
+
+    dates.forEach(date => {
+      const dayStart = new Date(date);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(date);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      // Collect all normalized values from all satellites for this day
+      const dayValues = [];
+      normalizedData.forEach(satData => {
+        for (let i = 0; i < satData.times.length; i++) {
+          if (satData.times[i] >= dayStart && satData.times[i] <= dayEnd) {
+            dayValues.push(satData.normalized[i]);
+          }
+        }
+      });
+
+      if (dayValues.length > 0) {
+        const mean = dayValues.reduce((a, b) => a + b, 0) / dayValues.length;
+
+        // Calculate standard deviation
+        let std = 0;
+        if (dayValues.length > 1) {
+          const variance = dayValues.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / dayValues.length;
+          std = Math.sqrt(variance);
+        }
+
+        validDates.push(date);
+        dailyMeans.push(mean);
+        dailyStdLower.push(Math.max(0, mean - std));
+        dailyStdUpper.push(Math.min(1, mean + std));
+      }
+    });
+
+    if (validDates.length === 0) return;
+
+    // Add uncertainty band (fill between lower and upper std)
+    traces.push({
+      x: [...validDates, ...validDates.slice().reverse()],
+      y: [...dailyStdUpper, ...dailyStdLower.slice().reverse()],
+      fill: 'toself',
+      fillcolor: band.color.replace(')', ', 0.2)').replace('rgb', 'rgba'),
+      line: { color: 'transparent' },
+      showlegend: false,
+      hoverinfo: 'skip',
+      name: band.name + ' uncertainty'
+    });
+
+    // Add mean line
+    traces.push({
+      x: validDates,
+      y: dailyMeans,
+      type: 'scatter',
+      mode: 'lines',
+      name: `${band.name} (n=${band.satellites.length})`,
+      line: { color: band.color, width: 2 },
+      hovertemplate: `<b>${band.name}</b><br>%{x|%d %b %Y}<br>Mean: %{y:.2f}<extra></extra>`
+    });
+  });
+
+  if (traces.length === 0) {
+    container.innerHTML = '<p style="text-align:center;color:#64748b;">Insufficient data for altitude band analysis.</p>';
+    return;
+  }
+
+  const layout = {
+    font: { family: 'system-ui, -apple-system, sans-serif', size: 11 },
+    margin: { t: 30, r: 30, b: 60, l: 60 },
+    paper_bgcolor: 'white',
+    plot_bgcolor: 'white',
+    title: {
+      text: `Normalized Density Response by Altitude Band (${windowConfig.label.replace('.', '')})`,
+      font: { size: 14 }
+    },
+    xaxis: {
+      gridcolor: 'rgba(0,0,0,0.05)',
+      title: { text: 'Date', standoff: 10 },
+      range: [startDate, now],
+      showspikes: true,
+      spikemode: 'across',
+      spikesnap: 'cursor',
+      spikecolor: '#64748b',
+      spikethickness: 1,
+      spikedash: 'dot'
+    },
+    yaxis: {
+      gridcolor: 'rgba(0,0,0,0.05)',
+      title: { text: 'Normalized Density (0-1)', standoff: 5 },
+      range: [-0.05, 1.05],
+      dtick: 0.2
+    },
+    showlegend: true,
+    legend: {
+      orientation: 'h',
+      y: -0.15,
+      x: 0.5,
+      xanchor: 'center'
+    },
+    hovermode: 'x unified',
+    hoverlabel: {
+      bgcolor: 'white',
+      bordercolor: '#e2e8f0',
+      font: { size: 11 }
+    }
+  };
+
+  Plotly.newPlot(container, traces, layout, {
+    responsive: true,
+    displayModeBar: true,
+    modeBarButtonsToRemove: ['lasso2d', 'select2d']
+  });
+}
 
 // Altitude-based color mapping (350-650 km range)
 const ALT_MIN = 350;
