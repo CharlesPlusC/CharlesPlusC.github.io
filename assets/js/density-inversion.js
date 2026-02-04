@@ -1627,19 +1627,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Altitude Bands Plot
- * Shows mean normalized density (0-1) per 100km altitude band with uncertainty
+ * Altitude Bands Plot (optimized)
+ * Pre-bins data by day to avoid O(n²) nested loops
  */
 function renderAltitudeBandsPlot() {
   const container = document.getElementById('altitude-bands-plot');
   if (!container || !window.Plotly) return;
 
-  const now = new Date();
+  const nowTs = Date.now();
   const windowConfig = getJoyDivisionWindow();
-  const startDate = new Date(now);
-  startDate.setDate(startDate.getDate() - (windowConfig.days - 1));
+  const startTs = nowTs - (windowConfig.days - 1) * 86400000;
 
-  // Define altitude bands (lowest to highest for stacking)
   const bands = [
     { min: 300, max: 400, color: '#ef4444', name: '300-400 km' },
     { min: 400, max: 500, color: '#f97316', name: '400-500 km' },
@@ -1648,161 +1646,129 @@ function renderAltitudeBandsPlot() {
     { min: 700, max: 800, color: '#3b82f6', name: '700-800 km' }
   ];
 
-  // Stacking parameters
-  const bandSpacing = 0.35;  // Vertical offset between bands
-  const amplitude = 0.25;    // How much of the spacing the signal uses
+  const bandSpacing = 0.35;
+  const amplitude = 0.25;
 
-  // Group satellites by altitude band
-  const bandSatellites = bands.map(band => {
-    const sats = Object.entries(SATELLITES)
-      .filter(([noradId, sat]) => {
-        const alt = sat.altitude;
-        return alt >= band.min && alt < band.max && allData[noradId]?.times?.length > 0;
-      })
-      .map(([noradId, sat]) => ({ noradId, sat, data: allData[noradId] }));
-    return { ...band, satellites: sats };
-  });
+  // Day key helper (faster than toISOString)
+  const dayKey = (ts) => Math.floor(ts / 86400000);
 
-  // Generate daily time bins
+  // Generate day keys for the window
   const numDays = windowConfig.days;
-  const dates = [];
+  const startDayKey = dayKey(startTs);
+  const dateMidpoints = [];
   for (let i = 0; i < numDays; i++) {
-    const d = new Date(startDate);
-    d.setDate(d.getDate() + i);
-    d.setHours(12, 0, 0, 0);
-    dates.push(d);
+    dateMidpoints.push(new Date(startTs + i * 86400000 + 43200000));
   }
 
-  // Collect all normalized values across all bands for Bayesian prior
-  let allNormalizedValues = [];
+  // Single pass: bin all satellite data by band and day
+  const bandBins = bands.map(() => ({ dailyBins: {}, satCount: 0 }));
+  let allVals = [];
 
-  // First pass: normalize each satellite and collect all values
-  const bandNormalizedData = bandSatellites.map(band => {
-    if (band.satellites.length === 0) return { band, normalizedData: [], allValues: [] };
+  Object.entries(SATELLITES).forEach(([noradId, sat]) => {
+    const alt = sat.altitude;
+    const bandIdx = alt < 300 ? -1 : alt >= 800 ? -1 : Math.floor((alt - 300) / 100);
+    if (bandIdx < 0 || bandIdx >= 5) return;
 
-    const normalizedData = band.satellites.map(({ noradId, sat, data }) => {
-      const windowDensities = [];
-      const windowTimes = [];
-      for (let i = 0; i < data.times.length; i++) {
-        const dt = new Date(data.times[i]);
-        if (dt >= startDate && dt <= now && data.densities[i] > 0) {
-          windowDensities.push(data.densities[i]);
-          windowTimes.push(dt);
-        }
+    const data = allData[noradId];
+    if (!data?.times?.length) return;
+
+    // Collect window data
+    const windowVals = [], windowTs = [];
+    for (let i = 0; i < data.times.length; i++) {
+      const ts = new Date(data.times[i]).getTime();
+      if (ts >= startTs && ts <= nowTs && data.densities[i] > 0) {
+        windowVals.push(data.densities[i]);
+        windowTs.push(ts);
       }
+    }
+    if (windowVals.length === 0) return;
 
-      if (windowDensities.length === 0) return null;
+    bandBins[bandIdx].satCount++;
 
-      const minD = Math.min(...windowDensities);
-      const maxD = Math.max(...windowDensities);
-      const rangeD = maxD - minD || 1;
+    // Find min/max for normalization
+    let minD = windowVals[0], maxD = windowVals[0];
+    for (let i = 1; i < windowVals.length; i++) {
+      if (windowVals[i] < minD) minD = windowVals[i];
+      if (windowVals[i] > maxD) maxD = windowVals[i];
+    }
+    const rangeD = maxD - minD || 1;
 
-      const normalized = windowDensities.map(d => (d - minD) / rangeD);
-      return { times: windowTimes, normalized };
-    }).filter(d => d !== null);
-
-    // Collect all normalized values for this band
-    const allValues = normalizedData.flatMap(d => d.normalized);
-    allNormalizedValues = allNormalizedValues.concat(allValues);
-
-    return { band, normalizedData, allValues };
+    // Bin normalized values by day
+    const bins = bandBins[bandIdx].dailyBins;
+    for (let i = 0; i < windowVals.length; i++) {
+      const dk = dayKey(windowTs[i]);
+      const norm = (windowVals[i] - minD) / rangeD;
+      if (!bins[dk]) bins[dk] = [];
+      bins[dk].push(norm);
+      allVals.push(norm);
+    }
   });
 
-  // Compute global prior from pooled data
-  const mu_0 = allNormalizedValues.length > 0
-    ? allNormalizedValues.reduce((a, b) => a + b, 0) / allNormalizedValues.length
-    : 0.5;
-  const sigma2_0 = allNormalizedValues.length > 1
-    ? allNormalizedValues.reduce((sum, v) => sum + Math.pow(v - mu_0, 2), 0) / allNormalizedValues.length
-    : 0.1;
-
-  // Bayesian hyperparameters (weak prior)
-  const kappa_0 = 2;  // Prior weight for mean
-  const nu_0 = 2;     // Prior weight for variance
-
-  // t-distribution critical value for 68% CI (approximation for small df)
-  function tCritical(df) {
-    // Approximation of t_{0.84} for various df
-    if (df <= 2) return 1.32;
-    if (df <= 5) return 1.15;
-    if (df <= 10) return 1.05;
-    if (df <= 30) return 1.01;
-    return 1.0;  // Approaches normal
+  // Global prior
+  let mu_0 = 0.5, sigma2_0 = 0.1;
+  if (allVals.length > 0) {
+    let sum = 0;
+    for (let i = 0; i < allVals.length; i++) sum += allVals[i];
+    mu_0 = sum / allVals.length;
+    if (allVals.length > 1) {
+      let varSum = 0;
+      for (let i = 0; i < allVals.length; i++) varSum += (allVals[i] - mu_0) ** 2;
+      sigma2_0 = varSum / allVals.length;
+    }
   }
+  allVals = null; // free memory
+
+  const kappa_0 = 2, nu_0 = 2;
+  const tCrit = (df) => df <= 2 ? 1.32 : df <= 5 ? 1.15 : df <= 10 ? 1.05 : df <= 30 ? 1.01 : 1.0;
 
   const traces = [];
 
-  // Second pass: compute Bayesian posterior predictive for each band
-  bandNormalizedData.forEach(({ band, normalizedData, allValues }, bandIndex) => {
-    if (normalizedData.length === 0) return;
+  // Build traces
+  bandBins.forEach(({ dailyBins, satCount }, bandIndex) => {
+    if (satCount === 0) return;
 
+    const band = bands[bandIndex];
     const offset = bandIndex * bandSpacing;
-    const validDates = [];
-    const dailyMeans = [];
-    const dailyLower = [];
-    const dailyUpper = [];
-    const dailyRawMeans = [];  // Unscaled means for hover
+    const validDates = [], dailyMeans = [], dailyLower = [], dailyUpper = [], customData = [];
 
-    dates.forEach(date => {
-      const dayStart = new Date(date);
-      dayStart.setHours(0, 0, 0, 0);
-      const dayEnd = new Date(date);
-      dayEnd.setHours(23, 59, 59, 999);
+    for (let i = 0; i < numDays; i++) {
+      const dk = startDayKey + i;
+      const vals = dailyBins[dk];
+      if (!vals || vals.length === 0) continue;
 
-      // Collect all normalized values from all satellites for this day
-      const dayValues = [];
-      normalizedData.forEach(satData => {
-        for (let i = 0; i < satData.times.length; i++) {
-          if (satData.times[i] >= dayStart && satData.times[i] <= dayEnd) {
-            dayValues.push(satData.normalized[i]);
-          }
-        }
-      });
+      const n = vals.length;
+      let sum = 0;
+      for (let j = 0; j < n; j++) sum += vals[j];
+      const x_bar = sum / n;
 
-      if (dayValues.length > 0) {
-        const n = dayValues.length;
-        const x_bar = dayValues.reduce((a, b) => a + b, 0) / n;
-
-        // Sample variance
-        const s2 = n > 1
-          ? dayValues.reduce((sum, v) => sum + Math.pow(v - x_bar, 2), 0) / (n - 1)
-          : sigma2_0;
-
-        // Bayesian posterior parameters (Normal-Inverse-Chi-Squared)
-        const kappa_n = kappa_0 + n;
-        const nu_n = nu_0 + n;
-        const mu_n = (kappa_0 * mu_0 + n * x_bar) / kappa_n;
-        const sigma2_n = (nu_0 * sigma2_0 + (n - 1) * s2 +
-                         (kappa_0 * n / kappa_n) * Math.pow(x_bar - mu_0, 2)) / nu_n;
-
-        // Posterior predictive: t-distribution scale
-        const predictiveScale = Math.sqrt(sigma2_n * (1 + 1 / kappa_n));
-        const t_crit = tCritical(nu_n);
-
-        // Clamp to valid range (0-1) before scaling
-        const rawMean = mu_n;
-        const rawLower = Math.max(0, mu_n - t_crit * predictiveScale);
-        const rawUpper = Math.min(1, mu_n + t_crit * predictiveScale);
-
-        validDates.push(date);
-        dailyRawMeans.push(rawMean);
-        // Scale to stacked position
-        dailyMeans.push(offset + rawMean * amplitude);
-        dailyLower.push(offset + rawLower * amplitude);
-        dailyUpper.push(offset + rawUpper * amplitude);
+      let s2 = sigma2_0;
+      if (n > 1) {
+        let varSum = 0;
+        for (let j = 0; j < n; j++) varSum += (vals[j] - x_bar) ** 2;
+        s2 = varSum / (n - 1);
       }
-    });
+
+      const kappa_n = kappa_0 + n;
+      const nu_n = nu_0 + n;
+      const mu_n = (kappa_0 * mu_0 + n * x_bar) / kappa_n;
+      const sigma2_n = (nu_0 * sigma2_0 + (n - 1) * s2 + (kappa_0 * n / kappa_n) * (x_bar - mu_0) ** 2) / nu_n;
+      const scale = Math.sqrt(sigma2_n * (1 + 1 / kappa_n));
+      const t = tCrit(nu_n);
+
+      const rawMean = mu_n;
+      const rawLower = Math.max(0, mu_n - t * scale);
+      const rawUpper = Math.min(1, mu_n + t * scale);
+
+      validDates.push(dateMidpoints[i]);
+      dailyMeans.push(offset + rawMean * amplitude);
+      dailyLower.push(offset + rawLower * amplitude);
+      dailyUpper.push(offset + rawUpper * amplitude);
+      customData.push([rawMean, rawLower, rawUpper]);
+    }
 
     if (validDates.length === 0) return;
 
-    // Compute raw lower/upper for customdata
-    const customData = validDates.map((date, i) => {
-      const rawLower = Math.max(0, dailyRawMeans[i] - (dailyMeans[i] - dailyLower[i]) / amplitude);
-      const rawUpper = Math.min(1, dailyRawMeans[i] + (dailyUpper[i] - dailyMeans[i]) / amplitude);
-      return [dailyRawMeans[i], rawLower, rawUpper];
-    });
-
-    // Uncertainty band (fill)
+    // Uncertainty fill
     traces.push({
       x: [...validDates, ...validDates.slice().reverse()],
       y: [...dailyUpper, ...dailyLower.slice().reverse()],
@@ -1814,7 +1780,7 @@ function renderAltitudeBandsPlot() {
       name: band.name + ' ±1σ'
     });
 
-    // Mean line with hovertemplate for unified hover
+    // Mean line
     traces.push({
       x: validDates,
       y: dailyMeans,
@@ -1832,7 +1798,6 @@ function renderAltitudeBandsPlot() {
     return;
   }
 
-  // Create y-axis tick labels for band names
   const tickvals = bands.map((_, i) => i * bandSpacing + amplitude / 2);
   const ticktext = bands.map(b => b.name);
 
@@ -1850,7 +1815,7 @@ function renderAltitudeBandsPlot() {
       gridcolor: 'rgba(148, 163, 184, 0.1)',
       linecolor: 'rgba(148, 163, 184, 0.2)',
       tickcolor: '#94a3b8',
-      range: [startDate, now],
+      range: [new Date(startTs), new Date(nowTs)],
       showspikes: true,
       spikemode: 'across',
       spikesnap: 'cursor',
