@@ -247,6 +247,8 @@ function setHeatmapPeriod(period) {
   renderActivityGrid();
   if (densityView === 'waves') {
     renderJoyDivisionPlot();
+  } else if (densityView === 'bands') {
+    renderAltitudeBandsPlot();
   }
 }
 
@@ -1793,14 +1795,11 @@ function renderAltitudeBandsPlot() {
 
     if (validDates.length === 0) return;
 
-    // Create custom hover text with raw values
-    const hoverText = validDates.map((date, i) => {
+    // Compute raw lower/upper for customdata
+    const customData = validDates.map((date, i) => {
       const rawLower = Math.max(0, dailyRawMeans[i] - (dailyMeans[i] - dailyLower[i]) / amplitude);
       const rawUpper = Math.min(1, dailyRawMeans[i] + (dailyUpper[i] - dailyMeans[i]) / amplitude);
-      return `<b>${band.name}</b><br>` +
-             `${date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}<br>` +
-             `Mean: ${dailyRawMeans[i].toFixed(3)}<br>` +
-             `±1σ: [${rawLower.toFixed(3)}, ${rawUpper.toFixed(3)}]`;
+      return [dailyRawMeans[i], rawLower, rawUpper];
     });
 
     // Uncertainty band (fill)
@@ -1808,28 +1807,23 @@ function renderAltitudeBandsPlot() {
       x: [...validDates, ...validDates.slice().reverse()],
       y: [...dailyUpper, ...dailyLower.slice().reverse()],
       fill: 'toself',
-      fillcolor: 'rgba(59, 130, 246, 0.3)',  // Blue fill for all
+      fillcolor: 'rgba(59, 130, 246, 0.3)',
       line: { color: 'transparent' },
       showlegend: false,
       hoverinfo: 'skip',
       name: band.name + ' ±1σ'
     });
 
-    // Mean line
+    // Mean line with hovertemplate for unified hover
     traces.push({
       x: validDates,
       y: dailyMeans,
       type: 'scatter',
       mode: 'lines',
-      name: `${band.name} (n=${band.satellites.length})`,
+      name: band.name,
       line: { color: '#e5e5e5', width: 1.5 },
-      text: hoverText,
-      hoverinfo: 'text',
-      hoverlabel: {
-        bgcolor: '#1e293b',
-        bordercolor: band.color,
-        font: { color: '#e5e5e5', size: 11 }
-      }
+      customdata: customData,
+      hovertemplate: `<b>${band.name}</b>: %{customdata[0]:.3f} [%{customdata[1]:.3f}, %{customdata[2]:.3f}]<extra></extra>`
     });
   });
 
@@ -1874,7 +1868,7 @@ function renderAltitudeBandsPlot() {
       zeroline: false
     },
     showlegend: false,
-    hovermode: 'closest',
+    hovermode: 'x unified',
     hoverlabel: {
       bgcolor: '#1e293b',
       bordercolor: '#475569',
@@ -1884,8 +1878,7 @@ function renderAltitudeBandsPlot() {
 
   Plotly.newPlot(container, traces, layout, {
     responsive: true,
-    displayModeBar: true,
-    modeBarButtonsToRemove: ['lasso2d', 'select2d']
+    displayModeBar: false
   });
 }
 
