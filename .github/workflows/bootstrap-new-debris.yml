@@ -21,10 +21,6 @@ on:
         required: false
         default: '365'
         type: string
-        type: choice
-        options:
-          - 'false'
-          - 'true'
 
 jobs:
   bootstrap-new-debris:
