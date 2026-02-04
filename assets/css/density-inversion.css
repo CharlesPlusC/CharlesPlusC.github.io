@@ -687,10 +687,10 @@
   flex: 1;
   min-width: 1px;
   height: 14px;
+  background: #1e293b;
 }
 
 /* Kp color scale for Joy Division */
-.joy-division-kp-cell[data-level="0"] { background: #1e293b; }
 .joy-division-kp-cell[data-level="1"] { background: #22c55e; }
 .joy-division-kp-cell[data-level="2"] { background: #eab308; }
 .joy-division-kp-cell[data-level="3"] { background: #f97316; }
