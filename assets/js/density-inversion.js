@@ -1845,6 +1845,84 @@ function renderAltitudeBandsPlot() {
     responsive: true,
     displayModeBar: false
   });
+
+  // Render Kp bar below the plot
+  renderAltitudeBandsKpBar(new Date(startTs), new Date(nowTs), numDays);
+
+  // Render satellite counts
+  renderAltitudeBandsCounts(bandBins, bands);
+}
+
+/**
+ * Render Kp indicator bar for altitude bands view
+ */
+function renderAltitudeBandsKpBar(startDate, endDate, numDays) {
+  const container = document.getElementById('altitude-bands-kp');
+  if (!container || !kpData || !kpData.times || !kpData.values) {
+    if (container) container.innerHTML = '';
+    return;
+  }
+
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  // Daily resolution - bin Kp values by day
+  const kpByDay = {};
+  kpData.times.forEach((t, i) => {
+    const dayKey = t.split(' ')[0];
+    if (!kpByDay[dayKey]) kpByDay[dayKey] = [];
+    if (kpData.values[i] !== null) {
+      kpByDay[dayKey].push(kpData.values[i]);
+    }
+  });
+
+  // Generate cells for each day
+  const cells = [];
+  for (let i = numDays - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const dayKp = kpByDay[dateStr];
+    let level = 0, maxKp = 0;
+
+    if (dayKp && dayKp.length > 0) {
+      maxKp = Math.max(...dayKp);
+      if (maxKp >= 7) level = 4;
+      else if (maxKp >= 5) level = 3;
+      else if (maxKp >= 4) level = 2;
+      else if (maxKp >= 1) level = 1;
+    }
+
+    cells.push({ timeStr: dateStr, kp: maxKp, level });
+  }
+
+  const cellsHtml = cells.map(cell =>
+    `<div class="joy-division-kp-cell" data-level="${cell.level}" title="${cell.timeStr}: Kp ${cell.kp.toFixed(1)}"></div>`
+  ).join('');
+
+  container.innerHTML = `
+    <span class="joy-division-kp-label">Kp Index</span>
+    <div class="joy-division-kp-cells">${cellsHtml}</div>
+  `;
+}
+
+/**
+ * Render satellite counts for each altitude band
+ */
+function renderAltitudeBandsCounts(bandBins, bands) {
+  const container = document.getElementById('altitude-bands-counts');
+  if (!container) return;
+
+  const countsHtml = bands.map((band, i) => {
+    const count = bandBins[i].satCount;
+    return `<span class="band-count">
+      <span class="band-dot" style="background: ${band.color};"></span>
+      <span class="band-label">${band.name}:</span>
+      <span class="band-n">n=${count}</span>
+    </span>`;
+  }).join('');
+
+  container.innerHTML = countsHtml;
 }
 
 // Altitude-based color mapping (350-650 km range)

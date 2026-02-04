@@ -680,14 +680,13 @@
 .joy-division-kp-cells {
   display: flex;
   flex: 1;
-  gap: 1px;
+  gap: 0;
 }
 
 .joy-division-kp-cell {
   flex: 1;
   min-width: 1px;
   height: 14px;
-  border-radius: 2px;
 }
 
 /* Kp color scale for Joy Division */
@@ -696,6 +695,32 @@
 .joy-division-kp-cell[data-level="2"] { background: #eab308; }
 .joy-division-kp-cell[data-level="3"] { background: #f97316; }
 .joy-division-kp-cell[data-level="4"] { background: #ef4444; }
+
+/* Altitude bands satellite counts */
+.altitude-bands-counts {
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 12px 0 4px 90px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.altitude-bands-counts .band-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.altitude-bands-counts .band-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.altitude-bands-counts .band-label {
+  color: #64748b;
+}
 
 @media (max-width: 720px) {
   .joy-division-plot {
