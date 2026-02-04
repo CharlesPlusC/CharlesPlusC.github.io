@@ -1637,7 +1637,7 @@ function renderAltitudeBandsPlot() {
   const startDate = new Date(now);
   startDate.setDate(startDate.getDate() - (windowConfig.days - 1));
 
-  // Define altitude bands
+  // Define altitude bands (lowest to highest for stacking)
   const bands = [
     { min: 300, max: 400, color: '#ef4444', name: '300-400 km' },
     { min: 400, max: 500, color: '#f97316', name: '400-500 km' },
@@ -1645,6 +1645,10 @@ function renderAltitudeBandsPlot() {
     { min: 600, max: 700, color: '#22c55e', name: '600-700 km' },
     { min: 700, max: 800, color: '#3b82f6', name: '700-800 km' }
   ];
+
+  // Stacking parameters
+  const bandSpacing = 0.35;  // Vertical offset between bands
+  const amplitude = 0.25;    // How much of the spacing the signal uses
 
   // Group satellites by altitude band
   const bandSatellites = bands.map(band => {
@@ -1663,19 +1667,18 @@ function renderAltitudeBandsPlot() {
   for (let i = 0; i < numDays; i++) {
     const d = new Date(startDate);
     d.setDate(d.getDate() + i);
-    d.setHours(12, 0, 0, 0); // Noon of each day
+    d.setHours(12, 0, 0, 0);
     dates.push(d);
   }
 
-  const traces = [];
+  // Collect all normalized values across all bands for Bayesian prior
+  let allNormalizedValues = [];
 
-  // Process each altitude band
-  bandSatellites.forEach((band, bandIndex) => {
-    if (band.satellites.length === 0) return;
+  // First pass: normalize each satellite and collect all values
+  const bandNormalizedData = bandSatellites.map(band => {
+    if (band.satellites.length === 0) return { band, normalizedData: [], allValues: [] };
 
-    // For each satellite, normalize its densities to 0-1 over the window
     const normalizedData = band.satellites.map(({ noradId, sat, data }) => {
-      // Get all densities in the window for normalization
       const windowDensities = [];
       const windowTimes = [];
       for (let i = 0; i < data.times.length; i++) {
@@ -1692,18 +1695,51 @@ function renderAltitudeBandsPlot() {
       const maxD = Math.max(...windowDensities);
       const rangeD = maxD - minD || 1;
 
-      // Normalize to 0-1
       const normalized = windowDensities.map(d => (d - minD) / rangeD);
       return { times: windowTimes, normalized };
     }).filter(d => d !== null);
 
+    // Collect all normalized values for this band
+    const allValues = normalizedData.flatMap(d => d.normalized);
+    allNormalizedValues = allNormalizedValues.concat(allValues);
+
+    return { band, normalizedData, allValues };
+  });
+
+  // Compute global prior from pooled data
+  const mu_0 = allNormalizedValues.length > 0
+    ? allNormalizedValues.reduce((a, b) => a + b, 0) / allNormalizedValues.length
+    : 0.5;
+  const sigma2_0 = allNormalizedValues.length > 1
+    ? allNormalizedValues.reduce((sum, v) => sum + Math.pow(v - mu_0, 2), 0) / allNormalizedValues.length
+    : 0.1;
+
+  // Bayesian hyperparameters (weak prior)
+  const kappa_0 = 2;  // Prior weight for mean
+  const nu_0 = 2;     // Prior weight for variance
+
+  // t-distribution critical value for 68% CI (approximation for small df)
+  function tCritical(df) {
+    // Approximation of t_{0.84} for various df
+    if (df <= 2) return 1.32;
+    if (df <= 5) return 1.15;
+    if (df <= 10) return 1.05;
+    if (df <= 30) return 1.01;
+    return 1.0;  // Approaches normal
+  }
+
+  const traces = [];
+
+  // Second pass: compute Bayesian posterior predictive for each band
+  bandNormalizedData.forEach(({ band, normalizedData, allValues }, bandIndex) => {
     if (normalizedData.length === 0) return;
 
-    // Bin normalized values by day and compute mean + std
-    const dailyMeans = [];
-    const dailyStdLower = [];
-    const dailyStdUpper = [];
+    const offset = bandIndex * bandSpacing;
     const validDates = [];
+    const dailyMeans = [];
+    const dailyLower = [];
+    const dailyUpper = [];
+    const dailyRawMeans = [];  // Unscaled means for hover
 
     dates.forEach(date => {
       const dayStart = new Date(date);
@@ -1722,45 +1758,78 @@ function renderAltitudeBandsPlot() {
       });
 
       if (dayValues.length > 0) {
-        const mean = dayValues.reduce((a, b) => a + b, 0) / dayValues.length;
+        const n = dayValues.length;
+        const x_bar = dayValues.reduce((a, b) => a + b, 0) / n;
 
-        // Calculate standard deviation
-        let std = 0;
-        if (dayValues.length > 1) {
-          const variance = dayValues.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / dayValues.length;
-          std = Math.sqrt(variance);
-        }
+        // Sample variance
+        const s2 = n > 1
+          ? dayValues.reduce((sum, v) => sum + Math.pow(v - x_bar, 2), 0) / (n - 1)
+          : sigma2_0;
+
+        // Bayesian posterior parameters (Normal-Inverse-Chi-Squared)
+        const kappa_n = kappa_0 + n;
+        const nu_n = nu_0 + n;
+        const mu_n = (kappa_0 * mu_0 + n * x_bar) / kappa_n;
+        const sigma2_n = (nu_0 * sigma2_0 + (n - 1) * s2 +
+                         (kappa_0 * n / kappa_n) * Math.pow(x_bar - mu_0, 2)) / nu_n;
+
+        // Posterior predictive: t-distribution scale
+        const predictiveScale = Math.sqrt(sigma2_n * (1 + 1 / kappa_n));
+        const t_crit = tCritical(nu_n);
+
+        // Clamp to valid range (0-1) before scaling
+        const rawMean = mu_n;
+        const rawLower = Math.max(0, mu_n - t_crit * predictiveScale);
+        const rawUpper = Math.min(1, mu_n + t_crit * predictiveScale);
 
         validDates.push(date);
-        dailyMeans.push(mean);
-        dailyStdLower.push(Math.max(0, mean - std));
-        dailyStdUpper.push(Math.min(1, mean + std));
+        dailyRawMeans.push(rawMean);
+        // Scale to stacked position
+        dailyMeans.push(offset + rawMean * amplitude);
+        dailyLower.push(offset + rawLower * amplitude);
+        dailyUpper.push(offset + rawUpper * amplitude);
       }
     });
 
     if (validDates.length === 0) return;
 
-    // Add uncertainty band (fill between lower and upper std)
+    // Create custom hover text with raw values
+    const hoverText = validDates.map((date, i) => {
+      const rawLower = Math.max(0, dailyRawMeans[i] - (dailyMeans[i] - dailyLower[i]) / amplitude);
+      const rawUpper = Math.min(1, dailyRawMeans[i] + (dailyUpper[i] - dailyMeans[i]) / amplitude);
+      return `<b>${band.name}</b><br>` +
+             `${date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}<br>` +
+             `Mean: ${dailyRawMeans[i].toFixed(3)}<br>` +
+             `±1σ: [${rawLower.toFixed(3)}, ${rawUpper.toFixed(3)}]`;
+    });
+
+    // Uncertainty band (fill)
     traces.push({
       x: [...validDates, ...validDates.slice().reverse()],
-      y: [...dailyStdUpper, ...dailyStdLower.slice().reverse()],
+      y: [...dailyUpper, ...dailyLower.slice().reverse()],
       fill: 'toself',
-      fillcolor: band.color.replace(')', ', 0.2)').replace('rgb', 'rgba'),
+      fillcolor: 'rgba(59, 130, 246, 0.3)',  // Blue fill for all
       line: { color: 'transparent' },
       showlegend: false,
       hoverinfo: 'skip',
-      name: band.name + ' uncertainty'
+      name: band.name + ' ±1σ'
     });
 
-    // Add mean line
+    // Mean line
     traces.push({
       x: validDates,
       y: dailyMeans,
       type: 'scatter',
       mode: 'lines',
       name: `${band.name} (n=${band.satellites.length})`,
-      line: { color: band.color, width: 2 },
-      hovertemplate: `<b>${band.name}</b><br>%{x|%d %b %Y}<br>Mean: %{y:.2f}<extra></extra>`
+      line: { color: '#e5e5e5', width: 1.5 },
+      text: hoverText,
+      hoverinfo: 'text',
+      hoverlabel: {
+        bgcolor: '#1e293b',
+        bordercolor: band.color,
+        font: { color: '#e5e5e5', size: 11 }
+      }
     });
   });
 
@@ -1769,44 +1838,47 @@ function renderAltitudeBandsPlot() {
     return;
   }
 
+  // Create y-axis tick labels for band names
+  const tickvals = bands.map((_, i) => i * bandSpacing + amplitude / 2);
+  const ticktext = bands.map(b => b.name);
+
   const layout = {
-    font: { family: 'system-ui, -apple-system, sans-serif', size: 11 },
-    margin: { t: 30, r: 30, b: 60, l: 60 },
-    paper_bgcolor: 'white',
-    plot_bgcolor: 'white',
+    font: { family: 'system-ui, -apple-system, sans-serif', size: 11, color: '#94a3b8' },
+    margin: { t: 40, r: 30, b: 50, l: 90 },
+    paper_bgcolor: '#0b0f1a',
+    plot_bgcolor: '#0b0f1a',
     title: {
-      text: `Normalized Density Response by Altitude Band (${windowConfig.label.replace('.', '')})`,
-      font: { size: 14 }
+      text: `Density Response by Altitude (${windowConfig.label.replace('.', '')}) — Bayesian ±1σ`,
+      font: { size: 13, color: '#e5e5e5' },
+      y: 0.98
     },
     xaxis: {
-      gridcolor: 'rgba(0,0,0,0.05)',
-      title: { text: 'Date', standoff: 10 },
+      gridcolor: 'rgba(148, 163, 184, 0.1)',
+      linecolor: 'rgba(148, 163, 184, 0.2)',
+      tickcolor: '#94a3b8',
       range: [startDate, now],
       showspikes: true,
       spikemode: 'across',
       spikesnap: 'cursor',
-      spikecolor: '#64748b',
+      spikecolor: '#475569',
       spikethickness: 1,
       spikedash: 'dot'
     },
     yaxis: {
-      gridcolor: 'rgba(0,0,0,0.05)',
-      title: { text: 'Normalized Density (0-1)', standoff: 5 },
-      range: [-0.05, 1.05],
-      dtick: 0.2
+      gridcolor: 'rgba(148, 163, 184, 0.05)',
+      linecolor: 'rgba(148, 163, 184, 0.2)',
+      tickcolor: '#94a3b8',
+      tickvals: tickvals,
+      ticktext: ticktext,
+      range: [-0.05, bands.length * bandSpacing],
+      zeroline: false
     },
-    showlegend: true,
-    legend: {
-      orientation: 'h',
-      y: -0.15,
-      x: 0.5,
-      xanchor: 'center'
-    },
-    hovermode: 'x unified',
+    showlegend: false,
+    hovermode: 'closest',
     hoverlabel: {
-      bgcolor: 'white',
-      bordercolor: '#e2e8f0',
-      font: { size: 11 }
+      bgcolor: '#1e293b',
+      bordercolor: '#475569',
+      font: { size: 11, color: '#e5e5e5' }
     }
   };
 

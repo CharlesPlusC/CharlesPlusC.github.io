@@ -153,15 +153,8 @@ author_profile: true
     <div id="combined-density-plot" style="width:100%; height:500px;"></div>
   </div>
   <div id="density-bands" class="density-view is-hidden">
-    <p class="section-note">Mean normalized density response (0-1) per 100km altitude band. Shaded regions show 1-sigma uncertainty across satellites in each band.</p>
+    <p class="section-note">Stacked normalized density (0-1) per 100km altitude band. Shaded regions show Bayesian ±1σ posterior predictive intervals that account for sample size. Hover for details.</p>
     <div id="altitude-bands-plot" style="width:100%; height:500px;"></div>
-    <div class="altitude-bands-legend">
-      <span class="bands-legend-item"><span class="bands-legend-color" style="background: #ef4444;"></span>300-400 km</span>
-      <span class="bands-legend-item"><span class="bands-legend-color" style="background: #f97316;"></span>400-500 km</span>
-      <span class="bands-legend-item"><span class="bands-legend-color" style="background: #eab308;"></span>500-600 km</span>
-      <span class="bands-legend-item"><span class="bands-legend-color" style="background: #22c55e;"></span>600-700 km</span>
-      <span class="bands-legend-item"><span class="bands-legend-color" style="background: #3b82f6;"></span>700-800 km</span>
-    </div>
   </div>
 </div>
 
