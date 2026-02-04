@@ -61,7 +61,50 @@ const SATELLITES = {
   '35929': { name: 'IRIDIUM 33 DEB (35929)', color: '#6d28d9', order: 47, flag: '🇺🇸', altitude: 547 },
   '35484': { name: 'IRIDIUM 33 DEB (35484)', color: '#7c3aed', order: 48, flag: '🇺🇸', altitude: 553 },
   '36028': { name: 'IRIDIUM 33 DEB (36028)', color: '#8b5cf6', order: 49, flag: '🇺🇸', altitude: 571 },
-  '34486': { name: 'IRIDIUM 33 DEB (34486)', color: '#a78bfa', order: 50, flag: '🇺🇸', altitude: 572 }
+  '34486': { name: 'IRIDIUM 33 DEB (34486)', color: '#a78bfa', order: 50, flag: '🇺🇸', altitude: 572 },
+  // ============================================================
+  // NEW: 37 debris objects for altitude band coverage (Feb 2026)
+  // ============================================================
+  // 300-400 km band (13 objects) - LOW ALTITUDE - actively decaying
+  '32203': { name: 'FENGYUN 1C DEB (32203)', color: '#dc2626', order: 51, flag: '🇨🇳', altitude: 341 },
+  '31258': { name: 'FENGYUN 1C DEB (31258)', color: '#ea580c', order: 52, flag: '🇨🇳', altitude: 343 },
+  '32363': { name: 'FENGYUN 1C DEB (32363)', color: '#d97706', order: 53, flag: '🇨🇳', altitude: 348 },
+  '32184': { name: 'FENGYUN 1C DEB (32184)', color: '#ca8a04', order: 54, flag: '🇨🇳', altitude: 365 },
+  '31159': { name: 'FENGYUN 1C DEB (31159)', color: '#65a30d', order: 55, flag: '🇨🇳', altitude: 365 },
+  '31358': { name: 'FENGYUN 1C DEB (31358)', color: '#16a34a', order: 56, flag: '🇨🇳', altitude: 370 },
+  '31330': { name: 'FENGYUN 1C DEB (31330)', color: '#059669', order: 57, flag: '🇨🇳', altitude: 387 },
+  '30490': { name: 'FENGYUN 1C DEB (30490)', color: '#0d9488', order: 58, flag: '🇨🇳', altitude: 387 },
+  '37085': { name: 'COSMOS 2251 DEB (37085)', color: '#0891b2', order: 59, flag: '🇷🇺', altitude: 388 },
+  '31850': { name: 'FENGYUN 1C DEB (31850)', color: '#0284c7', order: 60, flag: '🇨🇳', altitude: 389 },
+  '35602': { name: 'COSMOS 2251 DEB (35602)', color: '#2563eb', order: 61, flag: '🇷🇺', altitude: 397 },
+  '34886': { name: 'COSMOS 2251 DEB (34886)', color: '#4f46e5', order: 62, flag: '🇷🇺', altitude: 398 },
+  '30988': { name: 'FENGYUN 1C DEB (30988)', color: '#7c3aed', order: 63, flag: '🇨🇳', altitude: 398 },
+  // 400-500 km band (10 objects)
+  '50032': { name: 'COSMOS 1408 DEB (50032)', color: '#9333ea', order: 64, flag: '🇷🇺', altitude: 416 },
+  '34464': { name: 'COSMOS 2251 DEB (34464)', color: '#c026d3', order: 65, flag: '🇷🇺', altitude: 440 },
+  '34313': { name: 'COSMOS 2251 DEB (34313)', color: '#db2777', order: 66, flag: '🇷🇺', altitude: 453 },
+  '34010': { name: 'COSMOS 2251 DEB (34010)', color: '#e11d48', order: 67, flag: '🇷🇺', altitude: 465 },
+  '30082': { name: 'FENGYUN 1C DEB (30082)', color: '#be123c', order: 68, flag: '🇨🇳', altitude: 465 },
+  '34410': { name: 'COSMOS 2251 DEB (34410)', color: '#9f1239', order: 69, flag: '🇷🇺', altitude: 471 },
+  '33901': { name: 'COSMOS 2251 DEB (33901)', color: '#881337', order: 70, flag: '🇷🇺', altitude: 474 },
+  '34452': { name: 'COSMOS 2251 DEB (34452)', color: '#78716c', order: 71, flag: '🇷🇺', altitude: 485 },
+  '33765': { name: 'COSMOS 2251 DEB (33765)', color: '#57534e', order: 72, flag: '🇷🇺', altitude: 485 },
+  '29868': { name: 'FENGYUN 1C DEB (29868)', color: '#44403c', order: 73, flag: '🇨🇳', altitude: 495 },
+  // 700-800 km band (14 objects) - HIGH ALTITUDE
+  '30092': { name: 'FENGYUN 1C DEB (30092)', color: '#334155', order: 74, flag: '🇨🇳', altitude: 701 },
+  '37548': { name: 'IRIDIUM 33 DEB (37548)', color: '#475569', order: 75, flag: '🇺🇸', altitude: 701 },
+  '35918': { name: 'IRIDIUM 33 DEB (35918)', color: '#64748b', order: 76, flag: '🇺🇸', altitude: 702 },
+  '30127': { name: 'FENGYUN 1C DEB (30127)', color: '#6b7280', order: 77, flag: '🇨🇳', altitude: 702 },
+  '34690': { name: 'IRIDIUM 33 DEB (34690)', color: '#71717a', order: 78, flag: '🇺🇸', altitude: 702 },
+  '34302': { name: 'COSMOS 2251 DEB (34302)', color: '#737373', order: 79, flag: '🇷🇺', altitude: 703 },
+  '34059': { name: 'COSMOS 2251 DEB (34059)', color: '#78716c', order: 80, flag: '🇷🇺', altitude: 703 },
+  '29976': { name: 'FENGYUN 1C DEB (29976)', color: '#a1a1aa', order: 81, flag: '🇨🇳', altitude: 704 },
+  '34833': { name: 'IRIDIUM 33 DEB (34833)', color: '#a3a3a3', order: 82, flag: '🇺🇸', altitude: 705 },
+  '34004': { name: 'COSMOS 2251 DEB (34004)', color: '#a8a29e', order: 83, flag: '🇷🇺', altitude: 705 },
+  '34127': { name: 'COSMOS 2251 DEB (34127)', color: '#d4d4d8', order: 84, flag: '🇷🇺', altitude: 705 },
+  '29930': { name: 'FENGYUN 1C DEB (29930)', color: '#d4d4d4', order: 85, flag: '🇨🇳', altitude: 705 },
+  '33907': { name: 'COSMOS 2251 DEB (33907)', color: '#d6d3d1', order: 86, flag: '🇷🇺', altitude: 705 },
+  '39778': { name: 'IRIDIUM 33 DEB (39778)', color: '#e5e5e5', order: 87, flag: '🇺🇸', altitude: 706 }
 };
 
 let allData = {};

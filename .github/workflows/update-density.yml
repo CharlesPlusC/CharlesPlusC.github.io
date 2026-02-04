@@ -98,7 +98,51 @@ jobs:
               '35929': {'name': 'IRIDIUM 33 DEB (35929)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
               '35484': {'name': 'IRIDIUM 33 DEB (35484)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
               '36028': {'name': 'IRIDIUM 33 DEB (36028)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
-              '34486': {'name': 'IRIDIUM 33 DEB (34486)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0}
+              '34486': {'name': 'IRIDIUM 33 DEB (34486)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              # ============================================================
+              # NEW DEBRIS - 37 objects for altitude band coverage
+              # Added Feb 2026 for 300-400km, 400-500km, 700-800km bands
+              # ============================================================
+              # 300-400 km band (13 objects) - LOW ALTITUDE
+              '32203': {'name': 'FENGYUN 1C DEB (32203)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '31258': {'name': 'FENGYUN 1C DEB (31258)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '32363': {'name': 'FENGYUN 1C DEB (32363)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '32184': {'name': 'FENGYUN 1C DEB (32184)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '31159': {'name': 'FENGYUN 1C DEB (31159)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '31358': {'name': 'FENGYUN 1C DEB (31358)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '31330': {'name': 'FENGYUN 1C DEB (31330)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '30490': {'name': 'FENGYUN 1C DEB (30490)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '37085': {'name': 'COSMOS 2251 DEB (37085)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '31850': {'name': 'FENGYUN 1C DEB (31850)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '35602': {'name': 'COSMOS 2251 DEB (35602)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34886': {'name': 'COSMOS 2251 DEB (34886)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '30988': {'name': 'FENGYUN 1C DEB (30988)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              # 400-500 km band (10 objects)
+              '50032': {'name': 'COSMOS 1408 DEB (50032)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34464': {'name': 'COSMOS 2251 DEB (34464)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34313': {'name': 'COSMOS 2251 DEB (34313)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34010': {'name': 'COSMOS 2251 DEB (34010)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '30082': {'name': 'FENGYUN 1C DEB (30082)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34410': {'name': 'COSMOS 2251 DEB (34410)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '33901': {'name': 'COSMOS 2251 DEB (33901)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34452': {'name': 'COSMOS 2251 DEB (34452)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '33765': {'name': 'COSMOS 2251 DEB (33765)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '29868': {'name': 'FENGYUN 1C DEB (29868)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              # 700-800 km band (14 objects)
+              '30092': {'name': 'FENGYUN 1C DEB (30092)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '37548': {'name': 'IRIDIUM 33 DEB (37548)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '35918': {'name': 'IRIDIUM 33 DEB (35918)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '30127': {'name': 'FENGYUN 1C DEB (30127)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34690': {'name': 'IRIDIUM 33 DEB (34690)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34302': {'name': 'COSMOS 2251 DEB (34302)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34059': {'name': 'COSMOS 2251 DEB (34059)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '29976': {'name': 'FENGYUN 1C DEB (29976)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34833': {'name': 'IRIDIUM 33 DEB (34833)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34004': {'name': 'COSMOS 2251 DEB (34004)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '34127': {'name': 'COSMOS 2251 DEB (34127)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '29930': {'name': 'FENGYUN 1C DEB (29930)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '33907': {'name': 'COSMOS 2251 DEB (33907)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0},
+              '39778': {'name': 'IRIDIUM 33 DEB (39778)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0}
           }
 
           def parse_mean_motion(line2):

@@ -1,0 +1,409 @@
+name: Bootstrap New Debris Objects (API-Safe)
+
+# ============================================================
+# SPACE-TRACK API COMPLIANCE
+# ============================================================
+# Rate limits: 30 requests/minute, 300 requests/hour
+# Best practice: Use batch queries with comma-separated NORAD IDs
+# GP_History is LIFETIME download - only run once per satellite!
+#
+# This workflow uses BATCH QUERIES to minimize API calls:
+# - 37 satellites queried in 4 batches (10 satellites each)
+# - Only 4 API requests total (not 37!)
+# - 10 second delays between batches
+# ============================================================
+
+on:
+  workflow_dispatch: # Manual trigger only - NEVER RUN AUTOMATICALLY
+    inputs:
+      days_history:
+        description: 'Days of history (default 365)'
+        required: false
+        default: '365'
+        type: string
+      skip_existing:
+        description: 'Skip satellites that already have data files'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      dry_run:
+        description: 'Dry run - show what would be fetched without calling API'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  bootstrap-new-debris:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests numpy
+
+      - name: Bootstrap new debris (BATCH QUERIES - API SAFE)
+        env:
+          SPACETRACK_USER: ${{ secrets.SPACETRACK_USER }}
+          SPACETRACK_PASS: ${{ secrets.SPACETRACK_PASS }}
+          DAYS_HISTORY: ${{ github.event.inputs.days_history }}
+          SKIP_EXISTING: ${{ github.event.inputs.skip_existing }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          python3 << 'EOF'
+          import requests
+          import json
+          import numpy as np
+          from datetime import datetime, timedelta, timezone
+          import os
+          import time
+          import sys
+
+          # ============================================================
+          # CONFIGURATION
+          # ============================================================
+          MU = 398600.4418e9       # Earth's gravitational parameter m³/s²
+          R_EARTH = 6378137.0      # Earth radius in m
+
+          # API-safe settings
+          BATCH_SIZE = 10          # Satellites per batch query
+          DELAY_BETWEEN_BATCHES = 10  # Seconds between API calls
+          MAX_RETRIES = 3
+          RETRY_DELAY = 30         # Seconds to wait on rate limit
+
+          # 37 NEW satellites organized by altitude band
+          NEW_SATELLITES = {
+              # 300-400 km band (13 objects)
+              '32203': {'name': 'FENGYUN 1C DEB (32203)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 341},
+              '31258': {'name': 'FENGYUN 1C DEB (31258)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 343},
+              '32363': {'name': 'FENGYUN 1C DEB (32363)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 348},
+              '32184': {'name': 'FENGYUN 1C DEB (32184)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 365},
+              '31159': {'name': 'FENGYUN 1C DEB (31159)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 365},
+              '31358': {'name': 'FENGYUN 1C DEB (31358)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 370},
+              '31330': {'name': 'FENGYUN 1C DEB (31330)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 387},
+              '30490': {'name': 'FENGYUN 1C DEB (30490)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 387},
+              '37085': {'name': 'COSMOS 2251 DEB (37085)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 388},
+              '31850': {'name': 'FENGYUN 1C DEB (31850)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 389},
+              '35602': {'name': 'COSMOS 2251 DEB (35602)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 397},
+              '34886': {'name': 'COSMOS 2251 DEB (34886)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 398},
+              '30988': {'name': 'FENGYUN 1C DEB (30988)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 398},
+              # 400-500 km band (10 objects)
+              '50032': {'name': 'COSMOS 1408 DEB (50032)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 416},
+              '34464': {'name': 'COSMOS 2251 DEB (34464)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 440},
+              '34313': {'name': 'COSMOS 2251 DEB (34313)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 453},
+              '34010': {'name': 'COSMOS 2251 DEB (34010)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 465},
+              '30082': {'name': 'FENGYUN 1C DEB (30082)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 465},
+              '34410': {'name': 'COSMOS 2251 DEB (34410)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 471},
+              '33901': {'name': 'COSMOS 2251 DEB (33901)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 474},
+              '34452': {'name': 'COSMOS 2251 DEB (34452)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 485},
+              '33765': {'name': 'COSMOS 2251 DEB (33765)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 485},
+              '29868': {'name': 'FENGYUN 1C DEB (29868)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 495},
+              # 700-800 km band (14 objects)
+              '30092': {'name': 'FENGYUN 1C DEB (30092)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 701},
+              '37548': {'name': 'IRIDIUM 33 DEB (37548)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 701},
+              '35918': {'name': 'IRIDIUM 33 DEB (35918)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 702},
+              '30127': {'name': 'FENGYUN 1C DEB (30127)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 702},
+              '34690': {'name': 'IRIDIUM 33 DEB (34690)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 702},
+              '34302': {'name': 'COSMOS 2251 DEB (34302)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 703},
+              '34059': {'name': 'COSMOS 2251 DEB (34059)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 703},
+              '29976': {'name': 'FENGYUN 1C DEB (29976)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 704},
+              '34833': {'name': 'IRIDIUM 33 DEB (34833)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 705},
+              '34004': {'name': 'COSMOS 2251 DEB (34004)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 705},
+              '34127': {'name': 'COSMOS 2251 DEB (34127)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 705},
+              '29930': {'name': 'FENGYUN 1C DEB (29930)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 705},
+              '33907': {'name': 'COSMOS 2251 DEB (33907)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 705},
+              '39778': {'name': 'IRIDIUM 33 DEB (39778)', 'cd': 2.2, 'area': 0.5, 'mass': 20.0, 'alt': 706},
+          }
+
+          SPACETRACK_URL = "https://www.space-track.org"
+
+          def parse_tle_data(line1, line2, cd, area, mass):
+              """Parse TLE and calculate density."""
+              try:
+                  # Epoch
+                  epoch_str = line1[18:32]
+                  year_2d = int(epoch_str[:2])
+                  year = 2000 + year_2d if year_2d < 57 else 1900 + year_2d
+                  day = float(epoch_str[2:])
+                  epoch = datetime(year, 1, 1, tzinfo=timezone.utc) + timedelta(days=day - 1)
+
+                  # Orbital elements
+                  N = float(line2[52:63])  # Mean motion rev/day
+                  N_dot = float(line1[33:43].strip())  # Mean motion derivative
+                  e = float("0." + line2[26:33])  # Eccentricity
+
+                  n = N * 2 * np.pi / 86400.0
+                  n_dot = N_dot * 2 * np.pi / (86400.0**2)
+                  a = (MU / n**2)**(1/3)
+
+                  perigee = (a * (1 - e) - R_EARTH) / 1000
+                  apogee = (a * (1 + e) - R_EARTH) / 1000
+
+                  if perigee < 100 or perigee > 2000:
+                      return None
+
+                  v = np.sqrt(MU / a)
+                  rho = (2 * mass * n_dot) / (3 * cd * area * n * v)
+
+                  if rho < 0:
+                      return None
+
+                  return {
+                      'epoch': epoch.isoformat(),
+                      'density': float(rho),
+                      'perigee': float(perigee),
+                      'apogee': float(apogee),
+                      'sma': float(a / 1000)
+                  }
+              except:
+                  return None
+
+          def batch_fetch_tles(session, norad_ids, start_date, end_date):
+              """
+              BATCH QUERY: Fetch TLEs for multiple satellites in ONE API call.
+              This is the API-friendly way to query Space-Track.
+              """
+              # Comma-separated NORAD IDs for batch query
+              ids_str = ",".join(norad_ids)
+              start_str = start_date.strftime("%Y-%m-%d")
+              end_str = end_date.strftime("%Y-%m-%d")
+
+              query_url = (
+                  f"{SPACETRACK_URL}/basicspacedata/query/class/gp_history"
+                  f"/NORAD_CAT_ID/{ids_str}"
+                  f"/EPOCH/{start_str}--{end_str}"
+                  f"/orderby/NORAD_CAT_ID,EPOCH%20asc/format/tle"
+              )
+
+              for attempt in range(MAX_RETRIES):
+                  try:
+                      print(f"  API call for {len(norad_ids)} satellites...")
+                      response = session.get(query_url, timeout=180)
+
+                      if response.status_code == 200:
+                          return response.text
+                      elif response.status_code == 429:
+                          print(f"  RATE LIMITED! Waiting {RETRY_DELAY}s before retry...")
+                          time.sleep(RETRY_DELAY)
+                      else:
+                          print(f"  HTTP {response.status_code}: {response.text[:200]}")
+                          if attempt < MAX_RETRIES - 1:
+                              time.sleep(10)
+                  except Exception as e:
+                      print(f"  Error: {e}")
+                      if attempt < MAX_RETRIES - 1:
+                          time.sleep(10)
+
+              return None
+
+          def parse_batch_response(tle_text, satellites_config):
+              """Parse batch TLE response and organize by NORAD ID."""
+              results = {nid: [] for nid in satellites_config.keys()}
+
+              if not tle_text:
+                  return results
+
+              lines = tle_text.strip().split('\n')
+              i = 0
+              while i < len(lines) - 1:
+                  line1 = lines[i].strip()
+                  line2 = lines[i + 1].strip()
+
+                  if line1.startswith('1 ') and line2.startswith('2 '):
+                      # Extract NORAD ID from line 1 (columns 3-7)
+                      norad_id = line1[2:7].strip().lstrip('0')
+
+                      if norad_id in satellites_config:
+                          cfg = satellites_config[norad_id]
+                          result = parse_tle_data(line1, line2, cfg['cd'], cfg['area'], cfg['mass'])
+                          if result:
+                              results[norad_id].append(result)
+                      i += 2
+                  else:
+                      i += 1
+
+              return results
+
+          def main():
+              days_history = int(os.environ.get('DAYS_HISTORY', '365'))
+              skip_existing = os.environ.get('SKIP_EXISTING', 'true').lower() == 'true'
+              dry_run = os.environ.get('DRY_RUN', 'false').lower() == 'true'
+              spacetrack_user = os.environ.get('SPACETRACK_USER', '')
+              spacetrack_pass = os.environ.get('SPACETRACK_PASS', '')
+
+              print("=" * 70)
+              print("SPACE-TRACK API-SAFE BOOTSTRAP")
+              print("=" * 70)
+              print(f"Days of history: {days_history}")
+              print(f"Skip existing: {skip_existing}")
+              print(f"Dry run: {dry_run}")
+              print(f"Batch size: {BATCH_SIZE} satellites per API call")
+              print(f"Delay between batches: {DELAY_BETWEEN_BATCHES}s")
+              print("=" * 70)
+
+              # Determine which satellites to fetch
+              satellites_to_fetch = {}
+              skipped = []
+
+              for norad_id, config in NEW_SATELLITES.items():
+                  data_file = f"data/density-{norad_id}.json"
+                  if skip_existing and os.path.exists(data_file):
+                      # Check if file has actual data
+                      try:
+                          with open(data_file) as f:
+                              existing = json.load(f)
+                          if existing.get('times') and len(existing['times']) > 10:
+                              skipped.append(norad_id)
+                              continue
+                      except:
+                          pass
+                  satellites_to_fetch[norad_id] = config
+
+              print(f"\nSatellites to fetch: {len(satellites_to_fetch)}")
+              print(f"Satellites skipped (already have data): {len(skipped)}")
+
+              if skipped:
+                  print(f"  Skipped IDs: {', '.join(skipped[:10])}{'...' if len(skipped) > 10 else ''}")
+
+              if not satellites_to_fetch:
+                  print("\nNo satellites need bootstrapping!")
+                  return
+
+              # Calculate API calls needed
+              norad_ids = list(satellites_to_fetch.keys())
+              num_batches = (len(norad_ids) + BATCH_SIZE - 1) // BATCH_SIZE
+              print(f"\nWill make {num_batches} API calls (batches of {BATCH_SIZE})")
+              print(f"Estimated time: {num_batches * DELAY_BETWEEN_BATCHES}+ seconds")
+
+              if dry_run:
+                  print("\n[DRY RUN] Would fetch these satellites:")
+                  for i in range(0, len(norad_ids), BATCH_SIZE):
+                      batch = norad_ids[i:i+BATCH_SIZE]
+                      print(f"  Batch {i//BATCH_SIZE + 1}: {', '.join(batch)}")
+                  print("\n[DRY RUN] No API calls made.")
+                  return
+
+              # Check credentials
+              if not spacetrack_user or not spacetrack_pass:
+                  print("\nERROR: SPACETRACK_USER and SPACETRACK_PASS secrets required!")
+                  sys.exit(1)
+
+              os.makedirs('data', exist_ok=True)
+
+              # Login to Space-Track
+              session = requests.Session()
+              print("\nLogging in to Space-Track...")
+
+              login_resp = session.post(
+                  f"{SPACETRACK_URL}/ajaxauth/login",
+                  data={'identity': spacetrack_user, 'password': spacetrack_pass}
+              )
+
+              if login_resp.status_code != 200 or 'Failed' in login_resp.text:
+                  print(f"Login failed: {login_resp.text}")
+                  sys.exit(1)
+
+              print("Login successful!")
+
+              end_date = datetime.now(timezone.utc)
+              start_date = end_date - timedelta(days=days_history)
+
+              # Process in batches
+              all_results = {}
+
+              for batch_num, i in enumerate(range(0, len(norad_ids), BATCH_SIZE)):
+                  batch_ids = norad_ids[i:i+BATCH_SIZE]
+                  batch_config = {nid: satellites_to_fetch[nid] for nid in batch_ids}
+
+                  print(f"\n--- Batch {batch_num + 1}/{num_batches} ---")
+                  print(f"Satellites: {', '.join(batch_ids)}")
+
+                  tle_text = batch_fetch_tles(session, batch_ids, start_date, end_date)
+                  batch_results = parse_batch_response(tle_text, batch_config)
+
+                  for nid, data_points in batch_results.items():
+                      all_results[nid] = data_points
+                      print(f"  {nid}: {len(data_points)} TLEs")
+
+                  # Rate limiting delay between batches
+                  if i + BATCH_SIZE < len(norad_ids):
+                      print(f"  Waiting {DELAY_BETWEEN_BATCHES}s before next batch...")
+                      time.sleep(DELAY_BETWEEN_BATCHES)
+
+              # Logout
+              session.get(f"{SPACETRACK_URL}/ajaxauth/logout")
+              print("\nLogged out of Space-Track")
+
+              # Save results
+              print("\n--- Saving Results ---")
+              success = 0
+              empty = 0
+
+              for norad_id, data_points in all_results.items():
+                  config = satellites_to_fetch[norad_id]
+
+                  # Sort by epoch and deduplicate
+                  seen = set()
+                  unique_points = []
+                  for p in sorted(data_points, key=lambda x: x['epoch']):
+                      if p['epoch'] not in seen:
+                          seen.add(p['epoch'])
+                          unique_points.append(p)
+
+                  output = {
+                      'norad_id': norad_id,
+                      'name': config['name'],
+                      'cd': config['cd'],
+                      'area': config['area'],
+                      'mass': config['mass'],
+                      'times': [p['epoch'] for p in unique_points],
+                      'densities': [p['density'] for p in unique_points],
+                      'perigees': [p['perigee'] for p in unique_points],
+                      'apogees': [p['apogee'] for p in unique_points],
+                      'smas': [p['sma'] for p in unique_points],
+                      'generated_at': datetime.now(timezone.utc).isoformat()
+                  }
+
+                  with open(f"data/density-{norad_id}.json", 'w') as f:
+                      json.dump(output, f)
+
+                  if unique_points:
+                      success += 1
+                      print(f"  {norad_id}: {len(unique_points)} points saved")
+                  else:
+                      empty += 1
+                      print(f"  {norad_id}: empty (may have decayed)")
+
+              print("\n" + "=" * 70)
+              print(f"COMPLETE: {success} with data, {empty} empty")
+              print(f"Total API calls made: {num_batches}")
+              print("=" * 70)
+
+          if __name__ == "__main__":
+              main()
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/density-*.json
+
+          if git diff --staged --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Bootstrap new debris objects [automated]"
+            git push
+          fi
