@@ -3,6 +3,9 @@
  * Activity Grid + All Satellites Chart
  */
 
+// Maximum TLE age (days) before satellite is considered decayed/stale and hidden
+const MAX_TLE_AGE_DAYS = 30;
+
 // Satellites ordered by perigee altitude (lowest to highest) - fixed ordering
 // 50 debris objects spanning 350-650 km altitude
 // Note: CZ-6A DEB (64631) and NOAA 17 DEB (48714) removed - no longer in active TLE catalog (likely decayed)
@@ -246,8 +249,17 @@ window.setDensityView = setDensityView;
 
 
 function getVisibleSatellites() {
-  // Returns all satellite entries sorted by order
+  // Returns satellite entries sorted by order, filtering out stale/decayed ones
+  const now = new Date();
+  const maxAgeMs = MAX_TLE_AGE_DAYS * 24 * 3600 * 1000;
+
   return Object.entries(SATELLITES)
+    .filter(([noradId]) => {
+      const data = allData[noradId];
+      if (!data?.times?.length) return false;
+      const latestTime = new Date(data.times[data.times.length - 1]);
+      return (now - latestTime) < maxAgeMs;
+    })
     .sort((a, b) => a[1].order - b[1].order);
 }
 
@@ -893,10 +905,16 @@ function renderSatelliteCards() {
  */
 function renderDensityStats() {
   const now = new Date();
+  const maxAgeMs = MAX_TLE_AGE_DAYS * 24 * 3600 * 1000;
 
-  // Get satellites with data
+  // Get satellites with data, filtering out stale/decayed ones
   const satellitesWithData = Object.entries(SATELLITES)
-    .filter(([noradId]) => allData[noradId]?.times?.length > 2)
+    .filter(([noradId]) => {
+      const data = allData[noradId];
+      if (!data?.times?.length || data.times.length < 3) return false;
+      const latestTime = new Date(data.times[data.times.length - 1]);
+      return (now - latestTime) < maxAgeMs;
+    })
     .map(([noradId, sat]) => {
       const data = allData[noradId];
       const times = data.times.map(t => new Date(t));
