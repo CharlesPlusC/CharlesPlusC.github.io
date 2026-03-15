@@ -4,7 +4,8 @@
  */
 
 // Maximum TLE age (days) before satellite is considered decayed/stale and hidden
-const MAX_TLE_AGE_DAYS = 30;
+// Set to 90 days to allow for workflow outages while still filtering truly decayed objects
+const MAX_TLE_AGE_DAYS = 90;
 
 // Satellites ordered by perigee altitude (lowest to highest) - fixed ordering
 // 50 debris objects spanning 350-650 km altitude
