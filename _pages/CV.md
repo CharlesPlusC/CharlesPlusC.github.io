@@ -85,6 +85,9 @@ author_profile: true
 
 ## Awards
 
+* **Top 10 Paper, SIGGRAPH 2026** – ACM SIGGRAPH, July 2026
+  Recognition for "Photons × Force: Differentiable Radiation Pressure Modeling", published in ACM Transactions on Graphics 45(4)
+
 * **Best Student Paper Award** – AMOS Conference, September 2023
   Awarded for the paper "Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series"
 

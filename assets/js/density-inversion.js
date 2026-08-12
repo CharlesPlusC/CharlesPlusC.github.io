@@ -4,8 +4,12 @@
  */
 
 // Satellites ordered by perigee altitude (lowest to highest) - fixed ordering
-// 50 debris objects spanning 350-650 km altitude
-// Note: CZ-6A DEB (64631) and NOAA 17 DEB (48714) removed - no longer in active TLE catalog (likely decayed)
+// 68 objects spanning 340-710 km altitude
+// Decayed objects are pruned here: CelesTrak SATCAT lists them with OPS_STATUS_CODE "D",
+// they drop out of the TLE catalog, and their last inversions are unphysical outliers.
+// Removed to date: 48714, 64631 (Jan 2026); 29878, 30490, 31159, 31258, 31330, 31358,
+// 31850, 32184, 32363, 33815, 33901, 34010, 34313, 34464, 34488, 34693, 34886, 37085,
+// 50404 (reentered Feb-Jul 2026). Keep this list in sync with update-density.yml.
 const SATELLITES = {
   // Original satellites
   '22': { name: 'Explorer 7', color: '#0ea5e9', order: 1, flag: '🇺🇸', altitude: 433 },
@@ -19,11 +23,7 @@ const SATELLITES = {
   // New debris objects (350-650 km altitude spread)
   '50058': { name: 'COSMOS 1408 DEB (50058)', color: '#ef4444', order: 9, flag: '🇷🇺', altitude: 355 },
   '50621': { name: 'COSMOS 1408 DEB (50621)', color: '#f97316', order: 10, flag: '🇷🇺', altitude: 370 },
-  '34488': { name: 'IRIDIUM 33 DEB (34488)', color: '#f59e0b', order: 11, flag: '🇺🇸', altitude: 385 },
-  '34693': { name: 'IRIDIUM 33 DEB (34693)', color: '#eab308', order: 12, flag: '🇺🇸', altitude: 390 },
-  '33815': { name: 'COSMOS 2251 DEB (33815)', color: '#84cc16', order: 13, flag: '🇷🇺', altitude: 400 },
   '33821': { name: 'COSMOS 2251 DEB (33821)', color: '#22c55e', order: 14, flag: '🇷🇺', altitude: 415 },
-  '50404': { name: 'COSMOS 1408 DEB (50404)', color: '#10b981', order: 15, flag: '🇷🇺', altitude: 428 },
   '33818': { name: 'COSMOS 2251 DEB (33818)', color: '#14b8a6', order: 16, flag: '🇷🇺', altitude: 438 },
   '35622': { name: 'IRIDIUM 33 DEB (35622)', color: '#06b6d4', order: 17, flag: '🇺🇸', altitude: 450 },
   '40996': { name: 'IRIDIUM 33 DEB (40996)', color: '#0891b2', order: 18, flag: '🇺🇸', altitude: 465 },
@@ -42,8 +42,7 @@ const SATELLITES = {
   '33776': { name: 'IRIDIUM 33 DEB (33776)', color: '#71717a', order: 31, flag: '🇺🇸', altitude: 602 },
   '38228': { name: 'IRIDIUM 33 DEB (38228)', color: '#525252', order: 32, flag: '🇺🇸', altitude: 628 },
   '35680': { name: 'IRIDIUM 33 DEB (35680)', color: '#44403c', order: 33, flag: '🇺🇸', altitude: 642 },
-  // NEW: Fengyun 1C debris (2007 Chinese ASAT) - 6 objects
-  '29878': { name: 'FENGYUN 1C DEB (29878)', color: '#16a34a', order: 34, flag: '🇨🇳', altitude: 479 },
+  // NEW: Fengyun 1C debris (2007 Chinese ASAT) - 5 objects
   '29944': { name: 'FENGYUN 1C DEB (29944)', color: '#15803d', order: 35, flag: '🇨🇳', altitude: 494 },
   '30017': { name: 'FENGYUN 1C DEB (30017)', color: '#166534', order: 36, flag: '🇨🇳', altitude: 542 },
   '29866': { name: 'FENGYUN 1C DEB (29866)', color: '#14532d', order: 37, flag: '🇨🇳', altitude: 548 },
@@ -63,30 +62,16 @@ const SATELLITES = {
   '36028': { name: 'IRIDIUM 33 DEB (36028)', color: '#8b5cf6', order: 49, flag: '🇺🇸', altitude: 571 },
   '34486': { name: 'IRIDIUM 33 DEB (34486)', color: '#a78bfa', order: 50, flag: '🇺🇸', altitude: 572 },
   // ============================================================
-  // NEW: 37 debris objects for altitude band coverage (Feb 2026)
+  // NEW: debris objects for altitude band coverage (Feb 2026), 23 still on orbit
   // ============================================================
-  // 300-400 km band (13 objects) - LOW ALTITUDE - actively decaying
+  // 300-400 km band (3 objects) - LOW ALTITUDE - actively decaying
   '32203': { name: 'FENGYUN 1C DEB (32203)', color: '#dc2626', order: 51, flag: '🇨🇳', altitude: 341 },
-  '31258': { name: 'FENGYUN 1C DEB (31258)', color: '#ea580c', order: 52, flag: '🇨🇳', altitude: 343 },
-  '32363': { name: 'FENGYUN 1C DEB (32363)', color: '#d97706', order: 53, flag: '🇨🇳', altitude: 348 },
-  '32184': { name: 'FENGYUN 1C DEB (32184)', color: '#ca8a04', order: 54, flag: '🇨🇳', altitude: 365 },
-  '31159': { name: 'FENGYUN 1C DEB (31159)', color: '#65a30d', order: 55, flag: '🇨🇳', altitude: 365 },
-  '31358': { name: 'FENGYUN 1C DEB (31358)', color: '#16a34a', order: 56, flag: '🇨🇳', altitude: 370 },
-  '31330': { name: 'FENGYUN 1C DEB (31330)', color: '#059669', order: 57, flag: '🇨🇳', altitude: 387 },
-  '30490': { name: 'FENGYUN 1C DEB (30490)', color: '#0d9488', order: 58, flag: '🇨🇳', altitude: 387 },
-  '37085': { name: 'COSMOS 2251 DEB (37085)', color: '#0891b2', order: 59, flag: '🇷🇺', altitude: 388 },
-  '31850': { name: 'FENGYUN 1C DEB (31850)', color: '#0284c7', order: 60, flag: '🇨🇳', altitude: 389 },
   '35602': { name: 'COSMOS 2251 DEB (35602)', color: '#2563eb', order: 61, flag: '🇷🇺', altitude: 397 },
-  '34886': { name: 'COSMOS 2251 DEB (34886)', color: '#4f46e5', order: 62, flag: '🇷🇺', altitude: 398 },
   '30988': { name: 'FENGYUN 1C DEB (30988)', color: '#7c3aed', order: 63, flag: '🇨🇳', altitude: 398 },
-  // 400-500 km band (10 objects)
+  // 400-500 km band (6 objects)
   '50032': { name: 'COSMOS 1408 DEB (50032)', color: '#9333ea', order: 64, flag: '🇷🇺', altitude: 416 },
-  '34464': { name: 'COSMOS 2251 DEB (34464)', color: '#c026d3', order: 65, flag: '🇷🇺', altitude: 440 },
-  '34313': { name: 'COSMOS 2251 DEB (34313)', color: '#db2777', order: 66, flag: '🇷🇺', altitude: 453 },
-  '34010': { name: 'COSMOS 2251 DEB (34010)', color: '#e11d48', order: 67, flag: '🇷🇺', altitude: 465 },
   '30082': { name: 'FENGYUN 1C DEB (30082)', color: '#be123c', order: 68, flag: '🇨🇳', altitude: 465 },
   '34410': { name: 'COSMOS 2251 DEB (34410)', color: '#9f1239', order: 69, flag: '🇷🇺', altitude: 471 },
-  '33901': { name: 'COSMOS 2251 DEB (33901)', color: '#881337', order: 70, flag: '🇷🇺', altitude: 474 },
   '34452': { name: 'COSMOS 2251 DEB (34452)', color: '#78716c', order: 71, flag: '🇷🇺', altitude: 485 },
   '33765': { name: 'COSMOS 2251 DEB (33765)', color: '#57534e', order: 72, flag: '🇷🇺', altitude: 485 },
   '29868': { name: 'FENGYUN 1C DEB (29868)', color: '#44403c', order: 73, flag: '🇨🇳', altitude: 495 },
@@ -1168,14 +1153,52 @@ function renderTleCollectionPlot(satellitesWithData, now) {
  * Updates every 10 minutes
  */
 
-const NOAA_MAG_URL = 'https://services.swpc.noaa.gov/products/solar-wind/mag-7-day.json';
-const NOAA_PLASMA_URL = 'https://services.swpc.noaa.gov/products/solar-wind/plasma-7-day.json';
+// SWPC retired /products/solar-wind/ (mag-7-day.json, plasma-7-day.json now 404).
+// The replacement is the RTSW feed: arrays of objects, newest-first, ~24h of 1-minute
+// data carrying every upstream spacecraft (ACE, DSCOVR, IMAP, SOLAR1). Exactly one
+// source at a time is flagged active:true - that is the operational series to plot.
+const NOAA_MAG_URL = 'https://services.swpc.noaa.gov/json/rtsw/rtsw_mag_1m.json';
+const NOAA_PLASMA_URL = 'https://services.swpc.noaa.gov/json/rtsw/rtsw_wind_1m.json';
 const NOAA_KP_URL = 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json';
 const NOAA_KP_ESTIMATED_URL = 'https://services.swpc.noaa.gov/json/planetary_k_index_1m.json';
 const REALTIME_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 let realtimeRefreshTimer = null;
 let estimatedKp = null;  // Store latest estimated Kp for banner display
+
+/**
+ * The RTSW feed emits bare NaN literals for dropped telemetry (e.g. "proton_speed": NaN),
+ * which is not valid JSON and makes response.json() throw. Swap NaN/Infinity in value
+ * position for null before parsing. The leading [:,[] guard keeps quoted strings intact.
+ */
+async function fetchSwpcJson(response) {
+  const text = await response.text();
+  return JSON.parse(text.replace(/([:,[]\s*)(?:NaN|-?Infinity)\b/g, '$1null'));
+}
+
+/**
+ * Normalise an RTSW feed into ascending-time records.
+ * The feed interleaves several upstream spacecraft, so take the one SWPC flags
+ * active. If nothing is flagged (source handover, telemetry gap), fall back to
+ * whichever source reported most recently rather than mixing them together.
+ * time_tag carries no zone designator but is UTC, so append 'Z' before parsing.
+ */
+function parseRtsw(records, mapFields) {
+  if (!Array.isArray(records) || records.length === 0) return [];
+
+  let selected = records.filter(r => r.active);
+  if (selected.length === 0) {
+    const newestSource = records.reduce(
+      (best, r) => (!best || r.time_tag > best.time_tag ? r : best), null
+    )?.source;
+    selected = records.filter(r => r.source === newestSource);
+  }
+
+  return selected
+    .map(r => ({ time: new Date(`${r.time_tag}Z`), ...mapFields(r) }))
+    .filter(r => !isNaN(r.time))
+    .sort((a, b) => a.time - b.time);  // feed is newest-first; downstream wants oldest-first
+}
 
 async function loadRealtimeData() {
   try {
@@ -1190,8 +1213,8 @@ async function loadRealtimeData() {
       throw new Error('Failed to fetch NOAA solar wind data');
     }
 
-    const magData = await magResponse.json();
-    const plasmaData = await plasmaResponse.json();
+    const magData = await fetchSwpcJson(magResponse);
+    const plasmaData = await fetchSwpcJson(plasmaResponse);
 
     // Process estimated Kp (1-minute resolution, near real-time)
     if (kpEstResponse.ok) {
@@ -1205,24 +1228,20 @@ async function loadRealtimeData() {
       updateRealtimeKp(kpJson);
     }
 
-    // Parse magnetic field data (skip header row)
-    // Format: [time_tag, bx_gsm, by_gsm, bz_gsm, lon_gsm, lat_gsm, bt]
-    const magRecords = magData.slice(1).map(row => ({
-      time: new Date(row[0]),
-      bx: parseFloat(row[1]),
-      by: parseFloat(row[2]),
-      bz: parseFloat(row[3]),
-      bt: parseFloat(row[6])
-    })).filter(r => !isNaN(r.bz) && !isNaN(r.bt));
+    // Parse magnetic field data. GSM is the aurora-relevant frame (bz_gsm drives coupling).
+    const magRecords = parseRtsw(magData, r => ({
+      bx: r.bx_gsm,
+      by: r.by_gsm,
+      bz: r.bz_gsm,
+      bt: r.bt
+    })).filter(r => Number.isFinite(r.bz) && Number.isFinite(r.bt));
 
-    // Parse plasma data (skip header row)
-    // Format: [time_tag, density, speed, temperature]
-    const plasmaRecords = plasmaData.slice(1).map(row => ({
-      time: new Date(row[0]),
-      density: parseFloat(row[1]),
-      speed: parseFloat(row[2]),
-      temperature: parseFloat(row[3])
-    })).filter(r => !isNaN(r.speed));
+    // Parse plasma data
+    const plasmaRecords = parseRtsw(plasmaData, r => ({
+      density: r.proton_density,
+      speed: r.proton_speed,
+      temperature: r.proton_temperature
+    })).filter(r => Number.isFinite(r.speed) && Number.isFinite(r.density));
 
     updateAuroraDisplay(magRecords, plasmaRecords);
     renderBzChart(magRecords);

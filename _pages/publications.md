@@ -7,6 +7,10 @@ author_profile: true
 
 ## Journal & Conference Papers
 
+* <b>Constant, C.</b>, Brownhall, I., Aruliah, A., Ziebart, M., Bhattarai, S. *Empirical Assessment of Storm-Time Thermospheric Density Inversion Methods From LEO POD Data.* Earth and Space Science, Vol. 13, No. 8, e2025EA004914, August 2026. [DOI](https://doi.org/10.1029/2025EA004914)
+
+* <b>Constant, C.</b>, Bates, E., Bhattarai, S., Ziebart, M., Ritschel, T. *Photons × Force: Differentiable Radiation Pressure Modeling.* ACM Transactions on Graphics (Proc. SIGGRAPH 2026), Vol. 45, No. 4, Article 82, July 2026. **Top 10 Paper, SIGGRAPH 2026.** [DOI](https://doi.org/10.1145/3811396) &#8226; [arXiv](https://arxiv.org/abs/2602.10712)
+
 * Brownhall, I., Lifson, M., Hall, S., <b>Constant, C.</b>, Lavezzi, G., Ziebart, M., Linares, R., Bhattarai, S. *MOCAT-pySSEM: An open-source Python library and user interface for orbital debris and source-sink environmental modeling.* SoftwareX, Vol. 30, 102062, 2025. [DOI](https://doi.org/10.1016/j.softx.2025.102062)
 
 * Peto-Madew, F., Bhattarai, S., <b>Constant, C.</b>, Brownhall, I. *Investigating the Application of the Orbit Domain Calibration Method in Sun Synchronous Orbits.* Proceedings of the 9th European Conference on Space Debris, ESA Space Debris Office, April 2025. [PDF](https://conference.sdo.esoc.esa.int/proceedings/sdc9/paper/254/SDC9-paper254.pdf)
@@ -34,3 +38,9 @@ author_profile: true
 * <b>Constant, C.</b>, Bhattarai, S., Ziebart, M. *Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series.* AMOS, 2023. [Poster](https://github.com/CharlesPlusC/CharlesPlusC.github.io/raw/master/Figures/AMOS-Poster.pdf) &#8226; [Video](https://github.com/CharlesPlusC/CharlesPlusC.github.io/raw/master/assets/AMOS_Presentation_3min.mp4)
 
 * <b>Constant, C.</b>, Bhattarai, S., Brownhall, I., Ziebart, M. *Astrodynamics and Space Geodesy for Space Domain Awareness and Sustainability.* GNOSIS, 2022. [Poster](https://github.com/CharlesPlusC/CharlesPlusC.github.io/raw/master/assets/GNOSIS_Poster_28_11_22.pdf)
+
+## Media & Press
+
+* *Could sunlight help steer the spacecraft of the future?* UCL Faculty of Engineering, 2026. Coverage of the SIGGRAPH 2026 **Photons × Force** paper and the Verra Space spin-out formed to commercialise the work. [Article](https://www.ucl.ac.uk/engineering/news/could-sunlight-help-steer-spacecraft-future)
+
+* *Cold War Soviet spacecraft to crash "somewhere in Western hemisphere".* The Telegraph and The Times, 8 May 2025. Commentary on the uncontrolled reentry of the Kosmos 482 Venus lander and congestion in low Earth orbit: "With congestion in low-Earth orbit increasing, one collision could spell disaster for everyone else." [UCL News summary](https://www.ucl.ac.uk/news/headlines/2025/may/cold-war-soviet-spacecraft-crash-somewhere-western-hemisphere)
