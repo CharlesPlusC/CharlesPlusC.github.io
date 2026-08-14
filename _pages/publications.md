@@ -9,7 +9,7 @@ author_profile: true
 
 * <b>Constant, C.</b>, Brownhall, I., Aruliah, A., Ziebart, M., Bhattarai, S. *Empirical Assessment of Storm-Time Thermospheric Density Inversion Methods From LEO POD Data.* Earth and Space Science, Vol. 13, No. 8, e2025EA004914, August 2026. [DOI](https://doi.org/10.1029/2025EA004914)
 
-* <b>Constant, C.</b>, Bates, E., Bhattarai, S., Ziebart, M., Ritschel, T. *Photons × Force: Differentiable Radiation Pressure Modeling.* ACM Transactions on Graphics (Proc. SIGGRAPH 2026), Vol. 45, No. 4, Article 82, July 2026. **Top 10 Paper, SIGGRAPH 2026.** [DOI](https://doi.org/10.1145/3811396) &#8226; [arXiv](https://arxiv.org/abs/2602.10712)
+* <b>Constant, C.</b>, Bates, E., Bhattarai, S., Ziebart, M., Ritschel, T. *Photons × Force: Differentiable Radiation Pressure Modeling.* ACM Transactions on Graphics (Proc. SIGGRAPH 2026), Vol. 45, No. 4, Article 82, July 2026. **Best Paper Honourable Mention, SIGGRAPH 2026.** [DOI](https://doi.org/10.1145/3811396) &#8226; [arXiv](https://arxiv.org/abs/2602.10712)
 
 * Brownhall, I., Lifson, M., Hall, S., <b>Constant, C.</b>, Lavezzi, G., Ziebart, M., Linares, R., Bhattarai, S. *MOCAT-pySSEM: An open-source Python library and user interface for orbital debris and source-sink environmental modeling.* SoftwareX, Vol. 30, 102062, 2025. [DOI](https://doi.org/10.1016/j.softx.2025.102062)
 
@@ -26,6 +26,8 @@ author_profile: true
 * <b>Constant, C.</b>, Bhattarai, S., Ziebart, M. *Limitations of Current Practices in Uncooperative Space Surveillance: Analysis of Mega-Constellation Data Time-Series.* Proceedings of the AMOS Conference, 2023. [Abstract](https://ui.adsabs.harvard.edu/abs/2023amos.conf...88C/abstract)
 
 ## Conference Talks & Posters
+
+* <b>Constant, C.</b>, Bates, E., Bhattarai, S., Ziebart, M., Ritschel, T. *Photons × Force: Differentiable Radiation Pressure Modeling.* SIGGRAPH, 2026. [Poster](https://charlesplusc.github.io/assets/PhotonsXForce_Poster_SIGGRAPH2026.pdf)
 
 * <b>Constant, C.</b>, Brownhall, I., Aguilar, L., Dable, E., Ziebart, M., Aruliah, A., Bhattarai, S. *Thermospheric Response and Operational Impacts During the 2024 "Mother's Day" Geomagnetic Storm.* European Space Weather Week, 2024. [Poster](https://charlesplusc.github.io/assets/MothersDayStormPoster_v2.pdf)
 
