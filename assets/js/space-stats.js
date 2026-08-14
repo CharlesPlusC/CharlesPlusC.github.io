@@ -1,0 +1,49 @@
+/**
+ * Landing page space stats.
+ * Reads data/space-stats.json, rebuilt daily by the update-space-stats workflow
+ * from the CelesTrak catalogue. Counts are over a rolling 30-day window: same-day
+ * counts would read zero on roughly half of all days, since launches are bursty
+ * and the catalogue lags a few days behind reality.
+ */
+
+(function () {
+  'use strict';
+
+  document.addEventListener('DOMContentLoaded', loadSpaceStats);
+
+  async function loadSpaceStats() {
+    const strip = document.getElementById('space-stats');
+    if (!strip) return;
+
+    try {
+      const response = await fetch('/data/space-stats.json', { cache: 'no-cache' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const stats = await response.json();
+
+      setValue('stat-launched', stats.launched);
+      setValue('stat-reentered', stats.reentered);
+      setValue('stat-onorbit', stats.on_orbit);
+
+      const note = document.getElementById('stat-note');
+      if (note && Number.isFinite(stats.payloads) && Number.isFinite(stats.debris)) {
+        note.textContent = `of which ${fmt(stats.payloads)} payloads and ` +
+          `${fmt(stats.debris)} tracked debris. Source: CelesTrak, updated daily.`;
+      }
+
+      strip.classList.add('is-ready');
+    } catch (err) {
+      // Nothing to show is better than a row of dashes over the animation.
+      console.error('Space stats unavailable:', err);
+      strip.remove();
+    }
+  }
+
+  function setValue(id, value) {
+    const el = document.getElementById(id);
+    if (el && Number.isFinite(value)) el.textContent = fmt(value);
+  }
+
+  function fmt(n) {
+    return n.toLocaleString('en-GB');
+  }
+})();

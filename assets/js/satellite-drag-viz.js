@@ -38,6 +38,17 @@
   let helixTime = 0;
   let helixOffset = 0; // Forward position
 
+  // Starlink v1.0 mesh: 8 named objects sharing one material, so the bus/panel
+  // split keys off object names rather than the material. Texture coords were
+  // stripped from the source (its PBR maps are not shipped); lighting is Phong.
+  const SAT_MODEL_URL = '/data/starlink.obj';
+  const PANEL_NAME_RE = /solar|panel|array|arr/i;
+
+  function isSolarPanel(mesh) {
+    return PANEL_NAME_RE.test(mesh.name || '') ||
+           PANEL_NAME_RE.test(mesh.parent?.name || '');
+  }
+
   // Satellite trail settings
   const SAT_TRAIL_LENGTH = 60;
   const TRAIL_COLORS = [
@@ -174,7 +185,7 @@
     for (let i = 0; i < 2; i++) {
       const phaseOffset = i * Math.PI;
 
-      loader.load('/data/gps2f_boxwing.obj', (obj) => {
+      loader.load(SAT_MODEL_URL, (obj) => {
         const sat = obj.clone();
 
         const busMat = new THREE.MeshPhongMaterial({
@@ -193,7 +204,7 @@
 
         sat.traverse((child) => {
           if (child.isMesh) {
-            child.material = child.name.includes('Arr') ? panelMat : busMat;
+            child.material = isSolarPanel(child) ? panelMat : busMat;
           }
         });
 
@@ -351,7 +362,7 @@
 
   function loadSingleSatellite() {
     const loader = new THREE.OBJLoader();
-    loader.load('/data/gps2f_boxwing.obj', (obj) => {
+    loader.load(SAT_MODEL_URL, (obj) => {
       const sat = obj;
 
       const busMat = new THREE.MeshPhongMaterial({
@@ -368,7 +379,7 @@
 
       sat.traverse((child) => {
         if (child.isMesh) {
-          child.material = child.name.includes('Arr') ? panelMat : busMat;
+          child.material = isSolarPanel(child) ? panelMat : busMat;
         }
       });
 

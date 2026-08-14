@@ -41,11 +41,6 @@ author_profile: true
 
 * Thesis: Emotion Detection using Convolutional Neural Networks
 
-**University of Reading** <span style="float: right;">Sep. 2015 - Jun. 2018</span>
-*BSc Physical Geography, Grade: 2:1*
-
-* Thesis: Linking Green Spaces to Stress Reduction via Remote Sensing
-
 ## Work & Research Experience
 
 **Visiting Researcher** <span style="float: right;">Sep. 2023 – Jan. 2024</span>
