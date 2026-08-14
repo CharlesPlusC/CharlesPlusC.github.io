@@ -41,7 +41,8 @@
   // Starlink v1.0 mesh: 8 named objects sharing one material, so the bus/panel
   // split keys off object names rather than the material. Texture coords were
   // stripped from the source (its PBR maps are not shipped); lighting is Phong.
-  const SAT_MODEL_URL = '/data/starlink.obj';
+  // The .txt extension is deliberate - see the header comment in the file.
+  const SAT_MODEL_URL = '/data/starlink.obj.txt';
   const PANEL_NAME_RE = /solar|panel|array|arr/i;
 
   function isSolarPanel(mesh) {
