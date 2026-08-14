@@ -83,26 +83,16 @@ redirect_from:
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow: 0 -1px 28px rgba(15, 23, 42, 0.05);
   pointer-events: none;
-  /* The reveal is a CSS animation, never a JS-toggled class. Gating it on a
-     script meant that if the script ran after the document had parsed - a
-     cached hit, or timing shifted by the CDN scripts ahead of it - the bar
-     stayed at opacity 0 permanently. The animation always runs. */
-  opacity: 0;
-  animation: space-stats-in 0.7s ease 0.15s forwards;
-}
-
-@keyframes space-stats-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: none; }
+  /* No fade-in, and deliberately so. Every version of this that started at
+     opacity 0 and relied on something to reveal it - a JS class, then a CSS
+     animation - left the bar invisible whenever that reveal did not land.
+     Static content should not be able to fail closed, so it is simply
+     visible. Only the numbers are filled in by script. */
 }
 
 /* Where the blur is unavailable, lean on opacity instead. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   #space-stats { background: rgba(255, 255, 255, 0.94); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #space-stats { animation-duration: 0.01s; animation-delay: 0s; }
 }
 
 #space-stats .space-stats-row {
