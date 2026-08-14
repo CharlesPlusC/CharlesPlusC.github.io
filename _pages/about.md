@@ -62,8 +62,11 @@ redirect_from:
 }
 
 /* Space stats bar.
-   Frosted panel rather than bare text: the strip floats over the animation,
-   whose colour varies, so the text needs its own ground to stay legible. */
+   Two things this has to defend against: the strip floats over the animation,
+   whose colour varies, so the text needs its own ground to stay legible; and
+   the theme sets an 18px root with a `.page__content p` rule that outranks a
+   bare class. Hence the #space-stats prefixes and px type throughout - rem
+   here would silently inflate with the theme's root size. */
 #space-stats {
   position: fixed;
   bottom: 0;
@@ -73,7 +76,7 @@ redirect_from:
   right: 0;
   box-sizing: border-box;
   z-index: 2;
-  padding: 0.8rem 1rem calc(0.65rem + env(safe-area-inset-bottom));
+  padding: 13px 16px calc(11px + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 0.72);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
   backdrop-filter: blur(16px) saturate(150%);
@@ -99,68 +102,74 @@ redirect_from:
   #space-stats { transition: opacity 0.2s ease; transform: none; }
 }
 
-.space-stats-row {
+#space-stats .space-stats-row {
   display: flex;
   justify-content: center;
-  max-width: 40rem;
+  align-items: flex-start;
+  max-width: 620px;
   margin: 0 auto;
 }
 
-.space-stat {
+#space-stats .space-stat {
   flex: 1 1 0;
   min-width: 0;
   box-sizing: border-box;
   text-align: center;
-  padding: 0 0.9rem;
+  padding: 0 14px;
   border-left: 1px solid rgba(15, 23, 42, 0.09);
 }
 
-.space-stat:first-child { border-left: 0; }
+#space-stats .space-stat:first-child { border-left: 0; }
 
-.space-stat-value {
+#space-stats .space-stat-value {
   display: block;
-  font-size: clamp(1.35rem, 3vw, 1.7rem);
+  margin: 0;
+  font-size: clamp(21px, 2.4vw, 27px);
   font-weight: 600;
-  line-height: 1.05;
+  line-height: 1.1;
   letter-spacing: -0.022em;
   color: #0f172a;
   font-variant-numeric: tabular-nums;
 }
 
-.space-stat-label {
+#space-stats .space-stat-label {
   display: block;
-  margin-top: 0.32rem;
-  font-size: 0.625rem;
+  margin: 5px 0 0;
+  font-size: 10px;
   font-weight: 600;
+  line-height: 1.2;
   text-transform: uppercase;
   letter-spacing: 0.13em;
   color: #475569;
 }
 
-.space-stat-sub {
+#space-stats .space-stat-sub {
   display: block;
-  margin-top: 0.1rem;
-  font-size: 0.625rem;
+  margin: 2px 0 0;
+  font-size: 10px;
   line-height: 1.3;
   color: #64748b;
   font-variant-numeric: tabular-nums;
 }
 
-.space-stats-source {
-  margin: 0.5rem 0 0;
+/* Element selector included so this outranks the theme's `.page__content p`. */
+#space-stats p.space-stats-source {
+  margin: 8px 0 0;
+  padding: 0;
   text-align: center;
-  font-size: 0.58rem;
+  font-size: 9.5px;
+  line-height: 1.3;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #6b7280;
 }
 
 @media (max-width: 560px) {
-  #space-stats { padding: 0.7rem 0.5rem calc(0.55rem + env(safe-area-inset-bottom)); }
-  .space-stat { padding: 0 0.5rem; }
-  .space-stat-label { font-size: 0.55rem; letter-spacing: 0.08em; }
-  .space-stat-sub { font-size: 0.55rem; }
-  .space-stats-source { display: none; }
+  #space-stats { padding: 10px 8px calc(9px + env(safe-area-inset-bottom)); }
+  #space-stats .space-stat { padding: 0 8px; }
+  #space-stats .space-stat-label { font-size: 9px; letter-spacing: 0.08em; }
+  #space-stats .space-stat-sub { font-size: 9px; }
+  #space-stats p.space-stats-source { display: none; }
 }
 </style>
 
