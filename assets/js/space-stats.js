@@ -22,6 +22,15 @@
     const strip = document.getElementById('space-stats');
     if (!strip) return;
 
+    // The theme animates the opacity of #main, which both dims everything
+    // inside it and makes it a stacking context - trapping this fixed bar in
+    // it, behind the footer, whatever z-index it carries. Reparent to <body>
+    // so the bar sits against the viewport. Do this before fetching, so it
+    // still happens if the data call fails.
+    if (strip.parentElement !== document.body) {
+      document.body.appendChild(strip);
+    }
+
     try {
       const response = await fetch('/data/space-stats.json', { cache: 'no-cache' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);

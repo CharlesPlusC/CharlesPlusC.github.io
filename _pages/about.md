@@ -75,7 +75,10 @@ redirect_from:
   left: 0;
   right: 0;
   box-sizing: border-box;
-  z-index: 2;
+  /* Above the theme's .page__footer, which is absolutely positioned with an
+     opaque background and overlaps this bar whenever the page content is
+     shorter than the viewport. At z-index 2 the footer washed the bar out. */
+  z-index: 1000;
   padding: 13px 16px calc(11px + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 0.72);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
