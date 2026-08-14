@@ -24,10 +24,9 @@
       setValue('stat-reentered', stats.reentered);
       setValue('stat-onorbit', stats.on_orbit);
 
-      const note = document.getElementById('stat-note');
-      if (note && Number.isFinite(stats.payloads) && Number.isFinite(stats.debris)) {
-        note.textContent = `of which ${fmt(stats.payloads)} payloads and ` +
-          `${fmt(stats.debris)} tracked debris. Source: CelesTrak, updated daily.`;
+      const sub = document.getElementById('stat-onorbit-sub');
+      if (sub && Number.isFinite(stats.payloads)) {
+        sub.textContent = `${fmt(stats.payloads)} payloads`;
       }
 
       strip.classList.add('is-ready');
