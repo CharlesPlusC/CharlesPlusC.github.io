@@ -9,7 +9,14 @@
 (function () {
   'use strict';
 
-  document.addEventListener('DOMContentLoaded', loadSpaceStats);
+  // Do not wait on DOMContentLoaded unconditionally: this script sits behind
+  // several CDN tags, so on a cached load it can execute after the document has
+  // already parsed, and the listener would never fire.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSpaceStats);
+  } else {
+    loadSpaceStats();
+  }
 
   async function loadSpaceStats() {
     const strip = document.getElementById('space-stats');
@@ -29,7 +36,6 @@
         sub.textContent = `${fmt(stats.payloads)} payloads`;
       }
 
-      strip.classList.add('is-ready');
     } catch (err) {
       // Nothing to show is better than a row of dashes over the animation.
       console.error('Space stats unavailable:', err);

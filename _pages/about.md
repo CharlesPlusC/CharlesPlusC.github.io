@@ -83,14 +83,17 @@ redirect_from:
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow: 0 -1px 28px rgba(15, 23, 42, 0.05);
   pointer-events: none;
+  /* The reveal is a CSS animation, never a JS-toggled class. Gating it on a
+     script meant that if the script ran after the document had parsed - a
+     cached hit, or timing shifted by the CDN scripts ahead of it - the bar
+     stayed at opacity 0 permanently. The animation always runs. */
   opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  animation: space-stats-in 0.7s ease 0.15s forwards;
 }
 
-#space-stats.is-ready {
-  opacity: 1;
-  transform: none;
+@keyframes space-stats-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
 }
 
 /* Where the blur is unavailable, lean on opacity instead. */
@@ -99,7 +102,7 @@ redirect_from:
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #space-stats { transition: opacity 0.2s ease; transform: none; }
+  #space-stats { animation-duration: 0.01s; animation-delay: 0s; }
 }
 
 #space-stats .space-stats-row {
