@@ -1,12 +1,12 @@
 {
   "window_days": 30,
-  "launched": 324,
-  "reentered": 91,
-  "on_orbit": 35003,
-  "payloads": 20035,
-  "debris": 12488,
-  "catalog_latest_launch": "2026-08-30",
-  "catalog_latest_decay": "2026-08-31",
-  "generated_at": "2026-09-02T08:57:53+00:00",
+  "launched": 293,
+  "reentered": 99,
+  "on_orbit": 34998,
+  "payloads": 20030,
+  "debris": 12487,
+  "catalog_latest_launch": "2026-09-02",
+  "catalog_latest_decay": "2026-09-02",
+  "generated_at": "2026-09-03T09:06:11+00:00",
   "source": "CelesTrak SATCAT"
 }
