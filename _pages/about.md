@@ -1,202 +1,38 @@
 ---
+layout: landing
 permalink: /
 title: ""
-excerpt: "About me"
-author_profile: true
+excerpt: "Charles Constant - PhD, Space Flight Dynamics and Geodesy, UCL."
 redirect_from:
   - /about/
   - /about.html
 ---
 
-<style>
-/* Make navigation fully transparent on landing page */
-.masthead,
-.masthead__inner-wrap,
-.masthead__menu,
-.greedy-nav,
-.greedy-nav__toggle,
-.visible-links,
-.hidden-links {
-  background: transparent !important;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
+<main class="scene">
+  <div class="band band--sky"></div>
+  <div class="band band--ridge"></div>
+  <div class="band band--snow"></div>
 
-/* Navigation text black */
-.greedy-nav a {
-  color: #000 !important;
-}
+  <a class="obj obj--sputnik" href="/publications/" aria-label="Publications">
+    <img src="/images/landing/sputnik.png" width="358" height="288" alt="Sputnik 1" draggable="false">
+    <svg class="hit" viewBox="0 0 358 288" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M232 0H312V4H232ZM24 0H224V4H24ZM24 4H324V8H24ZM24 8H332V12H24ZM24 12H340V16H24ZM92 16H344V20H92ZM168 20H348V24H168ZM228 24H352V28H228ZM224 28H356V32H224ZM220 32H356V36H220ZM216 36H360V48H216ZM212 48H360V60H212ZM208 60H360V72H208ZM204 72H360V76H204ZM192 76H360V80H192ZM176 80H360V84H176ZM168 84H360V88H168ZM152 88H360V92H152ZM140 92H360V96H140ZM124 96H360V100H124ZM116 100H360V104H116ZM100 104H360V112H100ZM100 112H156V116H100ZM160 112H360V116H160ZM100 116H144V120H100ZM152 116H360V120H152ZM100 120H132V124H100ZM144 120H204V124H144ZM220 120H356V128H220ZM100 124H116V128H100ZM136 124H200V128H136ZM128 128H192V132H128ZM224 128H352V132H224ZM228 132H348V136H228ZM120 132H180V136H120ZM232 136H344V140H232ZM112 136H172V140H112ZM104 140H164V144H104ZM236 140H340V144H236ZM96 144H156V148H96ZM240 144H336V148H240ZM248 148H332V152H248ZM88 148H148V152H88ZM80 152H140V156H80ZM256 152H328V156H256ZM68 156H132V160H68ZM280 156H324V160H280ZM276 160H316V164H276ZM60 160H124V164H60ZM268 164H312V168H268ZM52 164H112V168H52ZM44 168H108V172H44ZM264 168H308V172H264ZM260 172H300V176H260ZM36 172H100V176H36ZM256 176H296V180H256ZM28 176H92V180H28ZM20 180H80V184H20ZM252 180H292V184H252ZM12 184H72V188H12ZM248 184H288V188H248ZM244 188H284V192H244ZM4 188H64V192H4ZM240 192H280V196H240ZM0 192H56V196H0ZM0 196H48V200H0ZM236 196H276V200H236ZM0 200H40V204H0ZM228 200H272V204H228ZM0 204H32V208H0ZM224 204H268V208H224ZM220 208H260V212H220ZM0 208H24V212H0ZM216 212H256V216H216ZM0 212H16V216H0ZM212 216H252V220H212ZM208 220H248V224H208ZM204 224H244V228H204ZM200 228H240V232H200ZM196 232H236V236H196ZM192 236H232V240H192ZM184 240H224V244H184ZM180 244H220V248H180ZM176 248H216V252H176ZM172 252H212V256H172ZM168 256H208V260H168ZM164 260H204V264H164ZM156 264H200V268H156ZM152 268H192V272H152ZM148 272H188V276H148ZM144 276H184V280H144ZM144 280H180V284H144ZM144 284H176V288H144Z"/></svg>
+    <span class="tag">Publications</span>
+  </a>
+  <a class="obj obj--duck-left" href="/satellite-passes/" aria-label="Meteor-M passes">
+    <img src="/images/landing/duckL.png" width="165" height="197" alt="A ruddy shelduck, standing" draggable="false">
+    <svg class="hit" viewBox="0 0 165 197" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M104 0H156V4H104ZM100 4H156V8H100ZM100 8H164V12H100ZM96 12H168V20H96ZM92 20H168V36H92ZM92 36H156V40H92ZM92 40H148V44H92ZM92 44H140V52H92ZM88 52H144V56H88ZM84 56H144V60H84ZM80 60H144V64H80ZM76 64H144V68H76ZM68 68H148V72H68ZM60 72H148V76H60ZM52 76H148V80H52ZM44 80H148V84H44ZM40 84H148V88H40ZM36 88H148V96H36ZM28 96H148V100H28ZM24 100H148V104H24ZM20 104H148V108H20ZM16 108H148V112H16ZM8 112H148V116H8ZM0 116H148V140H0ZM0 140H140V148H0ZM0 148H136V152H0ZM4 152H136V156H4ZM24 156H132V160H24ZM32 160H124V164H32ZM36 164H120V168H36ZM40 168H112V172H40ZM44 172H72V180H44ZM80 172H108V184H80ZM48 180H76V184H48ZM48 184H116V188H48ZM48 188H124V192H48ZM52 192H124V200H52Z"/></svg>
+    <span class="tag">Meteor-M passes</span>
+  </a>
+  <a class="obj obj--person" href="/cv/" aria-label="CV">
+    <img src="/images/landing/person.png" width="128" height="474" alt="Charles Constant" draggable="false">
+    <svg class="hit" viewBox="0 0 128 474" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M32 0H100V4H32ZM28 4H100V12H28ZM28 12H104V16H28ZM24 16H104V20H24ZM24 20H108V28H24ZM24 28H112V48H24ZM28 48H112V56H28ZM32 56H112V68H32ZM28 68H108V72H28ZM20 72H108V76H20ZM16 76H108V80H16ZM12 80H100V84H12ZM8 84H100V88H8ZM0 88H100V92H0ZM0 92H104V100H0ZM0 100H108V112H0ZM0 112H112V148H0ZM0 148H116V184H0ZM0 184H120V216H0ZM0 216H124V224H0ZM4 224H124V236H4ZM8 236H124V244H8ZM8 244H128V272H8ZM12 272H128V284H12ZM12 284H124V288H12ZM12 288H120V292H12ZM12 292H112V304H12ZM16 304H108V312H16ZM16 312H104V316H16ZM12 316H104V332H12ZM8 332H104V336H8ZM4 336H108V352H4ZM8 352H108V360H8ZM4 360H104V404H4ZM4 404H100V408H4ZM4 408H104V436H4ZM4 436H112V440H4ZM4 440H116V444H4ZM4 444H128V452H4ZM8 452H128V456H8ZM4 456H128V472H4ZM4 472H120V476H4Z"/></svg>
+    <span class="tag">CV</span>
+  </a>
+  <a class="obj obj--duck-right" href="/density-inversion/" aria-label="Space weather">
+    <img src="/images/landing/duckR.png" width="106" height="175" alt="A ruddy shelduck, facing you" draggable="false">
+    <svg class="hit" viewBox="0 0 106 175" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M36 0H80V4H36ZM32 4H80V16H32ZM32 16H84V24H32ZM28 24H88V36H28ZM24 36H88V40H24ZM16 40H96V44H16ZM12 44H96V48H12ZM8 48H100V52H8ZM4 52H104V60H4ZM0 60H108V132H0ZM0 132H104V136H0ZM4 136H104V140H4ZM8 140H100V144H8ZM12 144H96V148H12ZM12 148H92V152H12ZM16 152H44V160H16ZM64 152H92V160H64ZM64 160H96V164H64ZM16 160H48V164H16ZM16 164H52V168H16ZM60 164H96V176H60ZM16 168H56V176H16Z"/></svg>
+    <span class="tag">Space weather</span>
+  </a>
 
-.masthead__menu-item a,
-.masthead__menu-item--lg a {
-  color: #000 !important;
-}
-
-/* Full-page background animation - edge to edge */
-#satellite-bg-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: -1;
-  overflow: hidden;
-}
-
-#satellite-bg-container canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-#satellite-bg-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.5) 70%, rgba(200, 210, 230, 0.6) 100%);
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Space stats bar.
-   Two things this has to defend against: the strip floats over the animation,
-   whose colour varies, so the text needs its own ground to stay legible; and
-   the theme sets an 18px root with a `.page__content p` rule that outranks a
-   bare class. Hence the #space-stats prefixes and px type throughout - rem
-   here would silently inflate with the theme's root size. */
-#space-stats {
-  position: fixed;
-  bottom: 0;
-  /* Pin both edges rather than width:100% - with content-box sizing the
-     padding would otherwise push the bar wider than the viewport. */
-  left: 0;
-  right: 0;
-  box-sizing: border-box;
-  /* Above the theme's .page__footer, which is absolutely positioned with an
-     opaque background and overlaps this bar whenever the page content is
-     shorter than the viewport. At z-index 2 the footer washed the bar out. */
-  z-index: 1000;
-  padding: 13px 16px calc(11px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.72);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
-  backdrop-filter: blur(16px) saturate(150%);
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow: 0 -1px 28px rgba(15, 23, 42, 0.05);
-  pointer-events: none;
-  /* No fade-in, and deliberately so. Every version of this that started at
-     opacity 0 and relied on something to reveal it - a JS class, then a CSS
-     animation - left the bar invisible whenever that reveal did not land.
-     Static content should not be able to fail closed, so it is simply
-     visible. Only the numbers are filled in by script. */
-}
-
-/* Where the blur is unavailable, lean on opacity instead. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  #space-stats { background: rgba(255, 255, 255, 0.94); }
-}
-
-#space-stats .space-stats-row {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  max-width: 620px;
-  margin: 0 auto;
-}
-
-#space-stats .space-stat {
-  flex: 1 1 0;
-  min-width: 0;
-  box-sizing: border-box;
-  text-align: center;
-  padding: 0 14px;
-  border-left: 1px solid rgba(15, 23, 42, 0.09);
-}
-
-#space-stats .space-stat:first-child { border-left: 0; }
-
-#space-stats .space-stat-value {
-  display: block;
-  margin: 0;
-  font-size: clamp(21px, 2.4vw, 27px);
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.022em;
-  color: #0f172a;
-  font-variant-numeric: tabular-nums;
-}
-
-#space-stats .space-stat-label {
-  display: block;
-  margin: 5px 0 0;
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1.2;
-  text-transform: uppercase;
-  letter-spacing: 0.13em;
-  color: #475569;
-}
-
-#space-stats .space-stat-sub {
-  display: block;
-  margin: 2px 0 0;
-  font-size: 10px;
-  line-height: 1.3;
-  color: #64748b;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Element selector included so this outranks the theme's `.page__content p`. */
-#space-stats p.space-stats-source {
-  margin: 8px 0 0;
-  padding: 0;
-  text-align: center;
-  font-size: 9.5px;
-  line-height: 1.3;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #6b7280;
-}
-
-@media (max-width: 560px) {
-  #space-stats { padding: 10px 8px calc(9px + env(safe-area-inset-bottom)); }
-  #space-stats .space-stat { padding: 0 8px; }
-  #space-stats .space-stat-label { font-size: 9px; letter-spacing: 0.08em; }
-  #space-stats .space-stat-sub { font-size: 9px; }
-  #space-stats p.space-stats-source { display: none; }
-}
-</style>
-
-<div id="satellite-bg-container">
-  <canvas id="satellite-canvas"></canvas>
-</div>
-<div id="satellite-bg-overlay"></div>
-
-<div id="space-stats" aria-live="polite">
-  <div class="space-stats-row">
-    <div class="space-stat">
-      <span class="space-stat-value" id="stat-launched">–</span>
-      <span class="space-stat-label">Launched</span>
-      <span class="space-stat-sub">last 30 days</span>
-    </div>
-    <div class="space-stat">
-      <span class="space-stat-value" id="stat-reentered">–</span>
-      <span class="space-stat-label">Reentered</span>
-      <span class="space-stat-sub">last 30 days</span>
-    </div>
-    <div class="space-stat">
-      <span class="space-stat-value" id="stat-onorbit">–</span>
-      <span class="space-stat-label">On orbit</span>
-      <span class="space-stat-sub" id="stat-onorbit-sub">tracked objects</span>
-    </div>
-  </div>
-  <p class="space-stats-source">Source: CelesTrak &middot; updated daily</p>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-<script src="/assets/js/satellite-drag-viz.js"></script>
-<script src="/assets/js/space-stats.js"></script>
+  <h1 class="intro">Charles Constant</h1>
+</main>

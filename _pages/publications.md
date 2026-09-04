@@ -1,9 +1,11 @@
 ---
-layout: archive
+layout: page
 title: "Publications"
 permalink: /publications/
-author_profile: true
+figure: sputnik
+strapline: "Journal and conference papers, talks and posters, and press coverage."
 ---
+
 
 ## Journal & Conference Papers
 
@@ -45,4 +47,6 @@ author_profile: true
 
 * *Could sunlight help steer the spacecraft of the future?* UCL Faculty of Engineering, 2026. Coverage of the SIGGRAPH 2026 **Photons × Force** paper and the Verra Space spin-out formed to commercialise the work. [Article](https://www.ucl.ac.uk/engineering/news/could-sunlight-help-steer-spacecraft-future)
 
-* *Cold War Soviet spacecraft to crash "somewhere in Western hemisphere".* The Telegraph and The Times, 8 May 2025. Commentary on the uncontrolled reentry of the Kosmos 482 Venus lander and congestion in low Earth orbit: "With congestion in low-Earth orbit increasing, one collision could spell disaster for everyone else." [UCL News summary](https://www.ucl.ac.uk/news/headlines/2025/may/cold-war-soviet-spacecraft-crash-somewhere-western-hemisphere)
+* *Cold War Soviet spacecraft to crash "somewhere in Western hemisphere".* The Telegraph, 7 May 2025. On the uncontrolled reentry of the Kosmos 482 Venus lander and congestion in low Earth orbit. [Article](https://www.telegraph.co.uk/news/2025/05/07/cold-war-soviet-spacecraft-rash-western-hemisphere/)
+
+* *A Soviet-era spacecraft will crash to Earth in hours &mdash; but where?* The Times, 9 May 2025. On forecasting where the Kosmos 482 descent craft would come down. [Article](https://www.thetimes.com/uk/science/article/where-soviet-spacecraft-crash-earth-weekend-lfxv5ttkf)

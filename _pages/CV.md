@@ -1,80 +1,86 @@
 ---
-layout: archive
+layout: page
 title: "CV"
 permalink: /cv/
-author_profile: true
+figure: person
+strapline: "Education, research and work experience, awards, and skills."
 ---
 
-<style>
-.org-logo {
-  height: 20px;
-  width: auto;
-  vertical-align: middle;
-  margin-right: 8px;
-  border-radius: 3px;
-}
-.inline-logo {
-  height: 16px;
-  width: auto;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-</style>
 
 ## Education
 
-<img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">**University College London** <span style="float: right;">Sep. 2022 - Ongoing</span>
-*PhD Space Flight Dynamics and Geodesy*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org"><img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">University College London</span><span class="entry-when">Sep. 2022 - Ongoing</span></div>
+  <div class="entry-role">PhD Space Flight Dynamics and Geodesy</div>
+</div>
 
 * <img src="/assets/logos/uksa.png" class="inline-logo" alt="UKSA"><img src="/assets/logos/nasa.png" class="inline-logo" alt="NASA"><img src="/assets/logos/jpl.png" class="inline-logo" alt="JPL"> Software integration for the UK Space Agency funded UCL-NASA JPL collaboration on spacecraft force modelling
 * <img src="/assets/logos/impulsespace.png" class="inline-logo" alt="Impulse Space"> RPO algorithm development with Lodestar and Impulse Space on autonomous formation flying
 * Aided in the supervision of Masters and undergraduate research projects
 * Peer reviewer for GPS Solutions journal
 
-<img src="/assets/logos/imperial.png" class="org-logo" alt="Imperial">**Imperial College London** <span style="float: right;">Sep. 2021 - Jun. 2022</span>
-*MSc Environmental Data Science and Machine Learning, Grade: Merit*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org"><img src="/assets/logos/imperial.png" class="org-logo" alt="Imperial">Imperial College London</span><span class="entry-when">Sep. 2021 - Jun. 2022</span></div>
+  <div class="entry-role">MSc Environmental Data Science and Machine Learning, Grade: Merit</div>
+</div>
 
 * Thesis: Aerodynamic Drag Force Modelling for LEO Mega-Constellations
 
-<img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">**University College London** <span style="float: right;">Sep. 2018 - Jun. 2021</span>
-*BEng Engineering, Grade: First-Class*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org"><img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">University College London</span><span class="entry-when">Sep. 2018 - Jun. 2021</span></div>
+  <div class="entry-role">BEng Engineering, Grade: First-Class</div>
+</div>
 
 * Thesis: Emotion Detection using Convolutional Neural Networks
 
 ## Work & Research Experience
 
-**Visiting Researcher** <span style="float: right;">Sep. 2023 – Jan. 2024</span>
-*Space Environment Technologies, Boulder, Colorado, United States*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org">Visiting Researcher</span><span class="entry-when">Sep. 2023 – Jan. 2024</span></div>
+  <div class="entry-role">Space Environment Technologies, Boulder, Colorado, United States</div>
+</div>
 
 * Thermospheric data assimilation from commercial LEO POD data from satellite constellations
 
-**Consulting** <span style="float: right;">Sep. 2023 – Jan. 2024</span>
-*University College London Consultants Ltd, London, United Kingdom*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org">Consulting</span><span class="entry-when">Sep. 2023 – Jan. 2024</span></div>
+  <div class="entry-role">University College London Consultants Ltd, London, United Kingdom</div>
+</div>
 
 * Research and production of a report for the UK General Lighthouse Authority on the future of LEO PNT technologies over the next 10 years
 
-<img src="/assets/logos/esa.png" class="org-logo" alt="ESA">**Navigation Training Course** <span style="float: right;">Jun. 2023 – Jul. 2023</span>
-*European Space Agency Academy, Belgium*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org"><img src="/assets/logos/esa.png" class="org-logo" alt="ESA">Navigation Training Course</span><span class="entry-when">Jun. 2023 – Jul. 2023</span></div>
+  <div class="entry-role">European Space Agency Academy, Belgium</div>
+</div>
 
 * Training in GNSS and Galileo system architecture, signal processing, and hands-on navigation exercises
 
-<img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">**Researcher in Applied Machine Learning** <span style="float: right;">Jun. 2021 – Sep. 2021</span>
-*University College London, London, United Kingdom*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org"><img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">Researcher in Applied Machine Learning</span><span class="entry-when">Jun. 2021 – Sep. 2021</span></div>
+  <div class="entry-role">University College London, London, United Kingdom</div>
+</div>
 
 * Awarded Departmental Grant to develop and validate methods developed in undergraduate thesis
 
-<img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">**Founder and Team Lead** <span style="float: right;">Sep. 2020 – Sep. 2021</span>
-*University College London Cubesat Design Team, London, United Kingdom*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org"><img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">Founder and Team Lead</span><span class="entry-when">Sep. 2020 – Sep. 2021</span></div>
+  <div class="entry-role">University College London Cubesat Design Team, London, United Kingdom</div>
+</div>
 
 * Led a team of 11 doctoral and undergraduate students to the final round of the Airbus/UKSEDS CubeSat design competition
 
-<img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">**Undergraduate Researcher in Astrodynamics** <span style="float: right;">Jun. 2020 – Oct. 2020</span>
-*University College London Space Geodesy and Navigation Laboratory, London, United Kingdom*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org"><img src="/assets/logos/ucl.png" class="org-logo" alt="UCL">Undergraduate Researcher in Astrodynamics</span><span class="entry-when">Jun. 2020 – Oct. 2020</span></div>
+  <div class="entry-role">University College London Space Geodesy and Navigation Laboratory, London, United Kingdom</div>
+</div>
 
 * Development of C++ and Python tools for astrodynamics. Characterization and analysis of solar radiation pressure time-series
 
-**Semi-Professional Cyclist** <span style="float: right;">Jun. 2015 – Jun. 2017</span>
-*Various teams, France/Italy/UK*
+<div class="entry">
+  <div class="entry-head"><span class="entry-org">Semi-Professional Cyclist</span><span class="entry-when">Jun. 2015 – Jun. 2017</span></div>
+  <div class="entry-role">Various teams, France/Italy/UK</div>
+</div>
 
 * Raced in 4 road cycling teams across Europe; Competed in two Ironman events
 

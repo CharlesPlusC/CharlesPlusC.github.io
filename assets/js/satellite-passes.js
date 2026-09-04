@@ -458,7 +458,7 @@
 
     document.getElementById('stats-bar').innerHTML =
       '<div class="stat-item"><span class="stat-number">' + totalPasses + '</span><span class="stat-label">passes</span></div>' +
-      '<div class="stat-item"><span class="stat-number" style="color:#1e40af">' + excellentPasses + '</span><span class="stat-label">excellent</span></div>' +
+      '<div class="stat-item"><span class="stat-number" style="color:#14305e">' + excellentPasses + '</span><span class="stat-label">excellent</span></div>' +
       '<div class="stat-item"><span class="stat-number">' + daysFilter + '</span><span class="stat-label">days</span></div>';
 
     if (currentView === 'chrono') {
@@ -477,8 +477,8 @@
   function createSkyChartSmall(pass, satColor) {
     var size = 60, cx = size/2, cy = size/2, r = size/2 - 4;
     var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg">';
-    svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>';
-    svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r/2) + '" fill="none" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="2,2"/>';
+    svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#f6f7f8" stroke="#dfe2e6" stroke-width="1"/>';
+    svg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r/2) + '" fill="none" stroke="#dfe2e6" stroke-width="0.5" stroke-dasharray="2,2"/>';
 
     if (pass.track && pass.track.length > 1) {
       var pathData = '';
@@ -562,7 +562,7 @@
   function displayPassesChronological(satellitesData) {
     var container = document.getElementById('passes-container');
     container.innerHTML = '';
-    var colors = { '57166': '#3b82f6', '59051': '#8b5cf6' };
+    var colors = { '57166': '#1b3d75', '59051': '#2b4a76' };
     var lat = allData.location.lat, lon = allData.location.lon;
 
     var allPasses = [];
@@ -575,7 +575,7 @@
           pass: passes[j],
           noradId: noradId,
           satName: satData.name,
-          satColor: colors[noradId] || '#6b7280'
+          satColor: colors[noradId] || '#5b6779'
         });
       }
     }
@@ -637,7 +637,7 @@
   function displayPasses(satellitesData) {
     var container = document.getElementById('passes-container');
     container.innerHTML = '';
-    var colors = { '57166': '#3b82f6', '59051': '#8b5cf6' };
+    var colors = { '57166': '#1b3d75', '59051': '#2b4a76' };
     var lat = allData.location.lat, lon = allData.location.lon;
 
     var sortedSats = Object.entries(satellitesData).sort(function(a, b) {
@@ -648,7 +648,7 @@
       var noradId = sortedSats[i][0], satData = sortedSats[i][1];
       var passes = satData.passes || [];
       var satClass = noradId === '57166' ? 'meteor-n2-3' : 'meteor-n2-4';
-      var satColor = colors[noradId] || '#6b7280';
+      var satColor = colors[noradId] || '#5b6779';
       var isExpanded = expandedSats[noradId] !== false;
 
       var group = document.createElement('div');

@@ -6,11 +6,11 @@
 .status {
   margin: 15px 0;
   padding: 12px 20px;
-  background: #f0f4f8;
+  background: #eef0f2;
   border-radius: 8px;
   font-size: 13px;
   text-align: center;
-  color: #64748b;
+  color: #5b6779;
 }
 
 .status.hidden {
@@ -26,11 +26,11 @@
 .page-blurb {
   margin: 24px 0 0;
   padding: 14px 18px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #f6f7f8;
+  border: 1px solid #dfe2e6;
   border-radius: 10px;
   font-size: 13px;
-  color: #475569;
+  color: #4a5666;
   line-height: 1.5;
 }
 
@@ -40,8 +40,8 @@
 
 /* Space Weather Banner */
 .space-weather-banner {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  color: #f8fafc;
+  background: linear-gradient(135deg, #14203a, #14203a);
+  color: #f6f7f8;
   padding: 14px 18px;
   border-radius: 12px;
   margin: 16px 0 24px;
@@ -51,8 +51,8 @@
   flex-wrap: wrap;
   gap: 12px;
   position: relative;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.15);
+  border: 1px solid rgba(143, 154, 171, 0.25);
+  box-shadow: 0 10px 24px rgba(20, 32, 58, 0.15);
   overflow: hidden;
 }
 
@@ -243,7 +243,7 @@
 /* Aurora Activity Bar */
 .aurora-activity-bar {
   background: linear-gradient(135deg, #0c1222 0%, #162033 100%);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(43, 74, 118, 0.25);
   border-radius: 12px;
   padding: 14px 18px;
   margin: 0 0 24px;
@@ -266,7 +266,7 @@
 
 .aurora-bar-update {
   font-size: 10px;
-  color: rgba(148, 163, 184, 0.7);
+  color: rgba(143, 154, 171, 0.7);
 }
 
 .aurora-bar-content {
@@ -284,7 +284,7 @@
 .aurora-metric {
   text-align: center;
   padding: 8px 12px;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(20, 32, 58, 0.5);
   border-radius: 8px;
   min-width: 70px;
 }
@@ -293,21 +293,21 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: rgba(148, 163, 184, 0.8);
+  color: rgba(143, 154, 171, 0.8);
   margin-bottom: 4px;
 }
 
 .aurora-metric-value {
   font-size: 22px;
   font-weight: 700;
-  color: #f8fafc;
+  color: #f6f7f8;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 
 .aurora-metric-unit {
   font-size: 10px;
-  color: rgba(148, 163, 184, 0.6);
+  color: rgba(143, 154, 171, 0.6);
   margin-top: 2px;
 }
 
@@ -337,14 +337,14 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: rgba(148, 163, 184, 0.8);
+  color: rgba(143, 154, 171, 0.8);
   margin-bottom: 4px;
 }
 
 .bz-chart {
   flex: 1;
   min-height: 60px;
-  background: rgba(15, 23, 42, 0.3);
+  background: rgba(20, 32, 58, 0.3);
   border-radius: 6px;
 }
 
@@ -377,13 +377,13 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: rgba(148, 163, 184, 0.9);
+  color: rgba(143, 154, 171, 0.9);
   font-weight: 500;
 }
 
 .goes-mag-update {
   font-size: 10px;
-  color: rgba(148, 163, 184, 0.7);
+  color: rgba(143, 154, 171, 0.7);
 }
 
 .goes-mag-content {
@@ -401,7 +401,7 @@
 .goes-mag-metric {
   text-align: center;
   padding: 8px 14px;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(20, 32, 58, 0.5);
   border-radius: 8px;
   min-width: 85px;
 }
@@ -419,20 +419,20 @@
 }
 
 .goes-mag-sat-label.goes-west {
-  color: #3b82f6;
+  color: #1b3d75;
 }
 
 .goes-mag-value {
   font-size: 22px;
   font-weight: 700;
-  color: #f8fafc;
+  color: #f6f7f8;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 
 .goes-mag-unit {
   font-size: 10px;
-  color: rgba(148, 163, 184, 0.6);
+  color: rgba(143, 154, 171, 0.6);
   margin-top: 2px;
 }
 
@@ -454,7 +454,7 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: rgba(148, 163, 184, 0.7);
+  color: rgba(143, 154, 171, 0.7);
 }
 
 .goes-chart-legend {
@@ -474,7 +474,7 @@
 }
 
 .goes-legend-item.goes-west {
-  color: #3b82f6;
+  color: #1b3d75;
 }
 
 .goes-legend-dot {
@@ -491,7 +491,7 @@
 
 .goes-chart-hint {
   font-size: 9px;
-  color: rgba(148, 163, 184, 0.5);
+  color: rgba(143, 154, 171, 0.5);
   text-align: center;
   margin-top: 4px;
 }
@@ -561,12 +561,12 @@
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  color: #1e293b;
+  color: #14203a;
 }
 
 .section-note {
   font-size: 12px;
-  color: #64748b;
+  color: #5b6779;
   margin: 0 0 12px;
   line-height: 1.4;
 }
@@ -580,24 +580,24 @@
 
 .control-btn {
   padding: 6px 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dfe2e6;
   background: white;
   border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
-  color: #64748b;
+  color: #5b6779;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .control-btn:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
+  border-color: #1b3d75;
+  color: #1b3d75;
 }
 
 .control-btn.active {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: #1b3d75;
+  border-color: #1b3d75;
   color: white;
 }
 
@@ -615,34 +615,34 @@
 
 .view-btn {
   padding: 6px 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dfe2e6;
   background: white;
   border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
-  color: #64748b;
+  color: #5b6779;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .view-btn:hover {
-  border-color: #1e293b;
-  color: #1e293b;
+  border-color: #14203a;
+  color: #14203a;
 }
 
 .view-btn.active {
-  background: #1e293b;
-  border-color: #1e293b;
+  background: #14203a;
+  border-color: #14203a;
   color: white;
 }
 
 /* Joy Division Plot */
 .joy-division-card {
-  background: linear-gradient(160deg, #0b0f1a, #0f172a);
+  background: linear-gradient(160deg, #0b0f1a, #14203a);
   border-radius: 12px;
   padding: 12px 16px 16px;
   border: 1px solid #1f2937;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 12px 24px rgba(20, 32, 58, 0.2);
   position: relative;
 }
 
@@ -664,7 +664,7 @@
   align-items: center;
   margin-top: 12px;
   padding: 8px 10px;
-  background: rgba(30, 41, 59, 0.5);
+  background: rgba(20, 32, 58, 0.5);
   border-radius: 4px;
   position: relative;
   z-index: 10;
@@ -687,7 +687,7 @@
   flex: 1;
   min-width: 1px;
   height: 14px;
-  background: #1e293b;
+  background: #14203a;
 }
 
 /* Kp color scale for Joy Division */
@@ -711,24 +711,24 @@
 
 .period-btn {
   padding: 5px 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dfe2e6;
   background: white;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
-  color: #64748b;
+  color: #5b6779;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .period-btn:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
+  border-color: #1b3d75;
+  color: #1b3d75;
 }
 
 .period-btn.active {
-  background: #1e293b;
-  border-color: #1e293b;
+  background: #14203a;
+  border-color: #14203a;
   color: white;
 }
 
@@ -816,12 +816,12 @@
 .legend-title {
   font-size: 10px;
   font-weight: 600;
-  color: #64748b;
+  color: #5b6779;
 }
 
 .legend-label {
   font-size: 10px;
-  color: #64748b;
+  color: #5b6779;
 }
 
 .legend-boxes {
@@ -845,7 +845,7 @@
 
 .satellite-card {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dfe2e6;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -855,7 +855,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #eef0f2;
 }
 
 .card-dot {
@@ -868,7 +868,7 @@
 .card-name {
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: #14203a;
 }
 
 .card-flag {
@@ -892,13 +892,13 @@
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #94a3b8;
+  color: #8f9aab;
 }
 
 .card-stat-value {
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: #14203a;
 }
 
 .card-chart {
@@ -919,14 +919,14 @@
   height: 400px;
   background: #0a0e17;
   border-radius: 12px;
-  border: 1px solid #1e293b;
+  border: 1px solid #14203a;
 }
 
 .satellite-position-list {
   width: 280px;
   flex-shrink: 0;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #f6f7f8;
+  border: 1px solid #dfe2e6;
   border-radius: 8px;
   padding: 12px;
   max-height: 400px;
@@ -938,7 +938,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #dfe2e6;
 }
 
 .sat-position-item:last-child {
@@ -960,7 +960,7 @@
 .sat-position-name {
   font-size: 12px;
   font-weight: 600;
-  color: #1e293b;
+  color: #14203a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -968,13 +968,13 @@
 
 .sat-position-coords {
   font-size: 11px;
-  color: #64748b;
+  color: #5b6779;
   font-family: monospace;
 }
 
 .sat-position-alt {
   font-size: 10px;
-  color: #94a3b8;
+  color: #8f9aab;
 }
 
 .globe-controls {
@@ -985,14 +985,14 @@
 
 .globe-time {
   font-size: 12px;
-  color: #64748b;
+  color: #5b6779;
   font-family: monospace;
 }
 
 /* Drag Stats Panel */
 .drag-stats-panel {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f6f7f8 0%, #eef0f2 100%);
+  border: 1px solid #dfe2e6;
   border-radius: 12px;
   padding: 16px 20px;
   margin: 24px 0;
@@ -1008,14 +1008,14 @@
 .stats-title {
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: #14203a;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .stats-update {
   font-size: 10px;
-  color: #64748b;
+  color: #5b6779;
 }
 
 .stats-grid {
@@ -1028,7 +1028,7 @@
   background: white;
   border-radius: 8px;
   padding: 12px 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #dfe2e6;
 }
 
 .stats-section-wide {
@@ -1039,7 +1039,7 @@
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #64748b;
+  color: #5b6779;
   margin-bottom: 10px;
   font-weight: 500;
 }
@@ -1053,14 +1053,14 @@
   flex: 1;
   text-align: center;
   padding: 6px 4px;
-  background: #f8fafc;
+  background: #f6f7f8;
   border-radius: 6px;
 }
 
 .trend-period {
   display: block;
   font-size: 9px;
-  color: #94a3b8;
+  color: #8f9aab;
   margin-bottom: 2px;
 }
 
@@ -1068,7 +1068,7 @@
   display: block;
   font-size: 13px;
   font-weight: 700;
-  color: #64748b;
+  color: #5b6779;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1077,11 +1077,11 @@
 }
 
 .trend-value.negative {
-  color: #2563eb;
+  color: #1b3d75;
 }
 
 .trend-value.neutral {
-  color: #64748b;
+  color: #5b6779;
 }
 
 .trend-value.stale {
@@ -1092,28 +1092,28 @@
 .data-age {
   margin-top: 8px;
   font-size: 10px;
-  color: #94a3b8;
+  color: #8f9aab;
   text-align: center;
 }
 
 .tle-age-metrics {
   margin-top: 4px;
   font-size: 9px;
-  color: #94a3b8;
+  color: #8f9aab;
   text-align: center;
   line-height: 1.6;
 }
 .tle-age-label {
-  color: #64748b;
+  color: #5b6779;
   font-weight: 600;
   margin-right: 2px;
 }
 .tle-age-item strong {
-  color: #64748b;
+  color: #5b6779;
 }
 .tle-age-sep {
   margin: 0 3px;
-  color: #cbd5e1;
+  color: #c8ced6;
 }
 .tle-age-warn strong {
   color: #f59e0b;
@@ -1126,7 +1126,7 @@
 .mini-plot {
   width: 100%;
   height: 70px;
-  background: #f8fafc;
+  background: #f6f7f8;
   border-radius: 6px;
 }
 

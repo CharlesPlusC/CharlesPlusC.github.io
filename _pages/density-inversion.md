@@ -1,11 +1,14 @@
 ---
-layout: archive
-title: "Thermospheric Density Explorer"
+layout: page
+title: "Thermospheric Density"
 permalink: /density-inversion/
-author_profile: true
+figure: duckR
+wide: true
+stylesheet: /assets/css/density-inversion.css
+strapline: "Live space weather, solar wind, and density inverted from precise LEO orbit data."
 ---
 
-<link rel="stylesheet" href="/assets/css/density-inversion.css">
+
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
 <div id="status" class="status">Loading density data...</div>

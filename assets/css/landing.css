@@ -1,0 +1,249 @@
+/* Landing page: the painting rebuilt as separate layers.
+ *
+ * The scene is not one image. The sky, the ridge and the snow are three strips
+ * that resize independently, and the four figures are cut-outs positioned on
+ * top of them. That is what lets the page fill any window: the sky absorbs
+ * spare height, the ridge and snow keep the horizon where it belongs, and the
+ * figures scale as a group so they never crop off the side of a phone.
+ *
+ * All figure geometry is expressed as a fraction of --fig (the person's
+ * height), taken straight from the painting, so the group keeps its original
+ * proportions and spacing at every size.
+ */
+
+:root {
+  /* How big the figures are. Bounded below so they stay tappable on a phone
+     and above so they do not tower on a large monitor; the vh term keeps the
+     person's head on screen in a short, wide window. */
+  --fig: clamp(190px, min(38vw, 64vh), 660px);
+
+  /* Ground strips. The snow is near enough uniform that stretching it is
+     invisible; the ridge is kept closer to its natural proportion. */
+  --ridge-h: clamp(56px, 9vw, 190px);
+  --snow-h: clamp(120px, 25vh, 320px);
+
+  /* Where the group sits across the width. */
+  --px: 33vw;   /* the person's centre  */
+  --sx: 70vw;   /* the sputnik's centre */
+  --sky-top: clamp(14px, 7vh, 96px);
+
+  --ink: #0f1f3d;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #123061;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.scene {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ---------- background strips ---------- */
+
+.band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* Each strip is drawn over the one behind it and runs a few pixels past the
+   join, so sub-pixel rounding cannot open a hairline of page background
+   between them.
+
+   The strips are cut from the right-hand side of the painting, where there was
+   nothing standing on the ground to paint out. Any part of the scenery the
+   figures used to cover had to be reconstructed, and the repair shows on the
+   near-uniform snow; this side needed no repair at all. The figures are placed
+   by CSS rather than by where they were painted, so which slice of scenery
+   sits behind them is free. */
+.band--sky {
+  top: 0;
+  bottom: calc(var(--ridge-h) + var(--snow-h) - 4px);
+  background-image: url("/images/landing/sky.jpg");
+}
+
+.band--ridge {
+  height: var(--ridge-h);
+  bottom: calc(var(--snow-h) - 3px);
+  background-image: url("/images/landing/ridge.jpg");
+}
+
+.band--snow {
+  height: var(--snow-h);
+  bottom: 0;
+  background-image: url("/images/landing/snow.jpg");
+}
+
+/* ---------- figures ---------- */
+
+.obj {
+  position: absolute;
+  display: block;
+  /* The anchor box is a rectangle; only the traced silhouette inside it should
+     answer to the pointer, so the box itself stays inert and the hit path
+     switches events back on. */
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.obj img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: filter .25s ease, transform .25s ease;
+}
+
+.obj .hit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* fill-opacity 0 still takes the pointer under pointer-events: fill */
+.obj .hit path {
+  fill: #000;
+  fill-opacity: 0;
+  pointer-events: fill;
+  cursor: pointer;
+}
+
+.obj:hover img,
+.obj:focus-visible img {
+  filter: drop-shadow(0 0 14px rgba(255, 255, 255, .7)) brightness(1.04);
+  transform: translateY(-3px);
+}
+
+.obj:focus-visible {
+  outline: none;
+}
+
+.obj--person {
+  z-index: 3;
+  width: calc(var(--fig) * .270042);
+  height: var(--fig);
+  left: calc(var(--px) - var(--fig) * .135021);
+  bottom: calc(var(--snow-h) - var(--fig) * .154008);
+}
+
+.obj--duck-left {
+  z-index: 3;
+  width: calc(var(--fig) * .348101);
+  height: calc(var(--fig) * .415612);
+  left: calc(var(--px) - var(--fig) * .597046);
+  bottom: calc(var(--snow-h) - var(--fig) * .128692);
+}
+
+/* nearer the viewer than the person: it stands lower on the snow */
+.obj--duck-right {
+  z-index: 4;
+  width: calc(var(--fig) * .223629);
+  height: calc(var(--fig) * .369198);
+  left: calc(var(--px) + var(--fig) * .162447);
+  bottom: calc(var(--snow-h) - var(--fig) * .162447);
+}
+
+.obj--sputnik {
+  z-index: 2;
+  width: calc(var(--fig) * .755274);
+  height: calc(var(--fig) * .607595);
+  left: calc(var(--sx) - var(--fig) * .377637);
+  top: var(--sky-top);
+}
+
+/* ---------- labels ---------- */
+
+.tag {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, 6px);
+  margin-bottom: .6em;
+  padding: .42em .85em;
+  border-radius: 100px;
+  white-space: nowrap;
+  font-size: clamp(11px, 1.15vw, 14px);
+  font-weight: 500;
+  letter-spacing: .02em;
+  color: var(--ink);
+  background: rgba(255, 255, 255, .93);
+  box-shadow: 0 2px 14px rgba(8, 20, 45, .28);
+  opacity: 0;
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+/* the sputnik's box is mostly empty sky, so its label sits under the sphere */
+.obj--sputnik .tag {
+  left: 78%;
+  bottom: 28%;
+}
+
+.obj:hover .tag,
+.obj:focus-visible .tag {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ---------- masthead ---------- */
+
+.intro {
+  position: absolute;
+  z-index: 5;
+  top: clamp(20px, 4.5vh, 52px);
+  left: clamp(20px, 4vw, 68px);
+  margin: 0;
+  font-size: clamp(20px, 2.5vw, 34px);
+  font-weight: 500;
+  letter-spacing: -.015em;
+  color: #fff;
+  text-shadow: 0 1px 20px rgba(6, 16, 38, .55);
+}
+
+/* ---------- narrow screens ----------
+   The group spans .98 x --fig and sits off-centre within it (the person is
+   right of middle), so --px is derived from the group's centre rather than
+   guessed: that keeps equal margins either side however wide the figures get.
+   Below each breakpoint --fig is driven by width instead of the desktop
+   default, so the figures grow to use a phone's narrow viewport instead of
+   shrinking into the middle of it. */
+
+@media (max-width: 900px) {
+  :root {
+    --fig: clamp(190px, min(46vw, 50vh), 460px);
+    --px: calc(50vw + var(--fig) * .105485);
+    --sx: 72vw;
+  }
+}
+
+@media (max-width: 620px) {
+  :root {
+    --fig: clamp(190px, min(78vw, 40vh), 420px);
+    --px: calc(50vw + var(--fig) * .105485);
+    --sx: 68vw;
+    --sky-top: clamp(70px, 15vh, 150px);
+    --ridge-h: clamp(48px, 12vw, 120px);
+    --snow-h: clamp(110px, 22vh, 260px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .obj img,
+  .tag {
+    transition: none;
+  }
+  .obj:hover img,
+  .obj:focus-visible img {
+    transform: none;
+  }
+}

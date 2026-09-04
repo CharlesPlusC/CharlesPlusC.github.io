@@ -1,11 +1,14 @@
 ---
-layout: archive
-title: "Meteor-M Weather Satellite Passes"
+layout: page
+title: "Meteor-M Passes"
 permalink: /satellite-passes/
-author_profile: true
+figure: duckL
+wide: true
+stylesheet: /assets/css/satellite-passes.css
+strapline: "Predicted overhead passes of the Meteor-M weather satellites, for planning when to listen for LRPT."
 ---
 
-<link rel="stylesheet" href="/assets/css/satellite-passes.css">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/4.0.0/satellite.min.js"></script>
 
 <div class="location-picker">
