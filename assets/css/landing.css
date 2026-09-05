@@ -197,11 +197,14 @@ html, body {
 
 /* ---------- masthead ---------- */
 
-.intro {
+.masthead {
   position: absolute;
   z-index: 5;
   top: clamp(20px, 4.5vh, 52px);
   left: clamp(20px, 4vw, 68px);
+}
+
+.intro {
   margin: 0;
   font-size: clamp(20px, 2.5vw, 34px);
   font-weight: 500;
@@ -209,6 +212,48 @@ html, body {
   color: #fff;
   text-shadow: 0 1px 20px rgba(6, 16, 38, .55);
 }
+
+/* Social links under the name: small marks, each tinted to sit in the sky
+   rather than shout its brand colour, brightening on hover. */
+.social {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.social__link {
+  display: block;
+  width: 17px;
+  height: 17px;
+  color: var(--tint, #dfe6ee);
+  opacity: .72;
+  filter: drop-shadow(0 1px 6px rgba(6, 16, 38, .5));
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.social__link svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.social__link:hover,
+.social__link:focus-visible {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.social__link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, .8);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.social__link--linkedin     { --tint: #8fbcf0; }
+.social__link--x            { --tint: #e6ecf3; }
+.social__link--github       { --tint: #d9d2c4; }
+.social__link--researchgate { --tint: #7dd6c8; }
 
 /* ---------- narrow screens ----------
    The group spans .98 x --fig and sits off-centre within it (the person is
@@ -239,7 +284,8 @@ html, body {
 
 @media (prefers-reduced-motion: reduce) {
   .obj img,
-  .tag {
+  .tag,
+  .social__link {
     transition: none;
   }
   .obj:hover img,
