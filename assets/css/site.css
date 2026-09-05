@@ -321,6 +321,56 @@ body {
   margin-right: 4px;
 }
 
+/* Publications: a figure from each paper sits beside its citation. Every
+   thumbnail shares one frame so the list keeps a steady rhythm whatever the
+   figure's own aspect ratio; the frame links to the full-size image. */
+.pub {
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr);
+  gap: 6px 26px;
+  align-items: start;
+  margin: 0 0 2.1em;
+}
+
+.pub-fig { margin: 0; }
+
+.pub-fig a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  padding: 6px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: #fff;
+}
+.pub-fig a:hover { border-color: var(--haze); }
+
+.pub-fig img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.pub-fig figcaption {
+  margin-top: .5em;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.prose .pub-cite { margin: 0; }
+
+/* an entry with no figure to show runs the full width */
+.pub--nofig { grid-template-columns: minmax(0, 1fr); }
+
+@media (max-width: 600px) {
+  .pub { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .pub-fig a { height: 170px; }
+}
+
 /* ---------- footer ---------- */
 
 .foot {
