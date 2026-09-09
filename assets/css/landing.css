@@ -98,8 +98,16 @@ html, body {
 
 .obj img {
   display: block;
-  width: 100%;
-  height: 100%;
+  /* Safari clips a transitioned drop-shadow to the image's own box, which
+     cut the hover glow off in a straight line where the box ends. Pad the
+     box out by the blur radius (and pull it back with a negative margin) so
+     the figure stays put but the glow has room. */
+  --glow: 18px;
+  box-sizing: border-box;
+  width: calc(100% + 2 * var(--glow));
+  height: calc(100% + 2 * var(--glow));
+  padding: var(--glow);
+  margin: calc(-1 * var(--glow));
   transition: filter .25s ease, transform .25s ease;
 }
 
