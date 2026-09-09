@@ -125,17 +125,17 @@ body {
 .band--sky {
   top: 0;
   bottom: calc(var(--hero-ridge) + var(--hero-snow) - 4px);
-  background-image: url("/images/landing/sky.jpg");
+  background-image: url("/images/landing/sky.webp");
 }
 .band--ridge {
   height: var(--hero-ridge);
   bottom: calc(var(--hero-snow) - 3px);
-  background-image: url("/images/landing/ridge.jpg");
+  background-image: url("/images/landing/ridge.webp");
 }
 .band--snow {
   height: var(--hero-snow);
   bottom: 0;
-  background-image: url("/images/landing/snow.jpg");
+  background-image: url("/images/landing/snow.webp");
 }
 
 /* Figure geometry, as on the landing page: fractions of the person's height

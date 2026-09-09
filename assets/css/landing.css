@@ -65,7 +65,7 @@ html, body {
 .band--sky {
   top: 0;
   bottom: calc(var(--ridge-h) + var(--snow-h) - 4px);
-  background-image: url("/images/landing/sky.jpg");
+  background-image: url("/images/landing/sky.webp");
   /* The sky carries the aurora, which should not be squashed to fit, so it
      keeps its own aspect and is anchored to the horizon; the strip is painted
      tall enough (plain sky extended upward) to fill a phone screen, and the
@@ -78,13 +78,13 @@ html, body {
 .band--ridge {
   height: var(--ridge-h);
   bottom: calc(var(--snow-h) - 3px);
-  background-image: url("/images/landing/ridge.jpg");
+  background-image: url("/images/landing/ridge.webp");
 }
 
 .band--snow {
   height: var(--snow-h);
   bottom: 0;
-  background-image: url("/images/landing/snow.jpg");
+  background-image: url("/images/landing/snow.webp");
 }
 
 /* ---------- figures ---------- */
