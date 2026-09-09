@@ -13,4 +13,4 @@ share: true
 
 For detailed results and presentations from this work, please visit our comprehensive analysis at:
 
-**[COSPAR 2024 Presentation Results](https://charlesplusc.github.io//assets/cospar24_presentation/reveal.js-master/index.html)**
+**[COSPAR 2024 Presentation Results](https://cconstant.cc/assets/cospar24_presentation/reveal.js-master/index.html)**
