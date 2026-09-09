@@ -30,5 +30,16 @@ layout: compress
   <body class="landing">
     {{ content }}
     {% include analytics.html %}
+    <script>
+      // stop the arrival glow as soon as the visitor reaches for an object
+      (function () {
+        var scene = document.querySelector('.scene');
+        var stop = function () { scene.classList.add('seen'); };
+        document.querySelectorAll('.obj').forEach(function (o) {
+          o.addEventListener('pointerenter', stop, { once: true });
+          o.addEventListener('touchstart', stop, { once: true, passive: true });
+        });
+      })();
+    </script>
   </body>
 </html>

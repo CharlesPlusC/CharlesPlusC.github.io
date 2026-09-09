@@ -170,6 +170,35 @@ html, body {
   top: var(--sky-top);
 }
 
+/* ---------- arrival cue ---------- */
+
+/* On load, each object gets a soft version of the hover glow in a quick
+   left-to-right sweep, holds it about a second, and lets it go. It runs
+   once; hovering anything during the sweep hands over to the normal hover
+   glow (see the script in the landing layout). */
+@keyframes reveal {
+  0%       { filter: none; transform: none; }
+  22%, 62% { filter: drop-shadow(0 0 14px rgba(255, 255, 255, .55)) brightness(1.03); transform: translateY(-2px); }
+  100%     { filter: none; transform: none; }
+}
+
+/* the same without the lift, for people who have asked for reduced motion */
+@keyframes reveal-still {
+  0%       { filter: none; }
+  22%, 62% { filter: drop-shadow(0 0 14px rgba(255, 255, 255, .55)) brightness(1.03); }
+  100%     { filter: none; }
+}
+
+.scene:not(.seen) .obj img { animation: reveal 2.8s ease-in-out var(--d, 0s) 1 both; }
+.obj--duck-left  { --d: .35s; }
+.obj--person     { --d: .50s; }
+.obj--duck-right { --d: .65s; }
+.obj--sputnik    { --d: .80s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene:not(.seen) .obj img { animation-name: reveal-still; }
+}
+
 /* ---------- labels ---------- */
 
 .tag {
