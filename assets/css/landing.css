@@ -60,16 +60,19 @@ html, body {
    join, so sub-pixel rounding cannot open a hairline of page background
    between them.
 
-   The strips are cut from the right-hand side of the painting, where there was
-   nothing standing on the ground to paint out. Any part of the scenery the
-   figures used to cover had to be reconstructed, and the repair shows on the
-   near-uniform snow; this side needed no repair at all. The figures are placed
-   by CSS rather than by where they were painted, so which slice of scenery
-   sits behind them is free. */
+   The strips are cut full-width from a figure-free version of the painting;
+   the figures are placed by CSS rather than by where they were painted. */
 .band--sky {
   top: 0;
   bottom: calc(var(--ridge-h) + var(--snow-h) - 4px);
   background-image: url("/images/landing/sky.jpg");
+  /* The sky carries the aurora, which should not be squashed to fit, so it
+     keeps its own aspect and is anchored to the horizon; the strip is painted
+     tall enough (plain sky extended upward) to fill a phone screen, and the
+     colour behind it matches its top edge in case a window is taller still. */
+  background-size: 100% auto;
+  background-position: center bottom;
+  background-color: #152f59;
 }
 
 .band--ridge {
