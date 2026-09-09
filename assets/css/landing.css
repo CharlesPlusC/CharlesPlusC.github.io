@@ -72,7 +72,7 @@ html, body {
      colour behind it matches its top edge in case a window is taller still. */
   background-size: 100% auto;
   background-position: center bottom;
-  background-color: #152f59;
+  background-color: #102a55;
 }
 
 .band--ridge {
