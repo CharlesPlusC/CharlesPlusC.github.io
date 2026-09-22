@@ -294,6 +294,7 @@ html, body {
 .social__link--x            { --tint: #e6ecf3; }
 .social__link--github       { --tint: #d9d2c4; }
 .social__link--researchgate { --tint: #7dd6c8; }
+.social__link--verra        { --tint: #ff0000; }
 
 /* ---------- narrow screens ----------
    The group spans .98 x --fig and sits off-centre within it (the person is
